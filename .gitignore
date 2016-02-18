@@ -1,0 +1,8 @@
+# Folders
+dev/
+
+# Compiled Python
+*.pyc
+
+# Log files
+*.log
