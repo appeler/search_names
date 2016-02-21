@@ -106,7 +106,7 @@ if __name__ == "__main__":
         for i, r in enumerate(reader):
             print("#{0}:".format(i))
             for p in args.patterns:
-                print("Pattern: '{}'".format(p))
+                print("Pattern: '{0}'".format(p))
                 parr = p.split()
                 s = []
                 for a in parr:
@@ -124,7 +124,7 @@ if __name__ == "__main__":
                     if len(c) > 1:
                         name = ' '.join(c)
                         if name not in args.drop_patterns:
-                            print(" Name: '{}'".format(name))
+                            print(" Name: '{0}'".format(name))
                             new_r = copy(r)
                             new_r['search_name'] = name
                             out.append(new_r)
@@ -160,7 +160,7 @@ if __name__ == "__main__":
             del out[i]
 
         # Write out to output file
-        print("Write the output to file: '{}'".format(args.outfile))
+        print("Write the output to file: '{0}'".format(args.outfile))
         o = None
         o = open(args.outfile, 'wb')
         writer = csv.DictWriter(o, fieldnames=reader.fieldnames +
