@@ -7,6 +7,13 @@ import logging
 from csv import DictWriter, DictReader
 from os.path import splitext, basename, dirname
 
+import sys
+import csv
+try:
+    csv.field_size_limit(sys.maxsize)
+except:
+    csv.field_size_limit(sys.maxint)
+
 LOG_FILE = 'split_text_corpus.log'
 DEFAULT_OUTPUT_FORMAT = 'chunk_{chunk_id:02d}/{basename}.csv'
 DEFAULT_CHUNK_SIZE = 1000
@@ -52,8 +59,14 @@ if __name__ == "__main__":
     with open(args.input, 'rb') as f:
         reader = DictReader(f)
         header = reader.fieldnames
+        if 'uniqid' not in header:
+            add_uid = True
+            header.append('uniqid')
+        else:
+            add_uid = False
         chunk_id = 0
         count = 0
+        uid = 0
         for r in reader:
             if count == 0:
                 filename = splitext(basename(args.input))[0]
@@ -67,10 +80,13 @@ if __name__ == "__main__":
                 out = open(chunk_name, 'wb')
                 writer = DictWriter(out, fieldnames=header)
                 writer.writeheader()
+            if add_uid:
+                r['uniqid'] = uid
             writer.writerow(r)
             count += 1
             if count >= args.size:
                 count = 0
                 chunk_id += 1
                 out.close()
+            uid += 1
     logging.info("done.")

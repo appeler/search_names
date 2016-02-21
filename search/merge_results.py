@@ -47,7 +47,7 @@ if __name__ == "__main__":
     count = 0
     try:
         for n, i in enumerate(args.inputs):
-            logging.info("Merging...: '{0}'".format(i))
+            logging.info("Merging...: '{}'".format(i))
             with open(i, 'rb') as f:
                 reader = DictReader(f)
                 if n == 0:
@@ -61,5 +61,5 @@ if __name__ == "__main__":
     finally:
         out.close()
 
-    logging.info("Done! (merge: {0} rows, from {1} files"
+    logging.info("Done! (merge: {} rows, from {} files"
                  .format(count, len(args.inputs)))

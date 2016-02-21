@@ -56,7 +56,7 @@ def remove_special_chars(text):
     """
     schars = ''.join([a for a in string.punctuation if a not in ".,?"])
 
-    text = re.sub('[{0!s}]'.format(re.escape(schars)), '', text)
+    text = re.sub('[%s]' % re.escape(schars), '', text)
     return text
 
 
@@ -89,7 +89,7 @@ def remove_stopwords(text, swords=None):
 def remove_punctuation(text):
     """Replace punctuation mark with space
     """
-    text = re.sub('[{0!s}]'.format(re.escape(string.punctuation)), '', text)
+    text = re.sub('[%s]' % re.escape(string.punctuation), '', text)
     return text
 
 
@@ -132,7 +132,7 @@ def export(outdir, filename, text):
     """Export text to output filename (with directory)
     """
     fname = get_export_path(outdir, filename)
-    print("Exporting text: {0!s}...".format((fname)))
+    print("Exporting text: %s..." % (fname))
     try:
         extdir = os.path.split(fname)[0]
         if not os.path.exists(extdir):
