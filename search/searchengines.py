@@ -18,9 +18,11 @@ RESULT_FIELDS = ['uniqid', 'n', 'match', 'start', 'end']
 class SearchMultipleKeywords(object):
     """Search by multiple keywords list
     """
-    def __init__(self, keywords, fuzzy_min_len=[]):
+    def __init__(self, keywords, fuzzy_min_len=None):
         """Initialize search
         """
+        if fuzzy_min_len is None:
+            fuzzy_min_len = []
         self.fuzzy_min_len = sorted(fuzzy_min_len)
         self.keywords = {}
         for i, k in keywords:
@@ -91,9 +93,11 @@ class NewSearchMultipleKeywords(object):
     """New search by multiple keywords (should be faster if large keywords)
     """
 
-    def __init__(self, keywords, fuzzy_min_len=[]):
+    def __init__(self, keywords, fuzzy_min_len=None):
         """Initialize search
         """
+        if fuzzy_min_len is None:
+            fuzzy_min_len = []
         self.fuzzy_min_len = sorted(fuzzy_min_len)
         self.keywords = {}
         for i, k in keywords:
