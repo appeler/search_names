@@ -31,7 +31,7 @@ class SearchMultipleKeywords(object):
             else:
                 self.keywords[i].append(k.strip().lower())
 
-        print("Number of unique keywords ID to be search: {}"
+        print("Number of unique keywords ID to be search: {0}"
               .format(len(self.keywords)))
 
         self.re_keywords = dict()
@@ -44,7 +44,7 @@ class SearchMultipleKeywords(object):
                 else:
                     kw.append(re.escape(k))
             re_str = '|'.join(kw)
-            re_str = r'\b(?:{})\b'.format(re_str)
+            re_str = r'\b(?:{0})\b'.format(re_str)
             self.re_keywords[i] = re.compile(re_str, flags=re.I)
 
     def get_allow_distance(self, k):
@@ -105,9 +105,9 @@ class NewSearchMultipleKeywords(object):
             if k not in self.keywords:
                 self.keywords[k] = i
             else:
-                print("ERROR: found duplicate keyword '{}'".format(k))
+                print("ERROR: found duplicate keyword '{0}'".format(k))
 
-        print("Number of unique keywords ID to be search: {}"
+        print("Number of unique keywords ID to be search: {0}"
               .format(len(self.keywords)))
 
         kw = []
@@ -119,7 +119,7 @@ class NewSearchMultipleKeywords(object):
                 kw.append(re.escape(k))
 
         re_str = '|'.join(kw)
-        re_str = r'\b(?:{})\b'.format(re_str)
+        re_str = r'\b(?:{0})\b'.format(re_str)
         self.re_keywords = re.compile(re_str)
 
     def get_allow_distance(self, k):
