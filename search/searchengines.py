@@ -211,7 +211,7 @@ if __name__ == "__main__":
             c.append(count)
             writer.writerow(c)
         elaspe = time.time() - start_time
-        print("Average rate = %f rows/min" % (i * 60 / elaspe))
+        print("Average rate = {0:f} rows/min".format((i * 60 / elaspe)))
     out.close()
 
     # Test new search
@@ -237,5 +237,5 @@ if __name__ == "__main__":
             c.append(count)
             writer.writerow(c)
         elaspe = time.time() - start_time
-        print("Average rate = %f rows/min" % (i * 60 / elaspe))
+        print("Average rate = {0:f} rows/min".format((i * 60 / elaspe)))
     out.close()

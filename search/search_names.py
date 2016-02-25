@@ -241,7 +241,7 @@ if __name__ == "__main__":
             h = reader.fieldnames[:]
             for i in range(args.max_name):
                 for a in RESULT_FIELDS:
-                    h.append('name%d.%s' % (i + 1, a))
+                    h.append('name{0:d}.{1!s}'.format(i + 1, a))
             h.append('count')
             csvwriter.writerow(h)
 
