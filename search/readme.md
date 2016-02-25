@@ -70,6 +70,13 @@ edit1 = 10
 edit2 = 20
 ```
 
+Once again, if you want to disable `fuzzy' matching, just comment out edit1 and edit2 using a hash sign as follows:
+
+```
+# edit1 = 10
+# edit2 = 20
+```
+
 #### Usage
 
 ```
