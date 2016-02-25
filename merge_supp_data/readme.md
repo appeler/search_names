@@ -1,6 +1,6 @@
 ## Merge Supplementary Data
 
-The script takes output from [clean-names](../clean-names) (see [sample input file](sample_in.csv)) and appends supplementary data (prefixes, nicknames) to the file (see [sample output file](augmented_clean_names.csv)). In particular, the script merges two supplementary data files:
+The script takes output from [clean_names](../clean_names) (see [sample input file](sample_in.csv)) and appends supplementary data (prefixes, nicknames) to the file (see [sample output file](augmented_clean_names.csv)). In particular, the script merges two supplementary data files:
 
 1. **Prefixes:**  
   Generally the same set of prefixes will be used for a group of names. For instance, if you have a long list of politicians, state governors with no previous legislative experience will only have prefixes Governor, Mr., Mrs., Ms. etc., and not prefixes like Congressman or Congresswoman. We require a column in the input file that captures information about which 'prefix group' a particular name belongs to. We use that column to merge prefix data. The prefix file itself needs two columns: 1) A column to look up prefixes for groups of names depending on the value. The name of the column must be the same as the column name specified by the argument `-p/--prefix` (default is `seat`), and 2) a column of prefixes (multiple prefixes separated by semi-colon). The default name of the prefix data file is `prefixes.csv`. See [sample prefixes data file](prefixes.csv).   
