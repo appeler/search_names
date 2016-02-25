@@ -38,12 +38,19 @@ This section contains patterns ---combination of field names---we want to search
 
 3) editlength
 
- This section contains minimum name length for the specific edit distance.
+This section contains minimum name length for the specific string length. For instance, `edit1=10` means that for patterns of length 10 or more, match within edit distance of 1.
 
 ```
     [editlength]
     edit1 = 10
     edit2 = 20
+```
+
+If you want to disable `fuzzy' matching, just comment out edit1 and edit2 using a hash sign as follows:
+
+```
+# edit1 = 10
+# edit2 = 20
 ```
 
 ### Usage
