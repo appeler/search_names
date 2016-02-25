@@ -135,14 +135,14 @@ def load_config(args=None):
 
 def load_names_file(args):
     args.names = []
-    logging.info("Load name file: {}".format(args.namefile))
+    logging.info("Load name file: {0}".format(args.namefile))
     with open(args.namefile, 'rb') as f:
         reader = csv.DictReader(f)
         for r in reader:
             try:
                 args.names.append((r[args.name_id], r[args.name_search]))
             except:
-                logging.error("Name file must have '{}' and '{}' columns"
+                logging.error("Name file must have '{0}' and '{1}' columns"
                               .format(args.name_id, args.name_search))
                 sys.exit(-2)
     return args.names
@@ -165,7 +165,7 @@ def init_worker():
 def worker(args):
     try:
         args, pid = args
-        logging.info('[{}] worker start'.format(pid))
+        logging.info('[{0}] worker start'.format(pid))
         namesearch = NewSearchMultipleKeywords(args.names, args.editlength)
         with open(args.input, 'rb') as f:
             reader = csv.DictReader(f)
@@ -190,10 +190,10 @@ def worker(args):
                 c.extend(result)
                 c.append(n)
                 elaspe = time.time() - start
-                logging.debug("[{}] found: {} in {:0.3f}s".format(pid, n, elaspe))
+                logging.debug("[{0}] found: {1} in {2:0.3f}s".format(pid, n, elaspe))
                 args.result_queue.put(c)
                 count += 1
-        logging.info('[{}] worker stop'.format(pid))
+        logging.info('[{0}] worker stop'.format(pid))
         return count
     except:
         import traceback
@@ -261,7 +261,7 @@ if __name__ == "__main__":
             csvwriter.writerow(r)
             progress += 1
             elaspe = time.time() - all_start
-            logging.info("Progress: {:d}, Average rate = {:.0f} rows/min"
+            logging.info("Progress: {0:d}, Average rate = {1:.0f} rows/min"
                           .format(progress, progress * 60 / elaspe))
         except KeyboardInterrupt:
             pool.terminate()
@@ -276,6 +276,6 @@ if __name__ == "__main__":
                 pass
 
     elaspe = time.time() - all_start
-    logging.info("Total: {:d}, Average rate = {:.0f} rows/min"
+    logging.info("Total: {0:d}, Average rate = {1:.0f} rows/min"
                  .format(count, count * 60 / elaspe))
     csvfile.close()
