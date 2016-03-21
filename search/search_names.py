@@ -127,6 +127,20 @@ def load_config(args=None):
                 i += 1
             except:
                 break
+        # column name for text
+        args.text = config.get('input', 'text')
+
+        args.search_cols = []
+        with open('search_cols.txt') as f:
+            for l in f:
+                if not l.startswith('#') and l.strip() != '':
+                        args.search_cols.append(l.strip())
+        args.input_file_cols = []
+        with open('input_file_cols.txt') as f:
+            for l in f:
+                if not l.startswith('#') and l.strip() != '':
+                    args.input_file_cols.append(l.strip())
+
     except Exception as e:
         print(e)
 
@@ -173,7 +187,7 @@ def worker(args):
             for i, r in enumerate(reader):
                 if (i % args.processes) != pid:
                     continue
-                text = r['text']
+                text = r[args.text]
                 if args.clean:
                     # clean text if need
                     text = clean_text(text)
@@ -182,13 +196,20 @@ def worker(args):
                 result, n = namesearch.search(text, args.max_name)
                 c = []
                 for k in reader.fieldnames:
-                    if args.clean and k == 'text':
-                        # replace original text with cleaned text
-                        c.append(text)
-                    else:
-                        c.append(r[k])
-                c.extend(result)
-                c.append(n)
+                    if k in args.input_file_cols:
+                        if args.clean and k == args.text:
+                            # replace original text with cleaned text
+                            c.append(text)
+                        else:
+                            c.append(r[k])
+                sel_result = []
+                for i, r in enumerate(result):
+                    k = RESULT_FIELDS[i % len(RESULT_FIELDS)]
+                    if k in args.search_cols:
+                        sel_result.append(r)
+                c.extend(sel_result)
+                if 'count' in args.search_cols:
+                    c.append(n)
                 elaspe = time.time() - start
                 logging.debug("[{0}] found: {1} in {2:0.3f}s".format(pid, n, elaspe))
                 args.result_queue.put(c)
@@ -238,17 +259,23 @@ if __name__ == "__main__":
             reader = csv.DictReader(f)
             """Write output file headers
             """
-            h = reader.fieldnames[:]
+            h = []
+            for k in reader.fieldnames:
+                if k in args.input_file_cols:
+                    h.append(k)
             for i in range(args.max_name):
                 for a in RESULT_FIELDS:
-                    h.append('name{0:d}.{1!s}'.format(i + 1, a))
-            h.append('count')
+                    if a in args.search_cols:
+                        h.append('name%d.%s' % (i + 1, a))
+            if 'count' in args.search_cols:
+                h.append('count')
             csvwriter.writerow(h)
 
     # Setting up multiprocessing worker
     manager = WorkAroundManager()
     manager.start()
-    args.result_queue = manager.Queue()
+    # FIXME: Limit memory usage by set maxsize to twice a number of processes.
+    args.result_queue = manager.Queue(args.processes * 2)
     pool = Pool(processes=args.processes, initializer=init_worker)
     result = pool.map_async(worker,
                             [(args, pid) for pid in range(args.processes)])
