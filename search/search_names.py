@@ -266,7 +266,7 @@ if __name__ == "__main__":
             for i in range(args.max_name):
                 for a in RESULT_FIELDS:
                     if a in args.search_cols:
-                        h.append('name%d.%s' % (i + 1, a))
+                        h.append('name{0:d}.{1!s}'.format(i + 1, a))
             if 'count' in args.search_cols:
                 h.append('count')
             csvwriter.writerow(h)
