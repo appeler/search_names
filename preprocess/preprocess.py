@@ -77,7 +77,7 @@ def load_drop_patterns(filename):
     with open(filename) as f:
         for l in f:
             l = l.strip().lower()
-            if len(l) == 0:
+            if len(l): # null string
                 continue
             drop_patterns.append(l)
     return drop_patterns

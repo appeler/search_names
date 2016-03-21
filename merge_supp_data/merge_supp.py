@@ -46,7 +46,7 @@ def load_nick_names(filename):
     with open(filename) as f:
         for l in f:
             l = l.strip().lower()
-            if len(l) == 0:
+            if len(l): # null string
                 continue
             a = l.split('-')
             if len(a) >= 2:
