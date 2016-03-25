@@ -7,7 +7,8 @@ import csv
 DEFAULT_OUTPUT = "augmented_clean_names.csv"
 DEFAULT_NAME_LOOKUP = "FirstName"
 DEFAULT_PREFIX_LOOKUP = "seat"
-
+PREFIX_FILE = "prefixes.csv"
+NICK_NAMES_FILE="nick_names.txt"
 
 def parse_command_line():
     """Parse command line options
@@ -70,9 +71,9 @@ if __name__ == "__main__":
 
     args = parse_command_line()
 
-    prefixes = load_prefixes('prefixes.csv', args.prefix)
+    prefixes = load_prefixes(PREFIX_FILE, args.prefix)
 
-    nick_names = load_nick_names('nick_names.txt')
+    nick_names = load_nick_names(NICK_NAMES_FILE)
 
     print("Merging to '{0!s}', please wait...".format(args.outfile))
 
