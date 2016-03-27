@@ -11,9 +11,8 @@ from Levenshtein import distance
 """Constant declaration
 """
 MAX_RESULT = 20
-
+DEF_INPUT_FILE = '../preprocess/deduped_augmented_clean_names.csv'
 RESULT_FIELDS = ['uniqid', 'n', 'match', 'start', 'end']
-
 
 class SearchMultipleKeywords(object):
     """Search by multiple keywords list
@@ -184,7 +183,7 @@ if __name__ == "__main__":
     import csv
 
     keywords = []
-    with open('../preprocess/deduped_augmented_clean_names.csv', 'rb') as f:
+    with open(DEF_INPUT_FILE, 'rb') as f:
         reader = csv.DictReader(f)
         for r in reader:
             keywords.append((r['uniqid'], r['search_name']))
