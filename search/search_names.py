@@ -1,19 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import sys
 import argparse
 import logging
 import csv
+import six
+from six.moves import range
 try:
     csv.field_size_limit(sys.maxsize)
 except:
-    csv.field_size_limit(sys.maxint)
+    csv.field_size_limit(sys.maxsize)
 import time
 import signal
 
-from ConfigParser import ConfigParser
+from six.moves.configparser import ConfigParser
 from searchengines import (SearchMultipleKeywords, NewSearchMultipleKeywords,
                            RESULT_FIELDS)
 
@@ -104,7 +108,7 @@ def parse_command_line():
 
 
 def load_config(args=None):
-    if args is None or isinstance(args, basestring):
+    if args is None or isinstance(args, six.string_types):
         namespace = argparse.Namespace()
         if args is None:
             namespace.config = DEFAULT_CONFIG_FILE
