@@ -19,7 +19,7 @@ from searchengines import (SearchMultipleKeywords, NewSearchMultipleKeywords,
 
 from multiprocessing import (Pool, TimeoutError)
 from multiprocessing.managers import SyncManager
-from Queue import Empty
+from queue import Empty
 
 import preprocess
 
