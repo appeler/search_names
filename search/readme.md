@@ -43,7 +43,7 @@ optional arguments:
 python split_text_corpus.py -s 1000 tests/text_corpus.csv
 ```
 
-The script will split [`text_corpus.csv`](tests/text_corpus.csv) into multiple chunk_* directories.
+The script will split [`text_corpus.csv`](text_corpus.csv) into multiple chunk_* directories.
 
 In this case chunk_00, chunk_01, ... chunk_09 directory will be created along with `text_corpus.txt` which will have 1000 rows in it.
 
