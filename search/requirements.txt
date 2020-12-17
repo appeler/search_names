@@ -1,5 +1,4 @@
 regex
 python-Levenshtein
 nltk
-ctypes
-
+six
