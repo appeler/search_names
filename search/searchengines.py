@@ -129,7 +129,6 @@ class NewSearchMultipleKeywords(object):
         return dist
 
     def find_nearest_key(self, key):
-        key = key.encode('latin1')
         for k in self.keywords:
             d = self.get_allow_distance(k)
             if distance(k, key) <= d:
