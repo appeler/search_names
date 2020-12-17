@@ -1,5 +1,5 @@
-regex>=2016.02.24
-python-Levenshtein==0.12.0
-nltk==3.4.5
+regex
+python-Levenshtein
+nltk
 ctypes
 

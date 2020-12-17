@@ -156,7 +156,7 @@ def load_config(args=None):
 def load_names_file(args):
     args.names = []
     logging.info("Load name file: {0}".format(args.namefile))
-    with open(args.namefile, 'rb') as f:
+    with open(args.namefile, 'r') as f:
         reader = csv.DictReader(f)
         for r in reader:
             try:
@@ -187,7 +187,7 @@ def worker(args):
         args, pid = args
         logging.info('[{0}] worker start'.format(pid))
         namesearch = NewSearchMultipleKeywords(args.names, args.editlength)
-        with open(args.input, 'rb') as f:
+        with open(args.input, 'r') as f:
             reader = csv.DictReader(f)
             count = 0
             for i, r in enumerate(reader):
@@ -246,9 +246,9 @@ if __name__ == "__main__":
     """
     try:
         if not os.path.exists(args.outfile) or args.overwritten:
-            csvfile = open(args.outfile, 'wb')
+            csvfile = open(args.outfile, 'w')
         else:
-            csvfile = open(args.outfile, 'ab')
+            csvfile = open(args.outfile, 'a')
             new_outfile = False
         csvwriter = csv.writer(csvfile, dialect='excel', delimiter=',',
                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -261,7 +261,7 @@ if __name__ == "__main__":
 
     # Setting CSV header row
     if new_outfile:
-        with open(args.input, 'rb') as f:
+        with open(args.input, 'r') as f:
             reader = csv.DictReader(f)
             """Write output file headers
             """
