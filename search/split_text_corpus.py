@@ -12,7 +12,7 @@ import csv
 try:
     csv.field_size_limit(sys.maxsize)
 except:
-    csv.field_size_limit(sys.maxint)
+    csv.field_size_limit(sys.maxsize)
 
 LOG_FILE = 'split_text_corpus.log'
 DEFAULT_OUTPUT_FORMAT = 'chunk_{chunk_id:02d}/{basename}.csv'
