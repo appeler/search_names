@@ -40,7 +40,7 @@ optional arguments:
 #### Example
 
 ```
-python split_text_corpus.py -s 1000 tests/text_corpus.csv
+python split_text_corpus.py -s 1000 text_corpus.csv
 ```
 
 The script will split [`text_corpus.csv`](text_corpus.csv) into multiple chunk_* directories.

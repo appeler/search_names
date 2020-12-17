@@ -2,17 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import os
+from os.path import splitext, basename, dirname
 import argparse
 import logging
-from csv import DictWriter, DictReader
-from os.path import splitext, basename, dirname
-
-import sys
 import csv
+from csv import DictWriter, DictReader
+import sys
+
 try:
-    csv.field_size_limit(sys.maxsize)
+    csv.field_size_limit()
 except:
-    csv.field_size_limit(sys.maxsize)
+    csv.field_size_limit()
 
 LOG_FILE = 'split_text_corpus.log'
 DEFAULT_OUTPUT_FORMAT = 'chunk_{chunk_id:02d}/{basename}.csv'
@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
     logging.info(str(args))
 
-    with open(args.input, 'rb') as f:
+    with open(args.input, 'r') as f:
         reader = DictReader(f)
         header = reader.fieldnames
         if 'uniqid' not in header:
@@ -77,7 +77,7 @@ if __name__ == "__main__":
                 d = dirname(chunk_name)
                 if not os.path.exists(d):
                     os.makedirs(d)
-                out = open(chunk_name, 'wb')
+                out = open(chunk_name, 'w')
                 writer = DictWriter(out, fieldnames=header)
                 writer.writeheader()
             if add_uid:
