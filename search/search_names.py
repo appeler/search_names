@@ -3,17 +3,19 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
+
 import os
 import sys
+import ctypes
 import argparse
 import logging
 import csv
 import six
 from six.moves import range
 try:
-    csv.field_size_limit(sys.maxsize)
+    csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
 except:
-    csv.field_size_limit(sys.maxsize)
+    csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
 import time
 import signal
 

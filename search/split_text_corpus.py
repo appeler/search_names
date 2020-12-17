@@ -3,6 +3,7 @@
 
 import os
 from os.path import splitext, basename, dirname
+import ctypes
 import argparse
 import logging
 import csv
@@ -10,9 +11,9 @@ from csv import DictWriter, DictReader
 import sys
 
 try:
-    csv.field_size_limit()
+    csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
 except:
-    csv.field_size_limit()
+    csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
 
 LOG_FILE = 'split_text_corpus.log'
 DEFAULT_OUTPUT_FORMAT = 'chunk_{chunk_id:02d}/{basename}.csv'
