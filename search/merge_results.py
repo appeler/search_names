@@ -43,12 +43,12 @@ if __name__ == "__main__":
 
     logging.info(str(args))
 
-    out = open(args.outfile, 'wb')
+    out = open(args.outfile, 'w')
     count = 0
     try:
         for n, i in enumerate(args.inputs):
             logging.info("Merging...: '{0}'".format(i))
-            with open(i, 'rb') as f:
+            with open(i, 'r') as f:
                 reader = DictReader(f)
                 if n == 0:
                     writer = DictWriter(out, fieldnames=reader.fieldnames)
