@@ -10,6 +10,7 @@ import ctypes
 import argparse
 import logging
 import csv
+import gzip
 import six
 from six.moves import range
 try:
@@ -187,7 +188,8 @@ def worker(args):
         args, pid = args
         logging.info('[{0}] worker start'.format(pid))
         namesearch = NewSearchMultipleKeywords(args.names, args.editlength)
-        with open(args.input, 'r') as f:
+        _open = gzip.open if args.input.endswith('.gz') else open
+        with _open(args.input, 'rt') as f:
             reader = csv.DictReader(f)
             count = 0
             for i, r in enumerate(reader):
@@ -261,7 +263,8 @@ if __name__ == "__main__":
 
     # Setting CSV header row
     if new_outfile:
-        with open(args.input, 'r') as f:
+        _open = gzip.open if args.input.endswith('.gz') else open
+        with _open(args.input, 'rt') as f:
             reader = csv.DictReader(f)
             """Write output file headers
             """
