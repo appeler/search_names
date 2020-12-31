@@ -35,7 +35,7 @@ def parse_command_line():
 def load_prefixes(filename, col):
     prefixes = {}
 
-    with open(filename, 'rb') as f:
+    with open(filename, 'r') as f:
         reader = csv.DictReader(f)
         for r in reader:
             prefixes[r[col]] = r['prefixes']
@@ -82,9 +82,9 @@ if __name__ == "__main__":
     try:
         f = None
         o = None
-        f = open(args.input, 'rb')
+        f = open(args.input, 'r')
         reader = csv.DictReader(f)
-        o = open(args.outfile, 'wb')
+        o = open(args.outfile, 'w')
         writer = csv.DictWriter(o, fieldnames=reader.fieldnames +
                                 ['prefixes', 'nick_names'])
         writer.writeheader()
