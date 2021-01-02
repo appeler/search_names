@@ -6,7 +6,7 @@ import csv
 import itertools
 
 from copy import copy
-from configparser import configparser
+import configparser
 
 from Levenshtein import distance
 
@@ -41,7 +41,7 @@ def load_config(args=None):
             namespace.config = args
         args = namespace
     try:
-        config = configparser()
+        config = configparser.ConfigParser()
         config.read(args.config)
         args.patterns = []
         i = 1
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     """
     try:
         f = None
-        f = open(args.input, 'rb')
+        f = open(args.input, 'r')
         reader = csv.DictReader(f)
         out = []
         print("Build search names...")
@@ -162,7 +162,7 @@ if __name__ == "__main__":
         # Write out to output file
         print("Write the output to file: '{0}'".format(args.outfile))
         o = None
-        o = open(args.outfile, 'wb')
+        o = open(args.outfile, 'w')
         writer = csv.DictWriter(o, fieldnames=reader.fieldnames +
                                 ['search_name'])
         writer.writeheader()
