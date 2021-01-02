@@ -6,7 +6,7 @@ import csv
 import itertools
 
 from copy import copy
-from ConfigParser import ConfigParser
+from configparser import configparser
 
 from Levenshtein import distance
 
@@ -33,7 +33,7 @@ def parse_command_line():
 
 
 def load_config(args=None):
-    if args is None or isinstance(args, basestring):
+    if args is None or isinstance(args, str):
         namespace = argparse.Namespace()
         if args is None:
             namespace.config = DEFAULT_CONFIG_FILE
@@ -41,7 +41,7 @@ def load_config(args=None):
             namespace.config = args
         args = namespace
     try:
-        config = ConfigParser()
+        config = configparser()
         config.read(args.config)
         args.patterns = []
         i = 1
@@ -67,7 +67,7 @@ def load_config(args=None):
     except Exception as e:
         print(e)
 
-    print args
+    print(args)
 
     return args
 
