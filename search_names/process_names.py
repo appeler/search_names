@@ -90,7 +90,7 @@ def process_names(infile, outfile=None, col="Name", all=False):
                 suffix = ', '.join(suffix_list)
 
                 if last == '':
-                    print repr(name)
+                    print(repr(name))
 
                 # Fixed ROMAN and Title in Middle
                 if mid != "":
@@ -145,7 +145,7 @@ def process_names(infile, outfile=None, col="Name", all=False):
     return None
 
 if __name__ == '__main__':
-    print("{0!s} - r4 (2016/01/02)\n".format(os.path.basename(sys.argv[0])))
+    print("{0!s}\n".format(os.path.basename(sys.argv[0])))
 
     args = parse_command_line()
 
