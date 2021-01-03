@@ -68,10 +68,10 @@ a multi-threaded, parallelized way.
 The Workflow
 ~~~~~~~~~~~~
 
-1. `Clean Names <clean_names/>`__
-2. `Merge Supplementary Data <merge_supp_data/>`__
-3. `Preprocess <preprocess/>`__
-4. `Search <search/>`__
+1. Clean Names
+2. Merge Supplementary Data
+3. Preprocess
+4. Search
 
 Installation
 ~~~~~~~~~~~~
@@ -87,7 +87,7 @@ Functions
 
 ``process_names``
 
-The script is a modified version of `Clean Names <http://github.com/appeler/clean-names>`_.
+The script is a modified version of `Clean Names <http://github.com/appeler/clean-names>`__.
 
 The script takes a csv file with column 'Name' containing 'dirty names'--- names with all different formats: lastname firstname, firstname lastname, middlename lastname firstname etc. (see `sample input file <sample_input.csv>`_\ ) and produces a csv file that has all the columns of the original csv file and the following columns: 'uniqid', 'FirstName', 'MiddleInitial/Name', 'LastName', 'RomanNumeral', 'Title', 'Suffix' (see `sample output file <sample_output.csv>`_\ ).
 
