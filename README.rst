@@ -73,3 +73,36 @@ The Workflow
 3. `Preprocess <preprocess/>`__
 4. `Search <search/>`__
 
+Installation
+~~~~~~~~~~~~
+
+We strongly recommend installing ``search-names`` inside a Python virtual environment (see `venv documentation <https://docs.python.org/3/library/venv.html#creating-virtual-environments>`__)
+
+::
+
+    pip install search-names
+
+Documentation
+-------------
+
+For more information, please see `project documentation <http://search-names.readthedocs.io/en/latest/>`__.
+
+Authors
+-------
+
+Suriyan Laohaprapanon and Gaurav Sood
+
+Contributor Code of Conduct
+---------------------------
+
+The project welcomes contributions from everyone! In fact, it depends on
+it. To maintain this welcoming atmosphere, and to collaborate in a fun
+and productive way, we expect contributors to the project to abide by
+the `Contributor Code of
+Conduct <https://www.contributor-covenant.org/version/2/0/code_of_conduct/>`__.
+
+License
+-------
+
+The package is released under the `MIT
+License <https://opensource.org/licenses/MIT>`__.
