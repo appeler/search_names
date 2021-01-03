@@ -243,6 +243,9 @@ Search
 
 We implement poor man's parallelization---scripts for splitting the corpus and merging the results back---along with multi-threading to quickly search through a large text corpus. We also provide the option to reduce the amount of searching by reducing the size of the text corpus by preprocessing it --- removing stop words etc. 
 
+There are three scripts --- to be run sequentially --- for the purpose:
+
+
 Split text corpus into smaller chunks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
