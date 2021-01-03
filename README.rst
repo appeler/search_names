@@ -3,8 +3,8 @@ Search Names
 
 .. image:: https://travis-ci.org/appeler/search-names.svg?branch=master
     :target: https://travis-ci.org/appeler/search-names
-.. image:: https://ci.appveyor.com/api/projects/status/fhuyx2mdm1j05q6j?svg=true
-    :target: https://ci.appveyor.com/project/appeler/search-names
+.. image:: https://ci.appveyor.com/api/projects/status/v3ao00u6uccnpi0n?svg=true
+    :target: https://ci.appveyor.com/project/soodoku/search-names-hsmwu
 .. image:: https://img.shields.io/pypi/v/search-names.svg
     :target: https://pypi.python.org/pypi/search-names
 .. image:: https://readthedocs.org/projects/search-names/badge/?version=latest
