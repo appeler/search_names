@@ -8,7 +8,7 @@ Search Names
 .. image:: https://img.shields.io/pypi/v/search-names.svg
     :target: https://pypi.python.org/pypi/search-names
 .. image:: https://readthedocs.org/projects/search-names/badge/?version=latest
-    :target: http://lost-years.readthedocs.io/en/latest/?badge=latest
+    :target: http://search-names.readthedocs.io/en/latest/?badge=latest
 .. image:: https://pepy.tech/badge/search-names
     :target: https://pepy.tech/project/search-names
 
