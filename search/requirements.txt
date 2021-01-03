@@ -1,4 +1,0 @@
-regex
-python-Levenshtein
-nltk
-six

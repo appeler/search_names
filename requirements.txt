@@ -1,0 +1,5 @@
+nameparser
+python-Levenshtein
+regex
+nltk
+six

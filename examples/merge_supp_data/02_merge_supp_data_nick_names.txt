@@ -1,0 +1,54 @@
+Alfred - Al
+Albert - Al
+Andrew - Andy
+Angela - Angie
+Anthony - Tony
+Benjamin - Ben
+Bernard - Bernie
+Bradley - Brad
+Carmichael - Mike
+Charles - Chuck, Charlie
+Chester - Chet
+Christopher - Chris
+Clifford - Cliff
+David - Dave
+Donald - Don
+Douglas - Doug
+Dwight - Ike
+Edward - Ed
+Elizabeth - Liz, Betsy
+Ernest - Ernie
+Eugene - Gene
+Frederick - Fred
+Gilbert - Gil
+Gregory - Greg
+Gwendolyn - Gwen
+James - Jim, Jamie
+Jeffrey	- Jeff
+Jefferson - Jeff
+Jonathan - Jon
+Joseph - Joe
+Joshua - Josh
+Kathleen - Kathy
+Kenneth - Kenny, Ken
+Louis - Louie
+Matthew, Mathew - Matt
+Martin - Marty
+Michael - Mike
+Patrick - Pat
+Patricia - Pat
+Peter - Pete
+Philip - Phil
+Richard - Dick, Rick
+Robert -Bob, Bobby, Rob
+Ronald - Ron
+Rudolph - Rudy
+Stanley	- Stan
+Steven, Stephen, Stevan -Steve
+Timothy - Tim
+Thaddeus - Thad
+Thomas	- Tom
+Vernon - Vern
+Walter - Walt
+Wesley	- Wes
+William - Bill, Billy

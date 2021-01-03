@@ -1,0 +1,12 @@
+# uniqid from the name file
+uniqid
+# occurrences of name found
+n
+# name found (separated by semi-colon `;` if multiple matches)
+match
+# start index of name found
+start
+# end index of name found
+end
+# total occurrences of name found
+count
