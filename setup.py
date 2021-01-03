@@ -54,7 +54,7 @@ class Tox(TestCommand):
         tox.cmdline(args=args)
 
 setup(
-    name='search-names',
+    name='search_names',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
@@ -132,7 +132,7 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     #package_data={
-    #    'search-names': ['data/ssa.csv',
+    #    'search_names': ['data/ssa.csv',
     #                   'data/hld_translation.csv',
     #                   'data/who-lt.csv.gz',
     #                   'data/who_translation.csv',
@@ -148,12 +148,12 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'process_names=search-names.process_names:main',
-            'merge_supp=search-names.merge_supp:main',
-            'preprocess=search-names.preprocess:main',
-            'split_text_corpus = search-names.split_text_corpus:main',
-            'search_names = search-names.search_names:main',
-            'merge_results = search-names.merge_results:main',
+            'process_names=search_names.process_names:main',
+            'merge_supp=search_names.merge_supp:main',
+            'preprocess=search_names.preprocess:main',
+            'split_text_corpus=search_names.split_text_corpus:main',
+            'search_names=search_names.search_names:main',
+            'merge_results=search_names.merge_results:main',
         ],
     },
     cmdclass={
