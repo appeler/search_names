@@ -115,16 +115,13 @@ Example
    <pre><code> python process_names.py -a sample_input.csv </code></pre>
 
 Merge Supplementary Data
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 The script takes output from `clean_names <../clean_names>`_ (see `sample input file <sample_in.csv>`_\ ) and appends supplementary data (prefixes, nicknames) to the file (see `sample output file <augmented_clean_names.csv>`_\ ). In particular, the script merges two supplementary data files:
 
-
-#. 
    **Prefixes:**\ :raw-html-m2r:`<br>`
    Generally the same set of prefixes will be used for a group of names. For instance, if you have a long list of politicians, state governors with no previous legislative experience will only have prefixes Governor, Mr., Mrs., Ms. etc., and not prefixes like Congressman or Congresswoman. We require a column in the input file that captures information about which 'prefix group' a particular name belongs to. We use that column to merge prefix data. The prefix file itself needs two columns: 1) A column to look up prefixes for groups of names depending on the value. The name of the column must be the same as the column name specified by the argument ``-p/--prefix`` (default is ``seat``\ ), and 2) a column of prefixes (multiple prefixes separated by semi-colon). The default name of the prefix data file is ``prefixes.csv``. See `sample prefixes data file <prefixes.csv>`_.   
 
-#. 
    **Nicknames:**\ :raw-html-m2r:`<br>`
    Nicknames are merged using first names in the input data file. The nicknames file is a plain text file. Each line contains single or list of first names on left side of the '-' and one or multiple nicknames on the right hand side. List of first names and nicknames must be separated by comma. Default name of the nicknames data file is ``nick_names.txt``. See `sample nicknames file <nick_names.txt>`_.  
 
@@ -164,7 +161,7 @@ The script takes `sample_in.csv <sample_in.csv>`_\ , `prefixes.csv <prefixes.csv
 * ``nick_names`` - List of nick names (separated by semi-colon)
 
 Preprocess Search List
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 The script takes the output from `merge supp. data <../merge_supp_data/>`_ (\ `sample input file <augmented_clean_names.csv>`_\ ), list of patterns we want to search for, an ad hoc list of patterns we want to drop (\ `sample drop patterns file <drop_patterns.txt>`_\ , and relative edit distance (based on the length of the pattern we are searching for) for approximate matching and does three things: a) creates a row for each pattern we want to search for (duplicating all the supplementary information), b) drops the ad hoc list of patterns we want to drop and c) de-duplicates based on edit distance and patterns we want to search for. See `sample output file <deduped_augmented_clean_names.csv>`_.
 
@@ -242,17 +239,9 @@ Example
 By default, the output will be saved as ``deduped_augmented_clean_names.csv``. The script adds a new column, ``search_name`` for unique search key.
 
 Search
-------
+~~~~~~~
 
 We implement poor man's parallelization---scripts for splitting the corpus and merging the results back---along with multi-threading to quickly search through a large text corpus. We also provide the option to reduce the amount of searching by reducing the size of the text corpus by preprocessing it --- removing stop words etc. 
-
-There are three scripts --- to be run sequentially --- for the purpose:
-
-
-#. `Split the text corpus into smaller chunks <#Split-text-corpus-into-smaller-chunks>`_  
-#. `Search <#search>`_
-#. `Merge Search Results <#Merge-Search-Results>`_
-
 
 Split text corpus into smaller chunks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
