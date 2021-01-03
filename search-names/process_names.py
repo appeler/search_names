@@ -33,7 +33,7 @@ def parse_command_line():
     return parser.parse_args()
 
 
-def process_name_list(infile, outfile=None, col="Name", all=False):
+def process_names(infile, outfile=None, col="Name", all=False):
     """ Read names and pre-process
         Returns unique names in format "FirstName LastName AnyRomanNumeral"\
         or "FirstName LastName"
@@ -153,7 +153,7 @@ if __name__ == '__main__':
 
     """Process and export names file
     """
-    process_name_list(args.input, args.outfile, args.column,
+    process_names(args.input, args.outfile, args.column,
                             args.all)
 
     print("Done.")
