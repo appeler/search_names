@@ -54,12 +54,12 @@ class Tox(TestCommand):
         tox.cmdline(args=args)
 
 setup(
-    name='lost_years',
+    name='search-names',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.3.1',
+    version='0.1.1',
 
     description='Search a long list of names (patterns) in a large text corpus systematically and quickly',
     long_description=long_description,
@@ -131,13 +131,13 @@ setup(
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
-    package_data={
-        'lost_years': ['data/ssa.csv',
-                       'data/hld_translation.csv',
-                       'data/who-lt.csv.gz',
-                       'data/who_translation.csv',
-                       'tests/input.csv'],
-    },
+    #package_data={
+    #    'search-names': ['data/ssa.csv',
+    #                   'data/hld_translation.csv',
+    #                   'data/who-lt.csv.gz',
+    #                   'data/who_translation.csv',
+    #                   'tests/input.csv'],
+    #},
     
     # Although 'package_data' is the preferred approach, in some case you may
     # need to place data files outside of your packages. See:
