@@ -82,7 +82,7 @@ def load_drop_patterns(filename):
             drop_patterns.append(l)
     return drop_patterns
 
-def preprocess(infile = None, patterns = None, outfile = DEFAULT_OUTPUT, editlength = None):
+def preprocess(infile = None, patterns = None, outfile = DEFAULT_OUTPUT, editlength = None, droppatterns = None):
     """Preprocessing names file
     """
     print("Preprocessing to '{0!s}', please wait...".format(outfile))
@@ -113,7 +113,7 @@ def preprocess(infile = None, patterns = None, outfile = DEFAULT_OUTPUT, editlen
                     c = [d for d in c if len(d)]
                     if len(c) > 1:
                         name = ' '.join(c)
-                        if name not in args.drop_patterns:
+                        if name not in drop_patterns:
                             print(" Name: '{0}'".format(name))
                             new_r = copy(r)
                             new_r['search_name'] = name
@@ -126,7 +126,7 @@ def preprocess(infile = None, patterns = None, outfile = DEFAULT_OUTPUT, editlen
             name1 = r['search_name']
             # Get max edit distance
             max_dist = 0
-            for k, l in enumerate(args.editlength):
+            for k, l in enumerate(editlength):
                 if len(name1) > l:
                     max_dist = k + 1
             uid1 = r['uniqid']
@@ -150,9 +150,9 @@ def preprocess(infile = None, patterns = None, outfile = DEFAULT_OUTPUT, editlen
             del out[i]
 
         # Write out to output file
-        print("Write the output to file: '{0}'".format(args.outfile))
+        print("Write the output to file: '{0}'".format(outfile))
         o = None
-        o = open(args.outfile, 'w')
+        o = open(outfile, 'w')
         writer = csv.DictWriter(o, fieldnames=reader.fieldnames +
                                 ['search_name'])
         writer.writeheader()
@@ -179,6 +179,4 @@ if __name__ == "__main__":
 
     print(args)
 
-    preprocess(args.input, args.patterns, args.outfile, args.editlength)
-
-
+    preprocess(args.input, args.patterns, args.outfile, args.editlength, args.drop_patterns)
