@@ -13,7 +13,7 @@ import csv
 """Constant declaration
 """
 MAX_RESULT = 20
-DEF_INPUT_FILE = '../preprocess/deduped_augmented_clean_names.csv'
+DEF_INPUT_FILE = 'deduped_augmented_clean_names.csv'
 RESULT_FIELDS = ['uniqid', 'n', 'match', 'start', 'end']
 
 class SearchMultipleKeywords(object):
