@@ -66,7 +66,7 @@ def load_nick_names(filename):
                 print("WARNING: Invalid nick name line '{0!s}'".format(l))
     return nick_names
 
-def merge_supp(infile = args.input, prefixarg = DEFAULT_PREFIX_LOOKUP, name = DEFAULT_NAME_LOOKUP, outfile = DEFAULT_OUTPUT):
+def merge_supp(infile = None, prefixarg = DEFAULT_PREFIX_LOOKUP, name = DEFAULT_NAME_LOOKUP, outfile = DEFAULT_OUTPUT):
     """Merge supplement data to names file
     """
     try:

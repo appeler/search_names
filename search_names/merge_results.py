@@ -23,7 +23,7 @@ def setup_logger():
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
-def merge_results(infile = args.inputs, outfile = DEFAULT_OUTPUT_FILE):
+def merge_results(infile = None, outfile = DEFAULT_OUTPUT_FILE):
    
     out = open(outfile, 'w')
     count = 0
@@ -44,7 +44,7 @@ def merge_results(infile = args.inputs, outfile = DEFAULT_OUTPUT_FILE):
         out.close()
 
     logging.info("Done! (merge: {0} rows, from {1} files"
-                 .format(count, len(args.inputs)))
+                 .format(count, len(infile)))
 
 
 if __name__ == "__main__":

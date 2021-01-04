@@ -82,20 +82,20 @@ def load_drop_patterns(filename):
             drop_patterns.append(l)
     return drop_patterns
 
-def preprocess(infile = args.input, outfile = args.outfile):
+def preprocess(infile = None, patterns = None, outfile = DEFAULT_OUTPUT, editlength = None):
     """Preprocessing names file
     """
-    print("Preprocessing to '{0!s}', please wait...".format(args.outfile))
+    print("Preprocessing to '{0!s}', please wait...".format(outfile))
 
     try:
         f = None
-        f = open(args.input, 'r')
+        f = open(infile, 'r')
         reader = csv.DictReader(f)
         out = []
         print("Build search names...")
         for i, r in enumerate(reader):
             print("#{0}:".format(i))
-            for p in args.patterns:
+            for p in patterns:
                 print("Pattern: '{0}'".format(p))
                 parr = p.split()
                 s = []
@@ -179,6 +179,6 @@ if __name__ == "__main__":
 
     print(args)
 
-    preprocess(args.input, args.outfile)
+    preprocess(args.input, args.patterns, args.outfile, args.editlength)
 
 
