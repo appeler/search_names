@@ -8,7 +8,7 @@ DEFAULT_OUTPUT = "augmented_clean_names.csv"
 DEFAULT_NAME_LOOKUP = "FirstName"
 DEFAULT_PREFIX_LOOKUP = "seat"
 PREFIX_FILE = "prefixes.csv"
-NICK_NAMES_FILE="nick_names.txt"
+NICK_NAMES_FILE = "nick_names.txt"
 
 def parse_command_line():
     """Parse command line options
@@ -66,40 +66,30 @@ def load_nick_names(filename):
                 print("WARNING: Invalid nick name line '{0!s}'".format(l))
     return nick_names
 
-
-if __name__ == "__main__":
-
-    args = parse_command_line()
-
-    prefixes = load_prefixes(PREFIX_FILE, args.prefix)
-
-    nick_names = load_nick_names(NICK_NAMES_FILE)
-
-    print("Merging to '{0!s}', please wait...".format(args.outfile))
-
+def merge_supp(infile = args.input, prefixarg = DEFAULT_PREFIX_LOOKUP, name = DEFAULT_NAME_LOOKUP, outfile = DEFAULT_OUTPUT):
     """Merge supplement data to names file
     """
     try:
         f = None
         o = None
-        f = open(args.input, 'r')
+        f = open(infile, 'r')
         reader = csv.DictReader(f)
-        o = open(args.outfile, 'w')
+        o = open(outfile, 'w')
         writer = csv.DictWriter(o, fieldnames=reader.fieldnames +
                                 ['prefixes', 'nick_names'])
         writer.writeheader()
 
         for i, r in enumerate(reader):
-            print("#{0}: {1!s}".format(i, r[args.name].lower()))
+            print("#{0}: {1!s}".format(i, r[name].lower()))
             # Prefix
-            k = r[args.prefix]
+            k = r[prefixarg]
             if k in prefixes:
                 prefix = prefixes[k]
             else:
                 prefix = ''
             r['prefixes'] = prefix
             # Nick name
-            k = r[args.name].lower()
+            k = r[name].lower()
             if k in nick_names:
                 nick = nick_names[k]
             else:
@@ -115,3 +105,15 @@ if __name__ == "__main__":
             f.close()
 
     print("Done.")
+
+if __name__ == "__main__":
+
+    args = parse_command_line()
+
+    prefixes = load_prefixes(PREFIX_FILE, args.prefix)
+
+    nick_names = load_nick_names(NICK_NAMES_FILE)
+
+    print("Merging to '{0!s}', please wait...".format(args.outfile))
+
+    merge_supp(args.input, args.name, args.prefix, args.outfile)
