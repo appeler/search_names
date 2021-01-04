@@ -43,7 +43,7 @@ def process_names(infile, outfile=DEFAULT_OUTPUT, col="Name", all=False):
     ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
     if outfile:
         try:
-            of = open(outfile, 'wb')
+            of = open(outfile, 'w')
         except:
             outfile = None
 
@@ -143,8 +143,8 @@ def process_names(infile, outfile=DEFAULT_OUTPUT, col="Name", all=False):
                         writer.writerow(t)
         if outfile:
             of.close()
+        print("Done.")
         return allnameswithid
-    print("Done.")
     return None
 
 if __name__ == '__main__':
