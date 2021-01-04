@@ -82,21 +82,11 @@ def load_drop_patterns(filename):
             drop_patterns.append(l)
     return drop_patterns
 
-
-if __name__ == "__main__":
-
-    args = parse_command_line()
-
-    args = load_config(args)
-
-    args.drop_patterns = load_drop_patterns(args.drop_patterns_file)
-
-    print(args)
-
-    print("Preprocessing to '{0!s}', please wait...".format(args.outfile))
-
+def preprocess(args):
     """Preprocessing names file
     """
+    print("Preprocessing to '{0!s}', please wait...".format(args.outfile))
+
     try:
         f = None
         f = open(args.input, 'r')
@@ -177,5 +167,18 @@ if __name__ == "__main__":
             o.close()
         if f:
             f.close()
-
     print("Done.")
+
+if __name__ == "__main__":
+
+    args = parse_command_line()
+
+    args = load_config(args)
+
+    args.drop_patterns = load_drop_patterns(args.drop_patterns_file)
+
+    print(args)
+
+    preprocess(args)
+
+
