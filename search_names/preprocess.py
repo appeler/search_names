@@ -7,6 +7,7 @@ import itertools
 
 from copy import copy
 import configparser
+import traceback
 
 from Levenshtein import distance
 
@@ -29,6 +30,7 @@ def parse_command_line():
                         default=DEFAULT_CONFIG_FILE,
                         help="Default configuration file\
                         (default: {0!s})".format(DEFAULT_CONFIG_FILE))
+    
     return parser.parse_args()
 
 
@@ -82,10 +84,11 @@ def load_drop_patterns(filename):
             drop_patterns.append(l)
     return drop_patterns
 
-def preprocess(infile = None, patterns = None, outfile = DEFAULT_OUTPUT, editlength = None, droppatterns = None):
+def preprocess(infile = None, patterns = None, outfile = DEFAULT_OUTPUT, editlength = None, drop_patterns = None):
     """Preprocessing names file
     """
     print("Preprocessing to '{0!s}', please wait...".format(outfile))
+    o = None
 
     try:
         f = None
@@ -151,17 +154,15 @@ def preprocess(infile = None, patterns = None, outfile = DEFAULT_OUTPUT, editlen
 
         # Write out to output file
         print("Write the output to file: '{0}'".format(outfile))
-        o = None
         o = open(outfile, 'w')
         writer = csv.DictWriter(o, fieldnames=reader.fieldnames +
                                 ['search_name'])
         writer.writeheader()
         for r in out:
             writer.writerow(r)
-
     except Exception as e:
-        import traceback
         traceback.print_exc()
+
     finally:
         if o:
             o.close()
@@ -178,5 +179,5 @@ if __name__ == "__main__":
     args.drop_patterns = load_drop_patterns(args.drop_patterns_file)
 
     print(args)
-
+  
     preprocess(args.input, args.patterns, args.outfile, args.editlength, args.drop_patterns)
