@@ -34,6 +34,40 @@ def setup_logger():
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
+def split_text_corpus(infile = None, outfile = None):
+    with open(infile, 'r') as f:
+        reader = DictReader(f)
+        header = reader.fieldnames
+        if 'uniqid' not in header:
+            add_uid = True
+            header.append('uniqid')
+        else:
+            add_uid = False
+        chunk_id = 0
+        count = 0
+        uid = 0
+        for r in reader:
+            if count == 0:
+                filename = splitext(basename(infile))[0]
+                chunk_name = outfile.format(basename=filename,
+                                                 chunk_id=chunk_id)
+                logging.info("Create new chunk: {0}, filename: {1}"
+                             .format(chunk_id, chunk_name))
+                d = dirname(chunk_name)
+                if not os.path.exists(d):
+                    os.makedirs(d)
+                out = open(chunk_name, 'w')
+                writer = DictWriter(out, fieldnames=header)
+                writer.writeheader()
+            if add_uid:
+                r['uniqid'] = uid
+            writer.writerow(r)
+            count += 1
+            if count >= args.size:
+                count = 0
+                chunk_id += 1
+                out.close()
+            uid += 1
 
 if __name__ == "__main__":
     setup_logger()
@@ -57,37 +91,5 @@ if __name__ == "__main__":
 
     logging.info(str(args))
 
-    with open(args.input, 'r') as f:
-        reader = DictReader(f)
-        header = reader.fieldnames
-        if 'uniqid' not in header:
-            add_uid = True
-            header.append('uniqid')
-        else:
-            add_uid = False
-        chunk_id = 0
-        count = 0
-        uid = 0
-        for r in reader:
-            if count == 0:
-                filename = splitext(basename(args.input))[0]
-                chunk_name = args.outfile.format(basename=filename,
-                                                 chunk_id=chunk_id)
-                logging.info("Create new chunk: {0}, filename: {1}"
-                             .format(chunk_id, chunk_name))
-                d = dirname(chunk_name)
-                if not os.path.exists(d):
-                    os.makedirs(d)
-                out = open(chunk_name, 'w')
-                writer = DictWriter(out, fieldnames=header)
-                writer.writeheader()
-            if add_uid:
-                r['uniqid'] = uid
-            writer.writerow(r)
-            count += 1
-            if count >= args.size:
-                count = 0
-                chunk_id += 1
-                out.close()
-            uid += 1
+    split_text_corpus(args.input, args.outfile)
     logging.info("done.")

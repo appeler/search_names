@@ -5,4 +5,4 @@ from .merge_results import merge_results
 from .split_text_corpus import split_text_corpus
 from .merge_supp import merge_supp
 
-__all__ = ['process_names', 'preprocess', 'search_names', 'merge_results', 'merge_supp', 'split_text_corpus']
+__all__ = ['process_names', 'preprocess', 'search_names', 'merge_results', 'searchengines', 'merge_supp', 'split_text_corpus']

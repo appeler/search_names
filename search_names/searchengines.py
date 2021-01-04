@@ -32,7 +32,7 @@ class SearchMultipleKeywords(object):
             else:
                 self.keywords[i].append(k.strip().lower())
 
-        print("Number of unique keywords ID to be search: {0}"
+        print("Number of unique keywords ID to be searched: {0}"
               .format(len(self.keywords)))
 
         self.re_keywords = dict()
@@ -108,7 +108,7 @@ class NewSearchMultipleKeywords(object):
             else:
                 print("ERROR: found duplicate keyword '{0}'".format(k))
 
-        print("Number of unique keywords ID to be search: {0}"
+        print("Number of unique keywords ID to be searched: {0}"
               .format(len(self.keywords)))
 
         kw = []
