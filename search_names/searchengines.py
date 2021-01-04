@@ -7,6 +7,8 @@ Using `regex` instead of Python built-in `re` module.
 """
 import regex as re
 from Levenshtein import distance
+import time
+import csv
 
 """Constant declaration
 """
@@ -178,8 +180,7 @@ class NewSearchMultipleKeywords(object):
 
 
 if __name__ == "__main__":
-    import time
-    import csv
+    
 
     keywords = []
     with open(DEF_INPUT_FILE, 'rb') as f:

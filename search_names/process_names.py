@@ -33,11 +33,13 @@ def parse_command_line():
     return parser.parse_args()
 
 
-def process_names(infile, outfile=None, col="Name", all=False):
+def process_names(infile, outfile=DEFAULT_OUTPUT, col="Name", all=False):
     """ Read names and pre-process
         Returns unique names in format "FirstName LastName AnyRomanNumeral"\
         or "FirstName LastName"
     """
+    print("Processing and exporting, please wait...")
+
     ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
     if outfile:
         try:
@@ -142,6 +144,7 @@ def process_names(infile, outfile=None, col="Name", all=False):
         if outfile:
             of.close()
         return allnameswithid
+    print("Done.")
     return None
 
 if __name__ == '__main__':
@@ -149,11 +152,5 @@ if __name__ == '__main__':
 
     args = parse_command_line()
 
-    print("Processing and exporting, please wait...")
-
-    """Process and export names file
-    """
     process_names(args.input, args.outfile, args.column,
                             args.all)
-
-    print("Done.")

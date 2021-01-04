@@ -41,7 +41,6 @@ DEF_OUTPUT_FILE = 'search_results.csv'
 DEFAULT_CONFIG_FILE = "search_names.cfg"
 NUM_PROCESSES = 4
 
-
 class WorkAroundManager(SyncManager):
     @staticmethod
     def _finalize_manager(process, address, authkey, state, _Client):

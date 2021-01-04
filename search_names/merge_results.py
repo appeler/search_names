@@ -23,30 +23,12 @@ def setup_logger():
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
-
-if __name__ == "__main__":
-    setup_logger()
-
-    """Parse command line options
-    """
-    parser = argparse.ArgumentParser(description="Merge search results from"
-                                     " multiple chunks")
-
-    parser.add_argument('inputs', nargs='*', help='CSV input file(s) name')
-
-    parser.add_argument("-o", "--out", type=str, dest="outfile",
-                        default=DEFAULT_OUTPUT_FILE,
-                        help="Output file in CSV (default: {0:s})"
-                        .format(DEFAULT_OUTPUT_FILE))
-
-    args = parser.parse_args()
-
-    logging.info(str(args))
-
-    out = open(args.outfile, 'w')
+def merge_results(infile = args.inputs, outfile = DEFAULT_OUTPUT_FILE):
+   
+    out = open(outfile, 'w')
     count = 0
     try:
-        for n, i in enumerate(args.inputs):
+        for n, i in enumerate(infile):
             logging.info("Merging...: '{0}'".format(i))
             with open(i, 'r') as f:
                 reader = DictReader(f)
@@ -63,3 +45,27 @@ if __name__ == "__main__":
 
     logging.info("Done! (merge: {0} rows, from {1} files"
                  .format(count, len(args.inputs)))
+
+
+if __name__ == "__main__":
+
+    """Parse command line options
+    """
+    parser = argparse.ArgumentParser(description="Merge search results from"
+                                     " multiple chunks")
+
+    parser.add_argument('inputs', nargs='*', help='CSV input file(s) name')
+
+    parser.add_argument("-o", "--out", type=str, dest="outfile",
+                        default=DEFAULT_OUTPUT_FILE,
+                        help="Output file in CSV (default: {0:s})"
+                        .format(DEFAULT_OUTPUT_FILE))
+
+    args = parser.parse_args()
+
+    setup_logger()
+
+    logging.info(str(args))
+    
+    merge_results(args.inputs, args.outfile)
+

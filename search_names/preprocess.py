@@ -82,7 +82,7 @@ def load_drop_patterns(filename):
             drop_patterns.append(l)
     return drop_patterns
 
-def preprocess(args):
+def preprocess(infile = args.input, outfile = args.outfile):
     """Preprocessing names file
     """
     print("Preprocessing to '{0!s}', please wait...".format(args.outfile))
@@ -179,6 +179,6 @@ if __name__ == "__main__":
 
     print(args)
 
-    preprocess(args)
+    preprocess(args.input, args.outfile)
 
 
