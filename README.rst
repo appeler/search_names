@@ -1,5 +1,5 @@
-Search Names
-------------
+Search Names: Search a long list of names in a large text corpus
+=================================================================
 
 .. image:: https://travis-ci.org/appeler/search-names.svg?branch=master
     :target: https://travis-ci.org/appeler/search-names
@@ -13,26 +13,26 @@ Search Names
     :target: https://pepy.tech/project/search-names
 
 
-**Search a long list of names (patterns) in a large text corpus
-systematically and quickly**
+There are seven kinds of challenges in searching a long list of names in a large text corpus: 
 
-There are seven kinds of challenges in searching a long list of names in
-a large text corpus. First, the names on the list may not be in a
-standard format, for e.g., first name may not always be followed by last
-name, etc. Second, it isn't clear what to search for. For instance,
-searching FirstName LastName may not be enough. References to the person
-may take the form of Prefix LastName, etc. Third, names may be
-misspelled. Fourth, text may refer to people by their diminutive name
-(hypocorism), or by their middle name, or diminutive form of their
-middle name, etc. For instance, citations to Bill Clinton are liable to
-be much more common than William Clinton. Fifth, names on the list may
-overlap with names not on the list, especially names of other famous
-people. For instance, searching for `Maryland
-politician <https://en.wikipedia.org/wiki/Michael_A._Jackson_(politician)>`__
-Michael Jackson may yield lots of false positives. Sixth, names on the
-list may match other names on the list (duplicates). Seventh, searching
-is computationally expensive. And searching for a long list over a large
-corpus is a double whammy.
+1. The names on the list may not be in a standard format, for e.g., first name may not always be followed by last
+name, etc. 
+
+2. It isn't clear what to search for. For instance, searching FirstName LastName may not be enough. References to the person
+may take the form of Prefix LastName, etc. 
+
+3. Names may be misspelled. 
+
+4. Text may refer to people by their diminutive name (hypocorism), or by their middle name, or diminutive form of their
+middle name, etc. For instance, citations to Bill Clinton are liable to be much more common than William Clinton. 
+
+5. Names on the list may overlap with names not on the list, especially names of other famous
+people. For instance, searching for `Maryland politician <https://en.wikipedia.org/wiki/Michael_A._Jackson_(politician)>`__
+Michael Jackson may yield lots of false positives.
+
+6. Names on the list may match other names on the list (duplicates).
+
+7. Searching is computationally expensive. And searching for a long list over a large corpus is a double whammy.
 
 We address each of the problems.
 
