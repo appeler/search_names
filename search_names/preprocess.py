@@ -14,6 +14,8 @@ from Levenshtein import distance
 DEFAULT_OUTPUT = "deduped_augmented_clean_names.csv"
 DEFAULT_CONFIG_FILE = "preprocess.cfg"
 DEFAULT_DROP_PATTERNS = "drop_patterns.txt"
+DEFAULT_PATTERNS = ["FirstName LastName", "NickName LastName", "Prefix LastName"]
+DEFAULT_EDITLENGTH = [10, 20]
 
 def parse_command_line():
     """Parse command line options
@@ -34,8 +36,15 @@ def parse_command_line():
                         default=DEFAULT_DROP_PATTERNS,
                         help="File with Default Patterns\
                         (default: {0!s})".format(DEFAULT_DROP_PATTERNS))
+    parser.add_argument("-p", "--patterns", type=list, dest="patterns",
+                        default=DEFAULT_PATTERNS,
+                        help="List of Default Patterns\
+                        (default: {0!s})".format(DEFAULT_PATTERNS))
+    parser.add_argument("-e", "--editlength", type=list, dest="editlength",
+                        default=DEFAULT_EDITLENGTH,
+                        help="List of Edit Lengths\
+                        (default: {0!s})".format(DEFAULT_EDITLENGTH))
     return parser.parse_args()
-
 
 def load_config(args=None):
     if args is None or isinstance(args, str):
@@ -86,7 +95,7 @@ def load_drop_patterns(filename):
             drop_patterns.append(l)
     return drop_patterns
 
-def preprocess(infile = None, patterns = None, outfile = DEFAULT_OUTPUT, editlength = None, drop_patterns = None):
+def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUTPUT, editlength = DEFAULT_EDITLENGTH, drop_patterns = None):
     """Preprocessing names file
     """
     print("Preprocessing to '{0!s}', please wait...".format(outfile))
