@@ -12,23 +12,21 @@ Search Names: Search a long list of names in a large text corpus
 .. image:: https://pepy.tech/badge/search-names
     :target: https://pepy.tech/project/search-names
 
+.. |br| raw:: html
+    <br />
 
-There are seven kinds of challenges in searching a long list of names in a large text corpus: 
+There are seven kinds of challenges in searching a long list of names in a large text corpus:
 
 1. The names on the list may not be in a standard format, for e.g., first name may not always be followed by last
-name, etc. 
+name, etc.
 
-2. It isn't clear what to search for. For instance, searching FirstName LastName may not be enough. References to the person
-may take the form of Prefix LastName, etc. 
+2. It isn't clear what to search for. For instance, searching FirstName LastName may not be enough. References to the person may take the form of Prefix LastName, etc.
 
-3. Names may be misspelled. 
+3. Names may be misspelled.
 
-4. Text may refer to people by their diminutive name (hypocorism), or by their middle name, or diminutive form of their
-middle name, etc. For instance, citations to Bill Clinton are liable to be much more common than William Clinton. 
+4. Text may refer to people by their diminutive name (hypocorism), or by their middle name, or diminutive form of their middle name, etc. For instance, citations to Bill Clinton are liable to be much more common than William Clinton.
 
-5. Names on the list may overlap with names not on the list, especially names of other famous
-people. For instance, searching for `Maryland politician <https://en.wikipedia.org/wiki/Michael_A._Jackson_(politician)>`__
-Michael Jackson may yield lots of false positives.
+5. Names on the list may overlap with names not on the list, especially names of other famous people. For instance, searching for `Maryland politician <https://en.wikipedia.org/wiki/Michael_A._Jackson_(politician)>`__ Michael Jackson may yield lots of false positives.
 
 6. Names on the list may match other names on the list (duplicates).
 
@@ -98,12 +96,12 @@ Command Line Options
 
 .. code-block::
 
-       -h,         --help show this help message and exit  
-       -o OUTFILE, --out=OUTFILE  
-                       Output file in CSV (default: sample_output.csv)  
-       -c COLUMN,  --column=COLUMN  
-                       Column name in CSV that contains Names (default: Name)    
-       -a,         --all       
+       -h,         --help show this help message and exit
+       -o OUTFILE, --out=OUTFILE
+                       Output file in CSV (default: sample_output.csv)
+       -c COLUMN,  --column=COLUMN
+                       Column name in CSV that contains Names (default: Name)
+       -a,         --all
                    Export all names (do not take duplicate names out)  (default: False)
 
 Example
@@ -119,9 +117,9 @@ Merge Supplementary Data
 
 The script takes output from `clean_names <../clean_names>`_ (see `sample input file <sample_in.csv>`_\ ) and appends supplementary data (prefixes, nicknames) to the file (see `sample output file <augmented_clean_names.csv>`_\ ). In particular, the script merges two supplementary data files:
 
-   **Prefixes:** Generally the same set of prefixes will be used for a group of names. For instance, if you have a long list of politicians, state governors with no previous legislative experience will only have prefixes Governor, Mr., Mrs., Ms. etc., and not prefixes like Congressman or Congresswoman. We require a column in the input file that captures information about which 'prefix group' a particular name belongs to. We use that column to merge prefix data. The prefix file itself needs two columns: 1) A column to look up prefixes for groups of names depending on the value. The name of the column must be the same as the column name specified by the argument ``-p/--prefix`` (default is ``seat``\ ), and 2) a column of prefixes (multiple prefixes separated by semi-colon). The default name of the prefix data file is ``prefixes.csv``. See `sample prefixes data file <prefixes.csv>`_.   
+   **Prefixes:** Generally the same set of prefixes will be used for a group of names. For instance, if you have a long list of politicians, state governors with no previous legislative experience will only have prefixes Governor, Mr., Mrs., Ms. etc., and not prefixes like Congressman or Congresswoman. We require a column in the input file that captures information about which 'prefix group' a particular name belongs to. We use that column to merge prefix data. The prefix file itself needs two columns: 1) A column to look up prefixes for groups of names depending on the value. The name of the column must be the same as the column name specified by the argument ``-p/--prefix`` (default is ``seat``\ ), and 2) a column of prefixes (multiple prefixes separated by semi-colon). The default name of the prefix data file is ``prefixes.csv``. See `sample prefixes data file <prefixes.csv>`_.
 
-   **Nicknames:**  Nicknames are merged using first names in the input data file. The nicknames file is a plain text file. Each line contains single or list of first names on left side of the '-' and one or multiple nicknames on the right hand side. List of first names and nicknames must be separated by comma. Default name of the nicknames data file is ``nick_names.txt``. See `sample nicknames file <nick_names.txt>`_.  
+   **Nicknames:**  Nicknames are merged using first names in the input data file. The nicknames file is a plain text file. Each line contains single or list of first names on left side of the '-' and one or multiple nicknames on the right hand side. List of first names and nicknames must be separated by comma. Default name of the nicknames data file is ``nick_names.txt``. See `sample nicknames file <nick_names.txt>`_.
 
 Usage
 ^^^^^
@@ -155,7 +153,7 @@ Example
 The script takes `sample_in.csv <sample_in.csv>`_\ , `prefixes.csv <prefixes.csv>`_\ , and `nick_names.txt <nick_names.txt>`_ and produces `augmented_clean_names.csv <augmented_clean_names.csv>`_. The output file has two additional columns:
 
 
-* ``prefixes`` - List of prefixes (separated by semi-colon)  
+* ``prefixes`` - List of prefixes (separated by semi-colon)
 * ``nick_names`` - List of nick names (separated by semi-colon)
 
 Preprocess Search List
@@ -168,7 +166,7 @@ The script relies on a configuration file, `\ ``preprocess.cfg`` <preprocess.cfg
 Configuration file
 ^^^^^^^^^^^^^^^^^^
 
-There are three sections in the `configuration file <preprocess.cfg>`_\ : 
+There are three sections in the `configuration file <preprocess.cfg>`_\ :
 
 1) search
 
@@ -239,7 +237,7 @@ By default, the output will be saved as ``deduped_augmented_clean_names.csv``. T
 Search
 ~~~~~~~
 
-We implement poor man's parallelization---scripts for splitting the corpus and merging the results back---along with multi-threading to quickly search through a large text corpus. We also provide the option to reduce the amount of searching by reducing the size of the text corpus by preprocessing it --- removing stop words etc. 
+We implement poor man's parallelization---scripts for splitting the corpus and merging the results back---along with multi-threading to quickly search through a large text corpus. We also provide the option to reduce the amount of searching by reducing the size of the text corpus by preprocessing it --- removing stop words etc.
 
 There are three scripts --- to be run sequentially --- for the purpose:
 
@@ -291,7 +289,7 @@ Configuration file
 
 The script relies on a configuration file, `\ ``search_names.cfg`` <search_names.cfg>`_\ , `\ ``search_cols.txt`` <search_cols.txt>`_ that lists the columns from search file to be included in the output, and `\ ``input_file_cols.txt`` <input_file_cols.txt>`_ that lists columns from the file containing the text data to be included in the output.
 
-The configuration file has three sections. In the ``[name]`` section of the configuration file, there is a variable ``file`` which you can use to specify a CSV file where ``id`` and ``search`` refer to uniqid and keywords to be searched in that file respectively. In this case ``id`` and ``search`` are set to ``uniqid`` and ``search_name``\ , the de-duped output generated by `preprocess <../preprocess/>`_. Section ``[editlength]`` specifies the minimum string length for that edit distance. ``edit1 = 10`` means edit distance of 1 is allowed if string longer than 10 characters and ``edit2 = 20`` means that edit distance of 2 is allowed if the string is longer than 20 characters. We must use the same ``editlength`` as `\ ``preprocess.cfg`` <../preprocess/preprocess.cfg>`_ to avoid getting ambiguous search results. ``text`` in the ``input`` section specifies the name of the column that contains the text data to be searched. 
+The configuration file has three sections. In the ``[name]`` section of the configuration file, there is a variable ``file`` which you can use to specify a CSV file where ``id`` and ``search`` refer to uniqid and keywords to be searched in that file respectively. In this case ``id`` and ``search`` are set to ``uniqid`` and ``search_name``\ , the de-duped output generated by `preprocess <../preprocess/>`_. Section ``[editlength]`` specifies the minimum string length for that edit distance. ``edit1 = 10`` means edit distance of 1 is allowed if string longer than 10 characters and ``edit2 = 20`` means that edit distance of 2 is allowed if the string is longer than 20 characters. We must use the same ``editlength`` as `\ ``preprocess.cfg`` <../preprocess/preprocess.cfg>`_ to avoid getting ambiguous search results. ``text`` in the ``input`` section specifies the name of the column that contains the text data to be searched.
 
 .. code-block::
 
@@ -349,7 +347,7 @@ Example
 
    python search_names.py text_corpus.csv
 
-By default, the script forks 4 processes (specify by ``-p / --processes``\ ) and searches for the names specified by ``[name]`` section in the configuration file `\ ``search_names.cfg`` <search_names.cfg>`_. ``-m / --max-name`` is used to limit maximum search results. ``--overwritten`` is used to overwrite the output file if it exists; it is disabled by default. Also ``--clean`` option is provided to clean the ``text`` column (remove stop words, special characters etc.) before search. 
+By default, the script forks 4 processes (specify by ``-p / --processes``\ ) and searches for the names specified by ``[name]`` section in the configuration file `\ ``search_names.cfg`` <search_names.cfg>`_. ``-m / --max-name`` is used to limit maximum search results. ``--overwritten`` is used to overwrite the output file if it exists; it is disabled by default. Also ``--clean`` option is provided to clean the ``text`` column (remove stop words, special characters etc.) before search.
 
 The output file (specify by ``-o / --out``\ ) will contains all columns from the input file (except ``text`` column will be replaced by cleaned text if ``--clean`` is specify) along with the search result columns that are:
 
