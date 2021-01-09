@@ -1,5 +1,5 @@
 Search Names: Search a long list of names in a large text corpus
-=================================================================
+-----------------------------------------------------------------
 
 .. image:: https://travis-ci.org/appeler/search-names.svg?branch=master
     :target: https://travis-ci.org/appeler/search-names
