@@ -17,8 +17,7 @@ Search Names: Search a long list of names in a large text corpus
 
 There are seven kinds of challenges in searching a long list of names in a large text corpus:
 
-1. The names on the list may not be in a standard format, for e.g., first name may not always be followed by last
-name, etc.
+1. The names on the list may not be in a standard format, for e.g., first name may not always be followed by last name, etc.
 
 2. It isn't clear what to search for. For instance, searching FirstName LastName may not be enough. References to the person may take the form of Prefix LastName, etc.
 
