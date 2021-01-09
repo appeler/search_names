@@ -40,6 +40,7 @@ LOG_FILE = 'search_names.log'
 DEF_OUTPUT_FILE = 'search_results.csv'
 DEFAULT_CONFIG_FILE = "search_names.cfg"
 NUM_PROCESSES = 4
+DEFAULT_TXT_COLNAME = 'name'
 
 class WorkAroundManager(SyncManager):
     @staticmethod
@@ -90,7 +91,10 @@ def parse_command_line():
                         default=DEF_OUTPUT_FILE,
                         help="Search results in CSV (default: {0:s})"
                         .format(DEF_OUTPUT_FILE))
-
+    parser.add_argument("-c", "--txtcolname", type=str, dest="input",
+                        default=DEFAULT_TXT_COLNAME,
+                        help="Column name with text (default: {0:s})"
+                        .format(DEFAULT_TXT_COLNAME))
     parser.add_argument('--overwritten', dest='overwritten',
                         action='store_true',
                         help='Overwritten if output file is exists')
@@ -134,7 +138,7 @@ def load_config(args=None):
             except:
                 break
         # column name for text
-        args.text = config.get('input', 'text')
+        #args.text = config.get('input', 'text')
 
         args.search_cols = []
         with open('search_cols.txt') as f:
