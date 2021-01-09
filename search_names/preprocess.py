@@ -36,54 +36,15 @@ def parse_command_line():
                         default=DEFAULT_DROP_PATTERNS,
                         help="File with Default Patterns\
                         (default: {0!s})".format(DEFAULT_DROP_PATTERNS))
-    parser.add_argument("-p", "--patterns", type=list, dest="patterns",
+    parser.add_argument("-p", "--patterns", type=str, nargs='+', dest="patterns",
                         default=DEFAULT_PATTERNS,
                         help="List of Default Patterns\
                         (default: {0!s})".format(DEFAULT_PATTERNS))
-    parser.add_argument("-e", "--editlength", type=list, dest="editlength",
+    parser.add_argument("-e", "--editlength", type=int, nargs='+', dest="editlength",
                         default=DEFAULT_EDITLENGTH,
                         help="List of Edit Lengths\
                         (default: {0!s})".format(DEFAULT_EDITLENGTH))
     return parser.parse_args()
-
-def load_config(args=None):
-    if args is None or isinstance(args, str):
-        namespace = argparse.Namespace()
-        if args is None:
-            namespace.config = DEFAULT_CONFIG_FILE
-        else:
-            namespace.config = args
-        args = namespace
-    try:
-        config = configparser.ConfigParser()
-        config.read(args.config)
-        args.patterns = []
-        i = 1
-        while True:
-            k = 'pattern' + str(i)
-            try:
-                p = config.get('search', k)
-                args.patterns.append(p)
-                i += 1
-            except:
-                break
-        args.editlength = []
-        i = 1
-        while True:
-            k = 'edit' + str(i)
-            try:
-                l = config.getint('editlength', k)
-                args.editlength.append(l)
-                i += 1
-            except:
-                break
-    except Exception as e:
-        print(e)
-
-    print(args)
-
-    return args
-
 
 def load_drop_patterns(filename):
     drop_patterns = []
@@ -184,8 +145,6 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
 if __name__ == "__main__":
 
     args = parse_command_line()
-
-    args = load_config(args)
 
     args.drop_patterns = load_drop_patterns(args.drop_patterns_file)
 
