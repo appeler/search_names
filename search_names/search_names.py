@@ -41,6 +41,10 @@ DEF_OUTPUT_FILE = 'search_results.csv'
 DEFAULT_CONFIG_FILE = "search_names.cfg"
 NUM_PROCESSES = 4
 DEFAULT_TXT_COLNAME = 'name'
+DEFAULT_EDITLENGTH = [10, 20]
+DEFAULT_FILE = 'deduped_augmented_clean_names.csv'
+DEFAULT_ID = 'uniqid'
+DEFAULT_SEARCH = 'search_name'
 
 class WorkAroundManager(SyncManager):
     @staticmethod
@@ -98,16 +102,35 @@ def parse_command_line():
     parser.add_argument('--overwritten', dest='overwritten',
                         action='store_true',
                         help='Overwritten if output file is exists')
+    parser.add_argument("-e", "--editlength", type=int, nargs='+', dest="editlength",
+                        default=DEFAULT_EDITLENGTH,
+                        help="List of Edit Lengths\
+                        (default: {0!s})".format(DEFAULT_EDITLENGTH))
+    parser.add_argument('-f', '--file', dest='namefile',
+                        default=DEFAULT_FILE,
+                        help="List of Edit Lengths\
+                        (default: {0!s})".format(DEFAULT_FILE))
+    parser.add_argument('-u', '--uniqid', dest='name_id',
+                        default=DEFAULT_ID,
+                        help="ID\
+                        (default: {0!s})".format(DEFAULT_ID))
+    parser.add_argument('-s', '--search', dest='name_search',
+                        default=DEFAULT_SEARCH,
+                        help="Search\
+                        (default: {0!s})".format(DEFAULT_SEARCH))
+
     parser.set_defaults(overwritten=False)
 
     parser.add_argument('-d', '--debug', dest='debug',
                         action='store_true',
                         help="Enable debug message")
+
     parser.set_defaults(debug=False)
 
     parser.add_argument('--clean', dest='clean',
                         action='store_true',
                         help='Clean text column before search')
+
     parser.set_defaults(clean=False)
 
     return parser.parse_args()
@@ -237,7 +260,7 @@ if __name__ == "__main__":
 
     setup_logger(args.debug)
 
-    args = load_config(args)
+    #args = load_config(args)
     logging.info(str(args))
 
     logging.info("Setting up, please wait...")
