@@ -13,7 +13,7 @@ from Levenshtein import distance
 
 DEFAULT_OUTPUT = "deduped_augmented_clean_names.csv"
 DEFAULT_CONFIG_FILE = "preprocess.cfg"
-
+DEFAULT_DROP_PATTERNS = "drop_patterns.txt"
 
 def parse_command_line():
     """Parse command line options
@@ -28,9 +28,12 @@ def parse_command_line():
                         .format(DEFAULT_OUTPUT))
     parser.add_argument("-c", "--config", type=str, dest="config",
                         default=DEFAULT_CONFIG_FILE,
-                        help="Default configuration file\
+                        help="Configuration file\
                         (default: {0!s})".format(DEFAULT_CONFIG_FILE))
-    
+    parser.add_argument("-d", "--drop-patterns", type=str, dest="drop_patterns_file",
+                        default=DEFAULT_DROP_PATTERNS,
+                        help="File with Default Patterns\
+                        (default: {0!s})".format(DEFAULT_DROP_PATTERNS))
     return parser.parse_args()
 
 
@@ -55,7 +58,6 @@ def load_config(args=None):
                 i += 1
             except:
                 break
-        args.drop_patterns_file = config.get('drop', 'file')
         args.editlength = []
         i = 1
         while True:
