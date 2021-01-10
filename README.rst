@@ -17,9 +17,9 @@ Search Names: Search a long list of names in a large text corpus
 
 There are seven kinds of challenges in searching a long list of names in a large text corpus:
 
-1. The names on the list may not be in a standard format, for e.g., first name may not always be followed by last name, etc.
+1. Names may not be in a standard format, e.g., the first name may not always be followed by the last name, etc.
 
-2. It isn't clear what to search for. For instance, searching FirstName LastName may not be enough. References to the person may take the form of Prefix LastName, etc.
+2. Searching FirstName LastName may not be enough. References to the person may take the form of Prefix LastName, etc. For instance, President Clinton.
 
 3. Names may be misspelled.
 
@@ -27,21 +27,17 @@ There are seven kinds of challenges in searching a long list of names in a large
 
 5. Names on the list may overlap with names not on the list, especially names of other famous people. For instance, searching for `Maryland politician <https://en.wikipedia.org/wiki/Michael_A._Jackson_(politician)>`__ Michael Jackson may yield lots of false positives.
 
-6. Names on the list may match other names on the list (duplicates).
+6. Names on the list may match other names on the list (duplicates). 
 
 7. Searching is computationally expensive. And searching for a long list over a large corpus is a double whammy.
 
 We address each of the problems.
 
-Before anything else, use `clean names <clean_names/>`__ to standardize
-the names on the list. The script appends separate columns for prefix,
-first\_name, last\_name, etc. Some human curation will likely still be
-needed. Do it before going further. After that, use `merge supplementary
-data <merge_supp_data/>`__ to append other potential prefixes,
-diminutive norms of the first name, and other names by which the person
-is known by to the output of `clean names <clean_names/>`__. Next,
-`preprocess <preprocess/>`__ the search list. In particular, the script
-does three things:
+The Workflow
+~~~~~~~~~~~~
+
+Before anything else, use `clean names <clean_names/>`__ to standardize the names on the list. The script appends separate columns for prefix, first\_name, last\_name, etc. Some human curation will likely still be needed. Do it before going further. After that, use `merge supplementary data <merge_supp_data/>`__ to append other potential prefixes, diminutive norms of the first name, and other names by which the person is known by to the output of `clean names <clean_names/>`__. Next,
+`preprocess <preprocess/>`__ the search list. In particular, the script does three things:
 
 1. **Converts the data from wide to long**: The script creates a
    separate row for each pattern we want to search for. For instance, if
@@ -62,14 +58,6 @@ does three things:
 Lastly, the `search <search/>`__ script searches patterns in the list in
 a multi-threaded, parallelized way.
 
-The Workflow
-~~~~~~~~~~~~
-
-1. Clean Names
-2. Merge Supplementary Data
-3. Preprocess
-4. Search
-
 Installation
 ~~~~~~~~~~~~
 
@@ -77,12 +65,12 @@ We strongly recommend installing ``search-names`` inside a Python virtual enviro
 
 ::
 
-    pip install search-names
+    pip install search_names
 
 Functions
 ~~~~~~~~~~~~~~~~~~~~
 
-``process_names``
+``process_names``: 
 
 The script is a modified version of `Clean Names <http://github.com/appeler/clean-names>`__.
 
@@ -160,12 +148,7 @@ Preprocess Search List
 
 The script takes the output from `merge supp. data <../merge_supp_data/>`_ (\ `sample input file <augmented_clean_names.csv>`_\ ), list of patterns we want to search for, an ad hoc list of patterns we want to drop (\ `sample drop patterns file <drop_patterns.txt>`_\ , and relative edit distance (based on the length of the pattern we are searching for) for approximate matching and does three things: a) creates a row for each pattern we want to search for (duplicating all the supplementary information), b) drops the ad hoc list of patterns we want to drop and c) de-duplicates based on edit distance and patterns we want to search for. See `sample output file <deduped_augmented_clean_names.csv>`_.
 
-The script relies on a configuration file, `\ ``preprocess.cfg`` <preprocess.cfg>`_\ , that allows users to describe the patterns to search for, name of the file containing patterns we want to drop, and edit distance.
-
-Configuration file
-^^^^^^^^^^^^^^^^^^
-
-There are three sections in the `configuration file <preprocess.cfg>`_\ :
+The script also takes arguments that define the patterns to search for, name of the file containing patterns we want to drop, and edit distance.
 
 1) search
 
@@ -221,8 +204,6 @@ Usage
      -o OUTFILE, --out OUTFILE
                            Output file in CSV (default:
                            deduped_augmented_clean_names.csv)
-     -c CONFIG, --config CONFIG
-                           Default configuration file (default: preprocess.cfg)
 
 Example
 ^^^^^^^
