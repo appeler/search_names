@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 import argparse
 import logging
 from csv import DictWriter, DictReader
@@ -22,6 +23,7 @@ def setup_logger():
     formatter = logging.Formatter('%(message)s')
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
+
 
 def merge_results(infile = None, outfile = DEFAULT_OUTPUT_FILE):
    
@@ -47,7 +49,8 @@ def merge_results(infile = None, outfile = DEFAULT_OUTPUT_FILE):
                  .format(count, len(infile)))
 
 
-if __name__ == "__main__":
+
+def main(argv=sys.argv[1:]):
 
     """Parse command line options
     """
@@ -61,7 +64,7 @@ if __name__ == "__main__":
                         help="Output file in CSV (default: {0:s})"
                         .format(DEFAULT_OUTPUT_FILE))
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     setup_logger()
 
@@ -69,3 +72,9 @@ if __name__ == "__main__":
     
     merge_results(args.inputs, args.outfile)
 
+    return 0
+
+
+if __name__ == "__main__":
+
+    sys.exit(main())

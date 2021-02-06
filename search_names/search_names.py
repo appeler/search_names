@@ -28,23 +28,24 @@ from multiprocessing import (Pool, TimeoutError)
 from multiprocessing.managers import SyncManager
 from queue import Empty
 
-from . import preprocess
+from . import utils
 
-
-__version__ = "0.0.1"
 
 """ Defaults declaration
 """
 MAX_NAME = 20
 LOG_FILE = 'search_names.log'
 DEF_OUTPUT_FILE = 'search_results.csv'
-DEFAULT_CONFIG_FILE = "search_names.cfg"
 NUM_PROCESSES = 4
-DEFAULT_TXT_COLNAME = 'name'
-DEFAULT_EDITLENGTH = [10, 20]
-DEFAULT_FILE = 'deduped_augmented_clean_names.csv'
-DEFAULT_ID = 'uniqid'
-DEFAULT_SEARCH = 'search_name'
+
+DEFAULT_TXT_COLNAME = 'text'
+DEFAULT_INPUT_COLS = ['uniqid', 'text']
+DEFAULT_SEARCH_OUTPUT_COLS = ['uniqid', 'n', 'match', 'start', 'end', 'count']
+DEFAULT_EDITLENGTH = []
+DEFAULT_NAME_FILE = 'deduped_augmented_clean_names.csv'
+DEFAULT_COL_ID = 'uniqid'
+DEFAULT_COL_SEARCH = 'search_name'
+
 
 class WorkAroundManager(SyncManager):
     @staticmethod
@@ -79,10 +80,6 @@ def parse_command_line(argv):
     parser = argparse.ArgumentParser(description="Search names in text corpus")
 
     parser.add_argument('input', help='CSV input file name')
-    parser.add_argument("-c", "--config", type=str, dest="config",
-                        default=DEFAULT_CONFIG_FILE,
-                        help="Default configuration file\
-                        (default: {0!s})".format(DEFAULT_CONFIG_FILE))
     parser.add_argument("-m", "--max-name", type=int, dest="max_name",
                         default=MAX_NAME,
                         help="Maximum name in search results (default: {0:d})"
@@ -95,10 +92,18 @@ def parse_command_line(argv):
                         default=DEF_OUTPUT_FILE,
                         help="Search results in CSV (default: {0:s})"
                         .format(DEF_OUTPUT_FILE))
-    parser.add_argument("-c", "--txtcolname", type=str, dest="input",
+    parser.add_argument("-t", "--text", type=str, dest="text",
                         default=DEFAULT_TXT_COLNAME,
                         help="Column name with text (default: {0:s})"
                         .format(DEFAULT_TXT_COLNAME))
+    parser.add_argument("-i", "--input-cols", type=int, nargs='+', dest="input_cols",
+                        default=DEFAULT_INPUT_COLS,
+                        help="List of column name from input file to include in the output\
+                        (default: {0!s})".format(DEFAULT_INPUT_COLS))
+    parser.add_argument("-c", "--search-cols", type=int, nargs='+', dest="search_cols",
+                        default=DEFAULT_SEARCH_OUTPUT_COLS,
+                        help="List of column name from search output\
+                        (default: {0!s})".format(DEFAULT_SEARCH_OUTPUT_COLS))
     parser.add_argument('--overwritten', dest='overwritten',
                         action='store_true',
                         help='Overwritten if output file is exists')
@@ -107,17 +112,17 @@ def parse_command_line(argv):
                         help="List of Edit Lengths\
                         (default: {0!s})".format(DEFAULT_EDITLENGTH))
     parser.add_argument('-f', '--file', dest='namefile',
-                        default=DEFAULT_FILE,
-                        help="List of Edit Lengths\
-                        (default: {0!s})".format(DEFAULT_FILE))
+                        default=DEFAULT_NAME_FILE,
+                        help="CSV file contains unique ID and Name want to search for\
+                        (default: {0!s})".format(DEFAULT_NAME_FILE))
     parser.add_argument('-u', '--uniqid', dest='name_id',
-                        default=DEFAULT_ID,
-                        help="ID\
-                        (default: {0!s})".format(DEFAULT_ID))
+                        default=DEFAULT_COL_ID,
+                        help="Column of unique ID in name want to search for\
+                        (default: {0!s})".format(DEFAULT_COL_ID))
     parser.add_argument('-s', '--search', dest='name_search',
-                        default=DEFAULT_SEARCH,
-                        help="Search\
-                        (default: {0!s})".format(DEFAULT_SEARCH))
+                        default=DEFAULT_COL_SEARCH,
+                        help="Colunm of name want to search for\
+                        (default: {0!s})".format(DEFAULT_COL_SEARCH))
 
     parser.set_defaults(overwritten=False)
 
@@ -136,72 +141,27 @@ def parse_command_line(argv):
     return parser.parse_args(argv)
 
 
-def load_config(args=None):
-    if args is None or isinstance(args, six.string_types):
-        namespace = argparse.Namespace()
-        if args is None:
-            namespace.config = DEFAULT_CONFIG_FILE
-        else:
-            namespace.config = args
-        args = namespace
-    try:
-        config = ConfigParser()
-        config.read(args.config)
-        args.namefile = config.get('name', 'file')
-        args.name_id = config.get('name', 'id')
-        args.name_search = config.get('name', 'search')
-        args.editlength = []
-        i = 1
-        while True:
-            k = 'edit' + str(i)
-            try:
-                l = config.getint('editlength', k)
-                args.editlength.append((l, i))
-                i += 1
-            except:
-                break
-        # column name for text
-        #args.text = config.get('input', 'text')
-
-        args.search_cols = []
-        with open('search_cols.txt') as f:
-            for l in f:
-                if not l.startswith('#') and l.strip() != '':
-                        args.search_cols.append(l.strip())
-        args.input_file_cols = []
-        with open('input_file_cols.txt') as f:
-            for l in f:
-                if not l.startswith('#') and l.strip() != '':
-                    args.input_file_cols.append(l.strip())
-
-    except Exception as e:
-        print(e)
-
-    return args
-
-
-def load_names_file(args):
-    args.names = []
-    logging.info("Load name file: {0}".format(args.namefile))
-    with open(args.namefile, 'r') as f:
+def load_names_file(namefile, col_id=DEFAULT_COL_ID, col_search=DEFAULT_COL_SEARCH):
+    names = []
+    logging.info("Load name file: {0}".format(namefile))
+    with open(namefile, 'r') as f:
         reader = csv.DictReader(f)
         for r in reader:
             try:
-                args.names.append((r[args.name_id], r[args.name_search]))
+                names.append((r[col_id], r[col_search]))
             except:
                 logging.error("Name file must have '{0}' and '{1}' columns"
-                              .format(args.name_id, args.name_search))
-                sys.exit(-2)
-    return args.names
+                              .format(col_id, col_search))
+    return names
 
 
 def clean_text(s):
-    s = preprocess.to_lower_case(s)
-    s = preprocess.remove_special_chars(s)
-    s = preprocess.remove_accents(s)
-    s = preprocess.remove_stopwords(s)
-    s = preprocess.remove_punctuation(s)
-    s = preprocess.remove_extra_space(s)
+    s = utils.to_lower_case(s)
+    s = utils.remove_special_chars(s)
+    s = utils.remove_accents(s)
+    s = utils.remove_stopwords(s)
+    s = utils.remove_punctuation(s)
+    s = utils.remove_extra_space(s)
     return s
 
 
@@ -230,7 +190,7 @@ def worker(args):
                 result, n = namesearch.search(text, args.max_name)
                 c = []
                 for k in reader.fieldnames:
-                    if k in args.input_file_cols:
+                    if k in args.input_cols:
                         if args.clean and k == args.text:
                             # replace original text with cleaned text
                             c.append(text)
@@ -255,12 +215,29 @@ def worker(args):
         traceback.print_exc()
 
 
-def search_names(args):
+def search_names(input, text=DEFAULT_TXT_COLNAME,
+                 input_cols=DEFAULT_INPUT_COLS, names=[],
+                 search_cols=DEFAULT_SEARCH_OUTPUT_COLS, max_name=MAX_NAME,
+                 editlength=DEFAULT_EDITLENGTH, outfile=DEF_OUTPUT_FILE,
+                 overwritten=False, processes=NUM_PROCESSES, clean=True):
     logging.info("Setting up, please wait...")
-    load_names_file(args)
+
+    args = argparse.Namespace()
+
+    args.input = input
+    args.text = text
+    args.input_cols = input_cols
+    args.names = names
+    args.search_cols = search_cols
+    args.max_name = max_name
+    args.editlength = editlength
+    args.outfile = outfile
+    args.overwritten = overwritten
+    args.processes = processes
+    args.clean = clean
 
     if args.clean:
-        preprocess.init_nltk()
+        utils.init_nltk()
 
     new_outfile = True
     """Create output file
@@ -275,7 +252,7 @@ def search_names(args):
                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
     except:
         logging.error("Cannot create output file")
-        sys.exit(-1)
+        return -1
 
     count = 0
     all_start = time.time()
@@ -289,7 +266,7 @@ def search_names(args):
             """
             h = []
             for k in reader.fieldnames:
-                if k in args.input_file_cols:
+                if k in args.input_cols:
                     h.append(k)
             for i in range(args.max_name):
                 for a in RESULT_FIELDS:
@@ -342,10 +319,13 @@ def main(argv=sys.argv[1:]):
 
     setup_logger(args.debug)
 
-    #args = load_config(args)
     logging.info(str(args))
 
-    search_names(args)
+    names = load_names_file(args.namefile, args.name_id, args.name_search)
+
+    search_names(args.input, args.text, args.input_cols, names,
+                 args.search_cols, args.max_name, args.editlength,
+                 args.outfile, args.overwritten, args.processes, args.clean)
 
     return 0
 

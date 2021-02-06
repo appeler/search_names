@@ -34,7 +34,7 @@ def setup_logger():
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
-def split_text_corpus(infile = None, outfile = None):
+def split_text_corpus(infile=None, outfile=None, size=1000):
     with open(infile, 'r') as f:
         reader = DictReader(f)
         header = reader.fieldnames
@@ -63,13 +63,15 @@ def split_text_corpus(infile = None, outfile = None):
                 r['uniqid'] = uid
             writer.writerow(r)
             count += 1
-            if count >= args.size:
+            if count >= size:
                 count = 0
                 chunk_id += 1
                 out.close()
             uid += 1
 
-if __name__ == "__main__":
+
+def main(argv=sys.argv[1:]):
+
     setup_logger()
 
     """Parse command line options
@@ -87,9 +89,17 @@ if __name__ == "__main__":
                         help='Number of row in each chunk (default: {0:d})'
                         .format(DEFAULT_CHUNK_SIZE))
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     logging.info(str(args))
 
-    split_text_corpus(args.input, args.outfile)
+    split_text_corpus(args.input, args.outfile, args.size)
     logging.info("done.")
+
+    return 0
+
+
+if __name__ == "__main__":
+
+    sys.exit(main())
+
