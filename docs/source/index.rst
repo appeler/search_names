@@ -10,7 +10,7 @@ Welcome to search-names's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   search_names
 
 Indices and tables
 ==================
