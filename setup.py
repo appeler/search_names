@@ -149,7 +149,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'clean_names=search_names.process_names:main',
+            'clean_names=search_names.clean_names:main',
             'merge_supp=search_names.merge_supp:main',
             'preprocess=search_names.preprocess:main',
             'split_text_corpus=search_names.split_text_corpus:main',

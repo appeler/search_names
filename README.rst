@@ -67,7 +67,7 @@ We strongly recommend installing ``search-names`` inside a Python virtual enviro
     pip install search_names
 
 
-.. _`clean_names`:
+.. _`clean_names`: `Clean the name on the list`_
 
 Clean the name on the list
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -150,7 +150,7 @@ The script takes `sample_in.csv <sample_in.csv>`_\ , `prefixes.csv <prefixes.csv
 * ``prefixes`` - List of prefixes (separated by semi-colon)
 * ``nick_names`` - List of nick names (separated by semi-colon)
 
-.. _`preprocess`:
+.. _`preprocess`: `Preprocess Search List`_
 
 Preprocess Search List
 ~~~~~~~~~~~~~~~~~~~~~~~
