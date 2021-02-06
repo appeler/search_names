@@ -153,7 +153,7 @@ def main(argv=sys.argv[1:]):
     args = parse_command_line(argv)
     print(args)
 
-    process_names(args.input, args.outfile, args.column, args.all)
+    clean_names(args.input, args.outfile, args.column, args.all)
 
     return 0
 
