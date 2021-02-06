@@ -1,23 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 import argparse
 import csv
 import itertools
 
 from copy import copy
-import configparser
 import traceback
 
 from Levenshtein import distance
 
 DEFAULT_OUTPUT = "deduped_augmented_clean_names.csv"
-DEFAULT_CONFIG_FILE = "preprocess.cfg"
 DEFAULT_DROP_PATTERNS = "drop_patterns.txt"
 DEFAULT_PATTERNS = ["FirstName LastName", "NickName LastName", "Prefix LastName"]
-DEFAULT_EDITLENGTH = [10, 20]
+DEFAULT_EDITLENGTH = []
 
-def parse_command_line():
+def parse_command_line(argv):
     """Parse command line options
     """
     parser = argparse.ArgumentParser(description="Preprocess Search List")
@@ -28,10 +27,6 @@ def parse_command_line():
                         default=DEFAULT_OUTPUT,
                         help="Output file in CSV (default: {0!s})"
                         .format(DEFAULT_OUTPUT))
-    parser.add_argument("-c", "--config", type=str, dest="config",
-                        default=DEFAULT_CONFIG_FILE,
-                        help="Configuration file\
-                        (default: {0!s})".format(DEFAULT_CONFIG_FILE))
     parser.add_argument("-d", "--drop-patterns", type=str, dest="drop_patterns_file",
                         default=DEFAULT_DROP_PATTERNS,
                         help="File with Default Patterns\
@@ -44,17 +39,22 @@ def parse_command_line():
                         default=DEFAULT_EDITLENGTH,
                         help="List of Edit Lengths\
                         (default: {0!s})".format(DEFAULT_EDITLENGTH))
-    return parser.parse_args()
+    return parser.parse_args(argv)
+
 
 def load_drop_patterns(filename):
     drop_patterns = []
-    with open(filename) as f:
-        for l in f:
-            l = l.strip().lower()
-            if len(l): # null string
-                continue
-            drop_patterns.append(l)
+    try:
+        with open(filename) as f:
+            for l in f:
+                l = l.strip().lower()
+                if len(l): # null string
+                    continue
+                drop_patterns.append(l)
+    except Exception as e:
+        print('Drop pattern file {0!s} not found'.format(filename))
     return drop_patterns
+
 
 def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUTPUT, editlength = DEFAULT_EDITLENGTH, drop_patterns = None):
     """Preprocessing names file
@@ -75,6 +75,7 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
                 parr = p.split()
                 s = []
                 for a in parr:
+                    a = a.strip()
                     if a == 'Prefix':
                         prefixes = r['prefixes'].split(';')
                         s.append(prefixes)
@@ -142,12 +143,21 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
             f.close()
     print("Done.")
 
-if __name__ == "__main__":
 
-    args = parse_command_line()
+def main(argv=sys.argv[1:]):
+
+    args = parse_command_line(argv)
 
     args.drop_patterns = load_drop_patterns(args.drop_patterns_file)
 
     print(args)
   
     preprocess(args.input, args.patterns, args.outfile, args.editlength, args.drop_patterns)
+
+    return 0
+
+
+if __name__ == "__main__":
+
+    sys.exit(main())
+

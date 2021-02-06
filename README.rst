@@ -162,71 +162,61 @@ The script takes `sample_in.csv <examples/merge_supp_data/sample_in.csv>`__\ , `
 Preprocess Search List
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The script takes the output from `merge supp. data <../merge_supp_data/>`_ (\ `sample input file <augmented_clean_names.csv>`__\ ), list of patterns we want to search for, an ad hoc list of patterns we want to drop (\ `sample drop patterns file <drop_patterns.txt>`_\ , and relative edit distance (based on the length of the pattern we are searching for) for approximate matching and does three things: a) creates a row for each pattern we want to search for (duplicating all the supplementary information), b) drops the ad hoc list of patterns we want to drop and c) de-duplicates based on edit distance and patterns we want to search for. See `sample output file <deduped_augmented_clean_names.csv>`__.
+The script takes the output from `merge supp. data <examples/merge_supp_data>`__ (\ `sample input file <examples/preprocess/augmented_clean_names.csv>`__\ ), list of patterns we want to search for, an ad hoc list of patterns we want to drop (\ `sample drop patterns file <examples/preprocess/drop_patterns.txt>`__\ , and relative edit distance (based on the length of the pattern we are searching for) for approximate matching and does three things: a) creates a row for each pattern we want to search for (duplicating all the supplementary information), b) drops the ad hoc list of patterns we want to drop and c) de-duplicates based on edit distance and patterns we want to search for. See `sample output file <examples/preprocess/deduped_augmented_clean_names.csv>`__.
 
 The script also takes arguments that define the patterns to search for, name of the file containing patterns we want to drop, and edit distance.
 
-1) search
+1) search (``--patterns``)
 
-This section contains patterns ---combination of field names---we want to search for:
-
-::
-
-       [search]
-       pattern1 = FirstName LastName
-       pattern2 = NickName LastName
-       pattern3 = Prefix LastName
+ An argument ``--patterns`` contains patterns---combination of field names---we want to search for. For instance ``--patterns "FirstName LastName" "NickName LastName" "Prefix LastName"`` means that we want to search for combination of "FirstName LastName" "NickName LastName" and "Prefix LastName" respectively.
 
 2) drop
 
- The ``file`` variable points to the file containing list of people to be dropped. Usually, this file is an ad hoc list of patterns that we want removed. For instance, patterns matching famous people not on the list.
-
-::
-
-       [drop]
-       file = drop_patterns.txt
+ The ``file`` variable points to the text file containing list of people to be dropped. Usually, this file is an ad hoc list of patterns that we want removed. For instance, patterns matching famous people not on the list.
 
 3) editlength
 
-This section contains minimum name length for the specific string length. For instance, ``edit1=10`` means that for patterns of length 10 or more, match within edit distance of 1.
+An argument ``--editlength`` contains minimum name length for the specific string length. For instance, ``--editlength 10 15`` means that for patterns of length 10 or more, match within edit distance of 1 and patterns of length 15 or more, match within edit distance of 2.
 
-::
+If you want to disable `fuzzy` matching, just don't pass the argument ``--editlength``.
 
-       [editlength]
-       edit1 = 10
-       edit2 = 20
-
-If you want to disable `fuzzy` matching, just comment out edit1 and edit2 using a hash sign as follows:
-
-::
-
-   # edit1 = 10
-   # edit2 = 20
 
 Usage
 ^^^^^
 
 ::
 
-   usage: preprocess.py [-h] [-o OUTFILE] [-c CONFIG] input
+   usage: preprocess [-h] [-o OUTFILE] [-d DROP_PATTERNS_FILE]
+                     [-p PATTERNS [PATTERNS ...]]
+                     [-e EDITLENGTH [EDITLENGTH ...]]
+                     input
 
    Preprocess Search List
 
    positional arguments:
-     input                 Input file name
+   input                 Input file name
 
    optional arguments:
-     -h, --help            show this help message and exit
-     -o OUTFILE, --out OUTFILE
+   -h, --help            show this help message and exit
+   -o OUTFILE, --out OUTFILE
                            Output file in CSV (default:
                            deduped_augmented_clean_names.csv)
+   -d DROP_PATTERNS_FILE, --drop-patterns DROP_PATTERNS_FILE
+                           File with Default Patterns (default:
+                           drop_patterns.txt)
+   -p PATTERNS [PATTERNS ...], --patterns PATTERNS [PATTERNS ...]
+                           List of Default Patterns (default: ['FirstName
+                           LastName', 'NickName LastName', 'Prefix LastName'])
+   -e EDITLENGTH [EDITLENGTH ...], --editlength EDITLENGTH [EDITLENGTH ...]
+                           List of Edit Lengths (default: [])
+
 
 Example
 ^^^^^^^
 
 ::
 
-   python preprocess.py  augmented_clean_names.csv
+   preprocess augmented_clean_names.csv
 
 By default, the output will be saved as ``deduped_augmented_clean_names.csv``. The script adds a new column, ``search_name`` for unique search key.
 
