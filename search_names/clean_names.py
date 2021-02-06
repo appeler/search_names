@@ -33,7 +33,7 @@ def parse_command_line(argv):
     return parser.parse_args(argv)
 
 
-def process_names(infile, outfile=DEFAULT_OUTPUT, col="Name", all=False):
+def clean_names(infile, outfile=DEFAULT_OUTPUT, col="Name", all=False):
     """ Read names and pre-process
         Returns unique names in format "FirstName LastName AnyRomanNumeral"\
         or "FirstName LastName"
