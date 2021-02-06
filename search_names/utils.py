@@ -37,7 +37,7 @@ def to_lower_case(text):
 def remove_accents(text):
     """Remove diacritics
     """
-    nkfd_form = unicodedata.normalize('NFKD', text.decode('latin-1'))
+    nkfd_form = unicodedata.normalize('NFKD', text)
     text = u"".join([c for c in nkfd_form if not unicodedata.combining(c)])
 
     text = re.sub(r'[\x80-\xFF]', '', text)
