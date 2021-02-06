@@ -108,42 +108,50 @@ Example
 Merge Supplementary Data
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The script takes output from `clean_names`_ (see `sample input file <sample_in.csv>`__\ ) and appends supplementary data (prefixes, nicknames) to the file (see `sample output file <augmented_clean_names.csv>`__\ ). In particular, the script merges two supplementary data files:
+The script takes output from `clean_names`_ (see `sample input file <examples/merge_supp_data/sample_in.csv>`__\ ) and appends supplementary data (prefixes, nicknames) to the file (see `sample output file <examples/merge_supp_data/augmented_clean_names.csv>`__\ ). In particular, the script merges two supplementary data files:
 
-   **Prefixes:** Generally the same set of prefixes will be used for a group of names. For instance, if you have a long list of politicians, state governors with no previous legislative experience will only have prefixes Governor, Mr., Mrs., Ms. etc., and not prefixes like Congressman or Congresswoman. We require a column in the input file that captures information about which 'prefix group' a particular name belongs to. We use that column to merge prefix data. The prefix file itself needs two columns: 1) A column to look up prefixes for groups of names depending on the value. The name of the column must be the same as the column name specified by the argument ``-p/--prefix`` (default is ``seat``\ ), and 2) a column of prefixes (multiple prefixes separated by semi-colon). The default name of the prefix data file is ``prefixes.csv``. See `sample prefixes data file <prefixes.csv>`_.
+   **Prefixes:** Generally the same set of prefixes will be used for a group of names. For instance, if you have a long list of politicians, state governors with no previous legislative experience will only have prefixes Governor, Mr., Mrs., Ms. etc., and not prefixes like Congressman or Congresswoman. We require a column in the input file that captures information about which 'prefix group' a particular name belongs to. We use that column to merge prefix data. The prefix file itself needs two columns: 1) A column to look up prefixes for groups of names depending on the value. The name of the column must be the same as the column name specified by the argument ``-p/--prefix`` (default is ``seat``\ ), and 2) a column of prefixes (multiple prefixes separated by semi-colon). The default name of the prefix data file is ``prefixes.csv``. See `sample prefixes data file <examples/merge_supp_data/prefixes.csv>`__.
 
-   **Nicknames:**  Nicknames are merged using first names in the input data file. The nicknames file is a plain text file. Each line contains single or list of first names on left side of the '-' and one or multiple nicknames on the right hand side. List of first names and nicknames must be separated by comma. Default name of the nicknames data file is ``nick_names.txt``. See `sample nicknames file <nick_names.txt>`_.
+   **Nicknames:**  Nicknames are merged using first names in the input data file. The nicknames file is a plain text file. Each line contains single or list of first names on left side of the '-' and one or multiple nicknames on the right hand side. List of first names and nicknames must be separated by comma. Default name of the nicknames data file is ``nick_names.txt``. See `sample nicknames file <examples/merge_supp_data/nick_names.txt>`__.
 
 Usage
 ^^^^^
 
 ::
 
-   usage: merge_supp.py [-h] [-o OUTFILE] [-p PREFIX] [-n NAME] input
+usage: merge_supp [-h] [-o OUTFILE] [-n NAME] [-p PREFIX]
+                  [--prefix-file PREFIX_FILE] [--nick-name-file NICKNAME_FILE]
+                  input
 
-   Merge supplementary data
+Merge supplement data
 
-   positional arguments:
-     input                 Input file name
+positional arguments:
+  input                 Input file name
 
-   optional arguments:
-     -h, --help            show this help message and exit
-     -o OUTFILE, --out OUTFILE
-                           Output file in CSV (default:
-                           augmented_clean_names.csv)
-     -p PREFIX, --prefix PREFIX
-                           Name of column use for prefix look up (default: seat)
-     -n NAME, --name NAME  Name of column use for nick name look up (default:
-                           FirstName)
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OUTFILE, --out OUTFILE
+                        Output file in CSV (default:
+                        augmented_clean_names.csv)
+  -n NAME, --name NAME  Name of column use for nick name look up (default:
+                        FirstName)
+  -p PREFIX, --prefix PREFIX
+                        Name of column use for prefix look up (default: seat)
+  --prefix-file PREFIX_FILE
+                        CSV File contains list of prefixes (default:
+                        prefixes.csv)
+  --nick-name-file NICKNAME_FILE
+                        Text File contains list of nick names (default:
+                        nick_names.txt)
 
 Example
 ^^^^^^^
 
 ::
 
-   python merge_supp.py sample_in.csv
+   merge_supp sample_in.csv
 
-The script takes `sample_in.csv <sample_in.csv>`_\ , `prefixes.csv <prefixes.csv>`_\ , and `nick_names.txt <nick_names.txt>`_ and produces `augmented_clean_names.csv <augmented_clean_names.csv>`_. The output file has two additional columns:
+The script takes `sample_in.csv <examples/merge_supp_data/sample_in.csv>`__\ , `prefixes.csv <examples/merge_supp_data/prefixes.csv>`__\ , and `nick_names.txt <examples/merge_supp_data/nick_names.txt>`__ and produces `augmented_clean_names.csv <examples/merge_supp_data/augmented_clean_names.csv>`__. The output file has two additional columns:
 
 
 * ``prefixes`` - List of prefixes (separated by semi-colon)
