@@ -8,21 +8,21 @@ Tests for secc_caste_ln.py
 import os
 import shutil
 import unittest
-from search_names import clean_names
+from search_names import preprocess
 from . import capture
 
 
-class TestCleanNames(unittest.TestCase):
+class TestPreprocess(unittest.TestCase):
 
     def setUp(self):
-        self.input = 'examples/clean_names/sample_input.csv'
-        self.output = 'clean_names.csv'
+        self.input = 'examples/preprocess/augmented_clean_names.csv'
+        self.output = 'deduped_augmented_clean_names.csv'
 
     def tearDown(self):
         os.unlink(self.output)
 
     def test_clean_names(self):
-        clean_names(self.input)
+        preprocess(self.input, drop_patterns=['Barak Obama', 'Michael Jackson'])
         self.assertTrue(os.path.exists(self.output))
 
 
