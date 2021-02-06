@@ -1,10 +1,10 @@
 Search Names: Search a long list of names in a large text corpus
 -----------------------------------------------------------------
 
-.. image:: https://travis-ci.org/appeler/search-names.svg?branch=master
-    :target: https://travis-ci.org/appeler/search-names
+.. image:: https://travis-ci.org/appeler/search_names.svg?branch=master
+    :target: https://travis-ci.org/appeler/search_names
 .. image:: https://ci.appveyor.com/api/projects/status/v3ao00u6uccnpi0n?svg=true
-    :target: https://ci.appveyor.com/project/soodoku/search-names-hsmwu
+    :target: https://ci.appveyor.com/project/soodoku/search-names
 .. image:: https://img.shields.io/pypi/v/search-names.svg
     :target: https://pypi.python.org/pypi/search-names
 .. image:: https://readthedocs.org/projects/search-names/badge/?version=latest
