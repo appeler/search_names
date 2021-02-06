@@ -104,7 +104,6 @@ Example
 
     clean_names -a sample_input.csv
 
-.. _`merge supplementary data`:
 
 Merge Supplementary Data
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -223,8 +222,6 @@ Example
 
 By default, the output will be saved as ``deduped_augmented_clean_names.csv``. The script adds a new column, ``search_name`` for unique search key.
 
-
-.. _`search`:
 
 Search
 ~~~~~~~
