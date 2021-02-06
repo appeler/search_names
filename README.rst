@@ -119,30 +119,30 @@ Usage
 
 ::
 
-usage: merge_supp [-h] [-o OUTFILE] [-n NAME] [-p PREFIX]
-                  [--prefix-file PREFIX_FILE] [--nick-name-file NICKNAME_FILE]
-                  input
+   usage: merge_supp [-h] [-o OUTFILE] [-n NAME] [-p PREFIX]
+                     [--prefix-file PREFIX_FILE] [--nick-name-file NICKNAME_FILE]
+                     input
 
-Merge supplement data
+   Merge supplement data
 
-positional arguments:
-  input                 Input file name
+   positional arguments:
+   input                 Input file name
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -o OUTFILE, --out OUTFILE
-                        Output file in CSV (default:
-                        augmented_clean_names.csv)
-  -n NAME, --name NAME  Name of column use for nick name look up (default:
-                        FirstName)
-  -p PREFIX, --prefix PREFIX
-                        Name of column use for prefix look up (default: seat)
-  --prefix-file PREFIX_FILE
-                        CSV File contains list of prefixes (default:
-                        prefixes.csv)
-  --nick-name-file NICKNAME_FILE
-                        Text File contains list of nick names (default:
-                        nick_names.txt)
+   optional arguments:
+   -h, --help            show this help message and exit
+   -o OUTFILE, --out OUTFILE
+                           Output file in CSV (default:
+                           augmented_clean_names.csv)
+   -n NAME, --name NAME  Name of column use for nick name look up (default:
+                           FirstName)
+   -p PREFIX, --prefix PREFIX
+                           Name of column use for prefix look up (default: seat)
+   --prefix-file PREFIX_FILE
+                           CSV File contains list of prefixes (default:
+                           prefixes.csv)
+   --nick-name-file NICKNAME_FILE
+                           Text File contains list of nick names (default:
+                           nick_names.txt)
 
 Example
 ^^^^^^^
