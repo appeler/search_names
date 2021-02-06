@@ -166,19 +166,19 @@ The script takes the output from `merge supp. data <examples/merge_supp_data>`__
 
 The script also takes arguments that define the patterns to search for, name of the file containing patterns we want to drop, and edit distance.
 
-1) search (``--patterns``)
+1) search
 
- An argument ``--patterns`` contains patterns---combination of field names---we want to search for. For instance ``--patterns "FirstName LastName" "NickName LastName" "Prefix LastName"`` means that we want to search for combination of "FirstName LastName" "NickName LastName" and "Prefix LastName" respectively.
+   An argument ``--patterns`` contains patterns---combination of field names---we want to search for. For instance ``--patterns "FirstName LastName" "NickName LastName" "Prefix LastName"`` means that we want to search for combination of "FirstName LastName" "NickName LastName" and "Prefix LastName" respectively.
 
 2) drop
 
- The ``file`` variable points to the text file containing list of people to be dropped. Usually, this file is an ad hoc list of patterns that we want removed. For instance, patterns matching famous people not on the list.
+   An argument ``--drop-patterns``  points to the text file containing list of people to be dropped. Usually, this file is an ad hoc list of patterns that we want removed. For instance, patterns matching famous people not on the list.
 
 3) editlength
 
-An argument ``--editlength`` contains minimum name length for the specific string length. For instance, ``--editlength 10 15`` means that for patterns of length 10 or more, match within edit distance of 1 and patterns of length 15 or more, match within edit distance of 2.
+   An argument ``--editlength`` contains minimum name length for the specific string length. For instance, ``--editlength 10 15`` means that for patterns of length 10 or more, match within edit distance of 1 and patterns of length 15 or more, match within edit distance of 2.
 
-If you want to disable `fuzzy` matching, just don't pass the argument ``--editlength``.
+   If you want to disable `fuzzy` matching, just don't pass the argument ``--editlength``.
 
 
 Usage
