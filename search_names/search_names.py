@@ -209,10 +209,11 @@ def worker(args):
                 args.result_queue.put(c)
                 count += 1
         logging.info('[{0}] worker stop'.format(pid))
-        return count
     except:
         import traceback
         traceback.print_exc()
+
+    return count
 
 
 def search_names(input, text=DEFAULT_TXT_COLNAME,
@@ -296,8 +297,6 @@ def search_names(input, text=DEFAULT_TXT_COLNAME,
             logging.info("Progress: {0:d}, Average rate = {1:.0f} rows/min"
                           .format(progress, progress * 60 / elaspe))
         except KeyboardInterrupt:
-            pool.terminate()
-            pool.join()
             break
         except Empty:
             try:
@@ -306,7 +305,8 @@ def search_names(input, text=DEFAULT_TXT_COLNAME,
                 break
             except TimeoutError:
                 pass
-
+    pool.terminate()
+    pool.join()
     elaspe = time.time() - all_start
     logging.info("Total: {0:d}, Average rate = {1:.0f} rows/min"
                  .format(count, count * 60 / elaspe))
