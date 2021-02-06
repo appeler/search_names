@@ -63,9 +63,10 @@ setup(
 
     description='Search a long list of names (patterns) in a large text corpus systematically and quickly',
     long_description=long_description,
+    long_description_content_type='text/x-rst',
 
     # The project's main homepage.
-    url='https://github.com/appeler/search-names',
+    url='https://github.com/appeler/search_names',
 
     # Author details
     author='Suriyan Laohaprapanon, Gaurav Sood',
@@ -148,7 +149,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'process_names=search_names.process_names:main',
+            'clean_names=search_names.process_names:main',
             'merge_supp=search_names.merge_supp:main',
             'preprocess=search_names.preprocess:main',
             'split_text_corpus=search_names.split_text_corpus:main',

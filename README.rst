@@ -12,8 +12,7 @@ Search Names: Search a long list of names in a large text corpus
 .. image:: https://pepy.tech/badge/search-names
     :target: https://pepy.tech/project/search-names
 
-.. |br| raw:: html
-    <br />
+|
 
 There are seven kinds of challenges in searching a long list of names in a large text corpus:
 
@@ -36,8 +35,8 @@ We address each of the problems.
 The Workflow
 ~~~~~~~~~~~~
 
-Before anything else, use `clean names <clean_names/>`__ to standardize the names on the list. The script appends separate columns for prefix, first\_name, last\_name, etc. Some human curation will likely still be needed. Do it before going further. After that, use `merge supplementary data <merge_supp_data/>`__ to append other potential prefixes, diminutive norms of the first name, and other names by which the person is known by to the output of `clean names <clean_names/>`__. Next,
-`preprocess <preprocess/>`__ the search list. In particular, the script does three things:
+Before anything else, use `clean_names`_ to standardize the names on the list. The script appends separate columns for prefix, first\_name, last\_name, etc. Some human curation will likely still be needed. Do it before going further. After that, use `merge supplementary data`_ to append other potential prefixes, diminutive norms of the first name, and other names by which the person is known by to the output of `clean_names`_. Next,
+`preprocess`_ the search list. In particular, the script does three things:
 
 1. **Converts the data from wide to long**: The script creates a
    separate row for each pattern we want to search for. For instance, if
@@ -55,7 +54,7 @@ Before anything else, use `clean names <clean_names/>`__ to standardize the name
    matching famous people not on the list, e.g. we can remove 'Michael
    Jackson' and it won't remove 'Congressman Jackson.'
 
-Lastly, the `search <search/>`__ script searches patterns in the list in
+Lastly, the `search`_ script searches patterns in the list in
 a multi-threaded, parallelized way.
 
 Installation
@@ -67,42 +66,50 @@ We strongly recommend installing ``search-names`` inside a Python virtual enviro
 
     pip install search_names
 
-Functions
-~~~~~~~~~~~~~~~~~~~~
 
-``process_names``: 
+.. _`clean_names`:
 
-The script is a modified version of `Clean Names <http://github.com/appeler/clean-names>`__.
+Clean the name on the list
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The script takes a csv file with column 'Name' containing 'dirty names'--- names with all different formats: lastname firstname, firstname lastname, middlename lastname firstname etc. (see `sample input file <sample_input.csv>`_\ ) and produces a csv file that has all the columns of the original csv file and the following columns: 'uniqid', 'FirstName', 'MiddleInitial/Name', 'LastName', 'RomanNumeral', 'Title', 'Suffix' (see `sample output file <sample_output.csv>`_\ ).
+``clean_names``: The script is a modified version of `Clean Names <http://github.com/appeler/clean-names>`__.
 
-Usage: ``process_names.py [options]``
+The script takes a csv file with column 'Name' containing 'dirty names'--- names with all different formats: lastname firstname, firstname lastname, middlename lastname firstname etc. (see `sample input file <examples/clean_names/sample_input.csv>`__\ ) and produces a csv file that has all the columns of the original csv file and the following columns: 'uniqid', 'FirstName', 'MiddleInitial/Name', 'LastName', 'RomanNumeral', 'Title', 'Suffix' (see `sample output file <examples/clean_names/sample_output.csv>`__\ ).
 
-Command Line Options
-~~~~~~~~~~~~~~~~~~~~
+Usage
+^^^^^
 
-.. code-block::
+::
 
-       -h,         --help show this help message and exit
-       -o OUTFILE, --out=OUTFILE
-                       Output file in CSV (default: sample_output.csv)
-       -c COLUMN,  --column=COLUMN
-                       Column name in CSV that contains Names (default: Name)
-       -a,         --all
-                   Export all names (do not take duplicate names out)  (default: False)
+   usage: clean_names [-h] [-o OUTFILE] [-c COLUMN] [-a] input
+
+   Clean name
+
+   positional arguments:
+   input                 Input file name
+
+   optional arguments:
+   -h, --help            show this help message and exit
+   -o OUTFILE, --out OUTFILE
+                           Output file in CSV (default: clean_names.csv)
+   -c COLUMN, --column COLUMN
+                           Column name file in CSV contains Name list (default:
+                           Name)
+   -a, --all             Export all names (not take duplicate names out)
+                           (default: False)
 
 Example
-~~~~~~~
+^^^^^^^
+::
 
+    clean_names -a sample_input.csv
 
-.. raw:: html
-
-   <pre><code> python process_names.py -a sample_input.csv </code></pre>
+.. _`merge supplementary data`:
 
 Merge Supplementary Data
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-The script takes output from `clean_names <../clean_names>`_ (see `sample input file <sample_in.csv>`_\ ) and appends supplementary data (prefixes, nicknames) to the file (see `sample output file <augmented_clean_names.csv>`_\ ). In particular, the script merges two supplementary data files:
+The script takes output from `clean_names`_ (see `sample input file <sample_in.csv>`__\ ) and appends supplementary data (prefixes, nicknames) to the file (see `sample output file <augmented_clean_names.csv>`__\ ). In particular, the script merges two supplementary data files:
 
    **Prefixes:** Generally the same set of prefixes will be used for a group of names. For instance, if you have a long list of politicians, state governors with no previous legislative experience will only have prefixes Governor, Mr., Mrs., Ms. etc., and not prefixes like Congressman or Congresswoman. We require a column in the input file that captures information about which 'prefix group' a particular name belongs to. We use that column to merge prefix data. The prefix file itself needs two columns: 1) A column to look up prefixes for groups of names depending on the value. The name of the column must be the same as the column name specified by the argument ``-p/--prefix`` (default is ``seat``\ ), and 2) a column of prefixes (multiple prefixes separated by semi-colon). The default name of the prefix data file is ``prefixes.csv``. See `sample prefixes data file <prefixes.csv>`_.
 
@@ -111,7 +118,7 @@ The script takes output from `clean_names <../clean_names>`_ (see `sample input 
 Usage
 ^^^^^
 
-.. code-block::
+::
 
    usage: merge_supp.py [-h] [-o OUTFILE] [-p PREFIX] [-n NAME] input
 
@@ -133,7 +140,7 @@ Usage
 Example
 ^^^^^^^
 
-.. code-block::
+::
 
    python merge_supp.py sample_in.csv
 
@@ -143,10 +150,12 @@ The script takes `sample_in.csv <sample_in.csv>`_\ , `prefixes.csv <prefixes.csv
 * ``prefixes`` - List of prefixes (separated by semi-colon)
 * ``nick_names`` - List of nick names (separated by semi-colon)
 
+.. _`preprocess`:
+
 Preprocess Search List
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The script takes the output from `merge supp. data <../merge_supp_data/>`_ (\ `sample input file <augmented_clean_names.csv>`_\ ), list of patterns we want to search for, an ad hoc list of patterns we want to drop (\ `sample drop patterns file <drop_patterns.txt>`_\ , and relative edit distance (based on the length of the pattern we are searching for) for approximate matching and does three things: a) creates a row for each pattern we want to search for (duplicating all the supplementary information), b) drops the ad hoc list of patterns we want to drop and c) de-duplicates based on edit distance and patterns we want to search for. See `sample output file <deduped_augmented_clean_names.csv>`_.
+The script takes the output from `merge supp. data <../merge_supp_data/>`_ (\ `sample input file <augmented_clean_names.csv>`__\ ), list of patterns we want to search for, an ad hoc list of patterns we want to drop (\ `sample drop patterns file <drop_patterns.txt>`_\ , and relative edit distance (based on the length of the pattern we are searching for) for approximate matching and does three things: a) creates a row for each pattern we want to search for (duplicating all the supplementary information), b) drops the ad hoc list of patterns we want to drop and c) de-duplicates based on edit distance and patterns we want to search for. See `sample output file <deduped_augmented_clean_names.csv>`__.
 
 The script also takes arguments that define the patterns to search for, name of the file containing patterns we want to drop, and edit distance.
 
@@ -154,7 +163,7 @@ The script also takes arguments that define the patterns to search for, name of 
 
 This section contains patterns ---combination of field names---we want to search for:
 
-.. code-block::
+::
 
        [search]
        pattern1 = FirstName LastName
@@ -165,7 +174,7 @@ This section contains patterns ---combination of field names---we want to search
 
  The ``file`` variable points to the file containing list of people to be dropped. Usually, this file is an ad hoc list of patterns that we want removed. For instance, patterns matching famous people not on the list.
 
-.. code-block::
+::
 
        [drop]
        file = drop_patterns.txt
@@ -174,15 +183,15 @@ This section contains patterns ---combination of field names---we want to search
 
 This section contains minimum name length for the specific string length. For instance, ``edit1=10`` means that for patterns of length 10 or more, match within edit distance of 1.
 
-.. code-block::
+::
 
        [editlength]
        edit1 = 10
        edit2 = 20
 
-If you want to disable `fuzzy' matching, just comment out edit1 and edit2 using a hash sign as follows:
+If you want to disable `fuzzy` matching, just comment out edit1 and edit2 using a hash sign as follows:
 
-.. code-block::
+::
 
    # edit1 = 10
    # edit2 = 20
@@ -190,7 +199,7 @@ If you want to disable `fuzzy' matching, just comment out edit1 and edit2 using 
 Usage
 ^^^^^
 
-.. code-block::
+::
 
    usage: preprocess.py [-h] [-o OUTFILE] [-c CONFIG] input
 
@@ -208,11 +217,14 @@ Usage
 Example
 ^^^^^^^
 
-.. code-block::
+::
 
    python preprocess.py  augmented_clean_names.csv
 
 By default, the output will be saved as ``deduped_augmented_clean_names.csv``. The script adds a new column, ``search_name`` for unique search key.
+
+
+.. _`search`:
 
 Search
 ~~~~~~~
@@ -230,7 +242,7 @@ This script splits large text corpora into multiple smaller chunks that can be r
 Usage
 ~~~~~
 
-.. code-block::
+::
 
    usage: split_text_corpus.py [-h] [-o OUTFILE] [-s SIZE] input
 
@@ -249,7 +261,7 @@ Usage
 Example
 ~~~~~~~
 
-.. code-block::
+::
 
    python split_text_corpus.py -s 1000 text_corpus.csv
 
@@ -269,9 +281,9 @@ Configuration file
 
 The script relies on a configuration file, `\ ``search_names.cfg`` <search_names.cfg>`_\ , `\ ``search_cols.txt`` <search_cols.txt>`_ that lists the columns from search file to be included in the output, and `\ ``input_file_cols.txt`` <input_file_cols.txt>`_ that lists columns from the file containing the text data to be included in the output.
 
-The configuration file has three sections. In the ``[name]`` section of the configuration file, there is a variable ``file`` which you can use to specify a CSV file where ``id`` and ``search`` refer to uniqid and keywords to be searched in that file respectively. In this case ``id`` and ``search`` are set to ``uniqid`` and ``search_name``\ , the de-duped output generated by `preprocess <../preprocess/>`_. Section ``[editlength]`` specifies the minimum string length for that edit distance. ``edit1 = 10`` means edit distance of 1 is allowed if string longer than 10 characters and ``edit2 = 20`` means that edit distance of 2 is allowed if the string is longer than 20 characters. We must use the same ``editlength`` as `\ ``preprocess.cfg`` <../preprocess/preprocess.cfg>`_ to avoid getting ambiguous search results. ``text`` in the ``input`` section specifies the name of the column that contains the text data to be searched.
+The configuration file has three sections. In the ``[name]`` section of the configuration file, there is a variable ``file`` which you can use to specify a CSV file where ``id`` and ``search`` refer to uniqid and keywords to be searched in that file respectively. In this case ``id`` and ``search`` are set to ``uniqid`` and ``search_name``\ , the de-duped output generated by `preprocess`_. Section ``[editlength]`` specifies the minimum string length for that edit distance. ``edit1 = 10`` means edit distance of 1 is allowed if string longer than 10 characters and ``edit2 = 20`` means that edit distance of 2 is allowed if the string is longer than 20 characters. We must use the same ``editlength`` as `\ ``preprocess.cfg`` <../preprocess/preprocess.cfg>`_ to avoid getting ambiguous search results. ``text`` in the ``input`` section specifies the name of the column that contains the text data to be searched.
 
-.. code-block::
+::
 
    [name]
    file = ../preprocess/deduped_augmented_clean_names.csv
@@ -285,9 +297,9 @@ The configuration file has three sections. In the ``[name]`` section of the conf
    edit1 = 10
    edit2 = 20
 
-Once again, if you want to disable `fuzzy' matching, just comment out edit1 and edit2 using a hash sign as follows:
+Once again, if you want to disable `fuzzy` matching, just comment out edit1 and edit2 using a hash sign as follows:
 
-.. code-block::
+::
 
    # edit1 = 10
    # edit2 = 20
@@ -295,7 +307,7 @@ Once again, if you want to disable `fuzzy' matching, just comment out edit1 and 
 Usage
 ~~~~~
 
-.. code-block::
+::
 
    usage: search_names.py [-h] [-c CONFIG] [-m MAX_NAME] [-p PROCESSES]
                           [-o OUTFILE] [--overwritten] [-d] [--clean]
@@ -323,7 +335,7 @@ Usage
 Example
 ~~~~~~~
 
-.. code-block::
+::
 
    python search_names.py text_corpus.csv
 
@@ -331,7 +343,7 @@ By default, the script forks 4 processes (specify by ``-p / --processes``\ ) and
 
 The output file (specify by ``-o / --out``\ ) will contains all columns from the input file (except ``text`` column will be replaced by cleaned text if ``--clean`` is specify) along with the search result columns that are:
 
-.. code-block::
+::
 
    `nameX.uniqid` - uniqid number from name file
    `nameX.n` - occurrences of name found
@@ -353,7 +365,7 @@ Merge search results back from multiple files to a single file.
 Usage
 ~~~~~
 
-.. code-block::
+::
 
    usage: merge_results.py [-h] [-o OUTFILE] [inputs [inputs ...]]
 
@@ -371,7 +383,7 @@ Usage
 Example
 ~~~~~~~
 
-.. code-block::
+::
 
    python merge_results.py chunk_00/search_results.csv chunk_01/search_results.csv chunk_02/search_results.csv
 
