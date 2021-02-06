@@ -49,7 +49,6 @@ def load_prefixes(filename, col):
             for r in reader:
                 prefixes[r[col]] = r['prefixes']
     except Exception as e:
-        raise
         print('Prefix file {0!s} not found'.format(filename))
 
     return prefixes
