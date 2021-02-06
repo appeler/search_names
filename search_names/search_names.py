@@ -21,14 +21,14 @@ import time
 import signal
 
 from six.moves.configparser import ConfigParser
-from searchengines import (SearchMultipleKeywords, NewSearchMultipleKeywords,
+from .searchengines import (SearchMultipleKeywords, NewSearchMultipleKeywords,
                            RESULT_FIELDS)
 
 from multiprocessing import (Pool, TimeoutError)
 from multiprocessing.managers import SyncManager
 from queue import Empty
 
-import preprocess
+from . import preprocess
 
 
 __version__ = "0.0.1"
@@ -73,7 +73,7 @@ def setup_logger(debug):
     logging.getLogger('').addHandler(console)
 
 
-def parse_command_line():
+def parse_command_line(argv):
     """Parse command line arguments
     """
     parser = argparse.ArgumentParser(description="Search names in text corpus")
@@ -133,7 +133,7 @@ def parse_command_line():
 
     parser.set_defaults(clean=False)
 
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
 def load_config(args=None):
@@ -254,15 +254,8 @@ def worker(args):
         import traceback
         traceback.print_exc()
 
-if __name__ == "__main__":
 
-    args = parse_command_line()
-
-    setup_logger(args.debug)
-
-    #args = load_config(args)
-    logging.info(str(args))
-
+def search_names(args):
     logging.info("Setting up, please wait...")
     load_names_file(args)
 
@@ -341,3 +334,20 @@ if __name__ == "__main__":
     logging.info("Total: {0:d}, Average rate = {1:.0f} rows/min"
                  .format(count, count * 60 / elaspe))
     csvfile.close()
+
+
+def main(argv=sys.argv[1:]):
+
+    args = parse_command_line(argv)
+
+    setup_logger(args.debug)
+
+    #args = load_config(args)
+    logging.info(str(args))
+
+    search_names(args)
+
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -11,7 +11,7 @@ from nameparser import HumanName
 DEFAULT_OUTPUT = "clean_names.csv"
 re_std_suffix = re.compile("(JR|SR|PHD)[^\.]", flags=re.I)
 
-def parse_command_line():
+def parse_command_line(argv):
     """Parse command line options
     """
     parser = argparse.ArgumentParser(description="Clean name")
@@ -30,7 +30,7 @@ def parse_command_line():
                         dest="all", default=False,
                         help="Export all names (not take duplicate names out)\
                         (default: False)")
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
 def process_names(infile, outfile=DEFAULT_OUTPUT, col="Name", all=False):
@@ -147,10 +147,17 @@ def process_names(infile, outfile=DEFAULT_OUTPUT, col="Name", all=False):
         return allnameswithid
     return None
 
+
+def main(argv=sys.argv[1:]):
+
+    args = parse_command_line(argv)
+    print(args)
+
+    process_names(args.input, args.outfile, args.column, args.all)
+
+    return 0
+
+
 if __name__ == '__main__':
     print("{0!s}\n".format(os.path.basename(sys.argv[0])))
-
-    args = parse_command_line()
-
-    process_names(args.input, args.outfile, args.column,
-                            args.all)
+    sys.exit(main())
