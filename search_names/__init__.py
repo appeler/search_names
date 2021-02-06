@@ -1,3 +1,9 @@
+import sys
+import warnings
+
+if not sys.warnoptions:  # allow overriding with `-W` option
+    warnings.filterwarnings('ignore', category=RuntimeWarning, module='runpy')
+
 from .process_names import process_names
 from .preprocess import preprocess
 from .search_names import search_names
