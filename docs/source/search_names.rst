@@ -1,10 +1,10 @@
 Search Names: Search a long list of names in a large text corpus
 -----------------------------------------------------------------
 
-.. image:: https://travis-ci.org/appeler/search-names.svg?branch=master
-    :target: https://travis-ci.org/appeler/search-names
+.. image:: https://travis-ci.org/appeler/search_names.svg?branch=master
+    :target: https://travis-ci.org/appeler/search_names
 .. image:: https://ci.appveyor.com/api/projects/status/v3ao00u6uccnpi0n?svg=true
-    :target: https://ci.appveyor.com/project/soodoku/search-names-hsmwu
+    :target: https://ci.appveyor.com/project/soodoku/search-names
 .. image:: https://img.shields.io/pypi/v/search-names.svg
     :target: https://pypi.python.org/pypi/search-names
 .. image:: https://readthedocs.org/projects/search-names/badge/?version=latest
@@ -74,7 +74,7 @@ Clean the name on the list
 
 ``clean_names``: The script is a modified version of `Clean Names <http://github.com/appeler/clean-names>`__.
 
-The script takes a csv file with column 'Name' containing 'dirty names'--- names with all different formats: lastname firstname, firstname lastname, middlename lastname firstname etc. (see `sample input file <examples/clean_names/sample_input.csv>`__\ ) and produces a csv file that has all the columns of the original csv file and the following columns: 'uniqid', 'FirstName', 'MiddleInitial/Name', 'LastName', 'RomanNumeral', 'Title', 'Suffix' (see `sample output file <examples/clean_names/sample_output.csv>`__\ ).
+The script takes a csv file with column 'Name' containing 'dirty names'--- names with all different formats: lastname firstname, firstname lastname, middlename lastname firstname etc. (see `sample input file <https://github.com/appeler/search_names/blob/master/examples/clean_names/sample_input.csv>`__\ ) and produces a csv file that has all the columns of the original csv file and the following columns: 'uniqid', 'FirstName', 'MiddleInitial/Name', 'LastName', 'RomanNumeral', 'Title', 'Suffix' (see `sample output file <https://github.com/appeler/search_names/blob/master/examples/clean_names/sample_output.csv>`__\ ).
 
 Usage
 ^^^^^
@@ -108,11 +108,11 @@ Example
 Merge Supplementary Data
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The script takes output from `clean_names`_ (see `sample input file <examples/merge_supp_data/sample_in.csv>`__\ ) and appends supplementary data (prefixes, nicknames) to the file (see `sample output file <examples/merge_supp_data/augmented_clean_names.csv>`__\ ). In particular, the script merges two supplementary data files:
+The script takes output from `clean_names`_ (see `sample input file <https://github.com/appeler/search_names/blob/master/examples/merge_supp_data/sample_in.csv>`__\ ) and appends supplementary data (prefixes, nicknames) to the file (see `sample output file <https://github.com/appeler/search_names/blob/master/examples/merge_supp_data/augmented_clean_names.csv>`__\ ). In particular, the script merges two supplementary data files:
 
-   **Prefixes:** Generally the same set of prefixes will be used for a group of names. For instance, if you have a long list of politicians, state governors with no previous legislative experience will only have prefixes Governor, Mr., Mrs., Ms. etc., and not prefixes like Congressman or Congresswoman. We require a column in the input file that captures information about which 'prefix group' a particular name belongs to. We use that column to merge prefix data. The prefix file itself needs two columns: 1) A column to look up prefixes for groups of names depending on the value. The name of the column must be the same as the column name specified by the argument ``-p/--prefix`` (default is ``seat``\ ), and 2) a column of prefixes (multiple prefixes separated by semi-colon). The default name of the prefix data file is ``prefixes.csv``. See `sample prefixes data file <examples/merge_supp_data/prefixes.csv>`__.
+   **Prefixes:** Generally the same set of prefixes will be used for a group of names. For instance, if you have a long list of politicians, state governors with no previous legislative experience will only have prefixes Governor, Mr., Mrs., Ms. etc., and not prefixes like Congressman or Congresswoman. We require a column in the input file that captures information about which 'prefix group' a particular name belongs to. We use that column to merge prefix data. The prefix file itself needs two columns: 1) A column to look up prefixes for groups of names depending on the value. The name of the column must be the same as the column name specified by the argument ``-p/--prefix`` (default is ``seat``\ ), and 2) a column of prefixes (multiple prefixes separated by semi-colon). The default name of the prefix data file is ``prefixes.csv``. See `sample prefixes data file <https://github.com/appeler/search_names/blob/master/examples/merge_supp_data/prefixes.csv>`__.
 
-   **Nicknames:**  Nicknames are merged using first names in the input data file. The nicknames file is a plain text file. Each line contains single or list of first names on left side of the '-' and one or multiple nicknames on the right hand side. List of first names and nicknames must be separated by comma. Default name of the nicknames data file is ``nick_names.txt``. See `sample nicknames file <examples/merge_supp_data/nick_names.txt>`__.
+   **Nicknames:**  Nicknames are merged using first names in the input data file. The nicknames file is a plain text file. Each line contains single or list of first names on left side of the '-' and one or multiple nicknames on the right hand side. List of first names and nicknames must be separated by comma. Default name of the nicknames data file is ``nick_names.txt``. See `sample nicknames file <https://github.com/appeler/search_names/blob/master/examples/merge_supp_data/nick_names.txt>`__.
 
 Usage
 ^^^^^
@@ -151,7 +151,7 @@ Example
 
    merge_supp sample_in.csv
 
-The script takes `sample_in.csv <examples/merge_supp_data/sample_in.csv>`__\ , `prefixes.csv <examples/merge_supp_data/prefixes.csv>`__\ , and `nick_names.txt <examples/merge_supp_data/nick_names.txt>`__ and produces `augmented_clean_names.csv <examples/merge_supp_data/augmented_clean_names.csv>`__. The output file has two additional columns:
+The script takes `sample_in.csv <https://github.com/appeler/search_names/blob/master/examples/merge_supp_data/sample_in.csv>`__\ , `prefixes.csv <https://github.com/appeler/search_names/blob/master/examples/merge_supp_data/prefixes.csv>`__\ , and `nick_names.txt <https://github.com/appeler/search_names/blob/master/examples/merge_supp_data/nick_names.txt>`__ and produces `augmented_clean_names.csv <https://github.com/appeler/search_names/blob/master/examples/merge_supp_data/augmented_clean_names.csv>`__. The output file has two additional columns:
 
 
 * ``prefixes`` - List of prefixes (separated by semi-colon)
@@ -162,7 +162,7 @@ The script takes `sample_in.csv <examples/merge_supp_data/sample_in.csv>`__\ , `
 Preprocess Search List
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The script takes the output from `merge supp. data <examples/merge_supp_data>`__ (\ `sample input file <examples/preprocess/augmented_clean_names.csv>`__\ ), list of patterns we want to search for, an ad hoc list of patterns we want to drop (\ `sample drop patterns file <examples/preprocess/drop_patterns.txt>`__\ , and relative edit distance (based on the length of the pattern we are searching for) for approximate matching and does three things: a) creates a row for each pattern we want to search for (duplicating all the supplementary information), b) drops the ad hoc list of patterns we want to drop and c) de-duplicates based on edit distance and patterns we want to search for. See `sample output file <examples/preprocess/deduped_augmented_clean_names.csv>`__.
+The script takes the output from `merge supp. data <https://github.com/appeler/search_names/blob/master/examples/merge_supp_data>`__ (\ `sample input file <https://github.com/appeler/search_names/blob/master/examples/preprocess/augmented_clean_names.csv>`__\ ), list of patterns we want to search for, an ad hoc list of patterns we want to drop (\ `sample drop patterns file <https://github.com/appeler/search_names/blob/master/examples/preprocess/drop_patterns.txt>`__\ , and relative edit distance (based on the length of the pattern we are searching for) for approximate matching and does three things: a) creates a row for each pattern we want to search for (duplicating all the supplementary information), b) drops the ad hoc list of patterns we want to drop and c) de-duplicates based on edit distance and patterns we want to search for. See `sample output file <https://github.com/appeler/search_names/blob/master/examples/preprocess/deduped_augmented_clean_names.csv>`__.
 
 The script also takes arguments that define the patterns to search for, name of the file containing patterns we want to drop, and edit distance.
 
@@ -260,7 +260,7 @@ Example
 
    split_text_corpus -s 1000 text_corpus.csv
 
-The script will split `text_corpus.csv <examples/search/text_corpus.csv>`__ into multiple ``chunk_*`` directories.
+The script will split `text_corpus.csv <https://github.com/appeler/search_names/blob/master/examples/search/text_corpus.csv>`__ into multiple ``chunk_*`` directories.
 
 In this case ``chunk_00, chunk_01, ... chunk_09`` directory will be created along with ``text_corpus.csv`` which will have 1000 rows in it.
 
