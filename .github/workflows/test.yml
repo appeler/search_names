@@ -27,6 +27,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install nose coverage
 
-      - name: Run nosetest
-        run: nosetests
+      - name: Run nose tests
+        run: nosetests -s
