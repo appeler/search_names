@@ -1,6 +1,8 @@
 Search Names: Search a long list of names in a large text corpus
 -----------------------------------------------------------------
 
+.. image:: https://github.com/appeler/search-names/workflows/test/badge.svg
+    :target: https://github.com/appeler/search-names/actions?query=workflow%3Atest
 .. image:: https://ci.appveyor.com/api/projects/status/lv4f7r8t2fat4kqp?svg=true
     :target: https://ci.appveyor.com/project/soodoku/search-names
 .. image:: https://img.shields.io/pypi/v/search-names.svg
@@ -9,8 +11,7 @@ Search Names: Search a long list of names in a large text corpus
     :target: http://search-names.readthedocs.io/en/latest/?badge=latest
 .. image:: https://pepy.tech/badge/search-names
     :target: https://pepy.tech/project/search-names
-.. image:: https://github.com/appeler/search-names/workflows/test/badge.svg
-    :target: https://github.com/appeler/search-names/actions?query=workflow%3Atest
+
 
 There are seven kinds of challenges in searching a long list of names in a large text corpus:
 
