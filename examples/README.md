@@ -6,7 +6,7 @@ This directory contains comprehensive examples demonstrating the enhanced capabi
 
 The examples showcase the transformation from a legacy command-line tool to a modern Python package with:
 - **Dual parser support** (HumanName + parsernaam ML)
-- **Intelligent auto-selection** based on name patterns  
+- **Intelligent auto-selection** based on name patterns
 - **Rich NLP capabilities** with spaCy and transformers
 - **Modern CLI interfaces** with typer and rich
 - **Type-safe data processing** with pydantic validation
@@ -184,7 +184,7 @@ pip install 'search_names[all]'
 # Enhanced name parsing
 cd enhanced_name_parsing && python enhanced_name_parsing_demo.py
 
-# Modern CLI features  
+# Modern CLI features
 cd modern_cli && python cli_demo.py --help
 
 # NLP capabilities
@@ -205,7 +205,7 @@ find examples -name "*.py" -path "*/demo.py" -exec python {} \;
 After exploring these examples:
 
 1. **Review the main README.md** for package overview
-2. **Check the test suite** in `tests/` for comprehensive usage patterns  
+2. **Check the test suite** in `tests/` for comprehensive usage patterns
 3. **Examine the source code** in `search_names/` for implementation details
 4. **Configure your environment** using the configuration examples
 5. **Integrate into your workflows** using the integration patterns
@@ -214,7 +214,7 @@ After exploring these examples:
 
 - **Start with `enhanced_name_parsing/`** to understand core concepts
 - **Use `auto` parser type** for best results with mixed datasets
-- **Configure logging levels** appropriate for your environment  
+- **Configure logging levels** appropriate for your environment
 - **Test with your data** using the validation tools
 - **Leverage batch processing** for large datasets
 - **Consider NLP features** for advanced use cases

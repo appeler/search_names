@@ -91,7 +91,7 @@ This will run all demonstrations and create output files showing the enhanced pa
 ### Legacy (`clean_names.py`)
 - Single parser (HumanName only)
 - Basic error handling
-- Limited configurability  
+- Limited configurability
 - Manual processing loops
 - CSV output only
 
@@ -113,7 +113,7 @@ The enhanced parser works with just the base dependencies, but additional featur
 # For ML-based name parsing
 pip install parsernaam
 
-# For Parquet output support  
+# For Parquet output support
 pip install pyarrow
 
 # For full NLP features

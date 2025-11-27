@@ -44,7 +44,6 @@ class TestSpacyNER(unittest.TestCase):
             disable=["tok2vec", "tagger", "parser", "attribute_ruler", "lemmatizer"],
         )
 
-
     @patch("search_names.nlp_engine.spacy", create=True)
     def test_spacy_ner_model_load_error(self, mock_spacy):
         """Test SpacyNER initialization with model load error."""
@@ -175,7 +174,6 @@ class TestSemanticSimilarity(unittest.TestCase):
         self.assertEqual(similarity.model_name, "test-model")
         self.assertEqual(similarity.model, mock_model)
         mock_transformer.assert_called_once_with("test-model")
-
 
     @patch("search_names.nlp_engine.SentenceTransformer", create=True)
     def test_semantic_similarity_model_load_error(self, mock_transformer):
@@ -397,7 +395,6 @@ class TestNLPEngine(unittest.TestCase):
         self.assertEqual(engine.spacy_ner, mock_ner_instance)
         self.assertEqual(engine.semantic_similarity, mock_similarity_instance)
         self.assertEqual(engine.entity_linker, mock_linker_instance)
-
 
     @patch("search_names.nlp_engine.SpacyNER")
     def test_nlp_engine_init_with_errors(self, mock_ner):

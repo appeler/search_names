@@ -7,7 +7,7 @@ This directory demonstrates complete end-to-end workflows using all components o
 ### Complete Name Processing Pipeline
 - Load raw name data
 - Configure enhanced name parsing
-- Process with intelligent parser selection  
+- Process with intelligent parser selection
 - Generate statistics and quality metrics
 - Export results in multiple formats
 
@@ -80,16 +80,16 @@ import pandas as pd
 def process_name_data(input_file, output_file, config):
     # Load data
     df = pd.read_csv(input_file)
-    
+
     # Configure parser
     parser = NameParser(**config)
-    
+
     # Process names
     enhanced_df = parser.parse_dataframe(df, name_column="name")
-    
+
     # Save results
     enhanced_df.to_parquet(output_file, index=False)
-    
+
     return enhanced_df
 ```
 
@@ -111,13 +111,13 @@ from search_names.enhanced_name_parser import NameParser
 def process_database_names(connection, table_name):
     # Read from database
     df = pd.read_sql(f"SELECT * FROM {table_name}", connection)
-    
+
     # Process names
     parser = NameParser(parser_type="auto")
     processed_df = parser.parse_dataframe(df, name_column="raw_name")
-    
+
     # Write back to database
-    processed_df.to_sql(f"{table_name}_processed", connection, 
+    processed_df.to_sql(f"{table_name}_processed", connection,
                        if_exists="replace", index=False)
 ```
 

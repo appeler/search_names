@@ -27,7 +27,7 @@ Main CLI application demonstrating:
 - `generate-config`: Create sample configuration files
 - `validate-names`: Check parsing quality and identify issues
 
-### `sample_config.yaml` 
+### `sample_config.yaml`
 Example configuration file showing:
 - Parser selection options
 - Batch processing settings

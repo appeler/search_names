@@ -26,7 +26,7 @@ There are seven kinds of challenges in searching a long list of names in a large
 
 5. Names on the list may overlap with names not on the list, especially names of other famous people. For instance, searching for `Maryland politician <https://en.wikipedia.org/wiki/Michael_A._Jackson_(politician)>`__ Michael Jackson may yield lots of false positives.
 
-6. Names on the list may match other names on the list (duplicates). 
+6. Names on the list may match other names on the list (duplicates).
 
 7. Searching is computationally expensive. And searching for a long list over a large corpus is a double whammy.
 

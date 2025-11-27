@@ -12,7 +12,7 @@
 When searching for names in large text corpora, you encounter seven major challenges:
 
 1. **Non-standard formats** - Names may appear as "LastName, FirstName" or "FirstName MiddleName LastName"
-2. **Reference variations** - People may be referred to as "President Clinton" vs "William Clinton"  
+2. **Reference variations** - People may be referred to as "President Clinton" vs "William Clinton"
 3. **Misspellings** - OCR errors and typos in source documents
 4. **Name variants** - Nicknames (Bill vs William), diminutives, and middle names
 5. **False positives** - Common names that overlap with other famous people
@@ -70,7 +70,7 @@ config = search_names.get_config()
 # Step 1: Clean and standardize names
 result = clean_names(
     infile="input_names.csv",
-    outfile="clean_names.csv", 
+    outfile="clean_names.csv",
     col="Name",
     all=False  # Remove duplicates
 )
@@ -79,13 +79,13 @@ result = clean_names(
 augment_names(
     infile="clean_names.csv",
     prefixarg="seat",           # Column for prefix lookup
-    name="FirstName",           # Column for nickname lookup  
+    name="FirstName",           # Column for nickname lookup
     outfile="augmented.csv",
-    prefix_file="prefixes.csv", 
+    prefix_file="prefixes.csv",
     nickname_file="nick_names.txt"
 )
 
-# Step 3: Create optimized search patterns  
+# Step 3: Create optimized search patterns
 preprocess_names(
     infile="augmented.csv",
     patterns=["FirstName LastName", "NickName LastName"],
@@ -101,7 +101,7 @@ result = search_names(
     text="text",               # Text column name
     names=names,               # Preprocessed name list
     outfile="results.csv",
-    use_optimized=True,        # Use vectorized search engine  
+    use_optimized=True,        # Use vectorized search engine
     use_streaming=True,        # Memory-efficient for large files
     processes=8,               # Parallel processing
     max_name=20,               # Max results per document
@@ -119,16 +119,16 @@ Standardize names from various formats into structured components:
 - Handle titles, Roman numerals, and compound names
 - Remove duplicates and normalize formatting
 
-**Input**: Raw names in various formats  
+**Input**: Raw names in various formats
 **Output**: Structured name components
 
-### 2. **Merge Supplementary Data** (`search-names merge-supp`)  
+### 2. **Merge Supplementary Data** (`search-names merge-supp`)
 Enrich names with additional variations:
 - **Prefixes**: Context-specific titles (Senator, Dr., etc.)
 - **Nicknames**: Common diminutives and alternatives
 - **Aliases**: Alternative names and spellings
 
-**Input**: Cleaned names + lookup files  
+**Input**: Cleaned names + lookup files
 **Output**: Augmented names with variations
 
 ### 3. **Preprocess** (`search-names preprocess`)
@@ -138,7 +138,7 @@ Prepare optimized search patterns:
 - Filter out problematic patterns
 - Generate fuzzy matching parameters
 
-**Input**: Augmented names  
+**Input**: Augmented names
 **Output**: Optimized search patterns
 
 ### 4. **Search** (`search-names search`)
@@ -148,7 +148,7 @@ Execute high-performance name search:
 - Context-aware filtering
 - Confidence scoring
 
-**Input**: Text corpus + search patterns  
+**Input**: Text corpus + search patterns
 **Output**: Ranked search results with confidence scores
 
 ## 🔧 Modern Features
@@ -162,7 +162,7 @@ Execute high-performance name search:
 ### Performance & Scalability
 - **Optimized Search Engine**: Vectorized string matching with NumPy
 - **Streaming Processing**: Handle datasets larger than memory with chunking
-- **Parallel Search**: Multi-process search with configurable worker count  
+- **Parallel Search**: Multi-process search with configurable worker count
 - **Memory Management**: Automatic streaming for large files (>500MB)
 - **Regex Optimization**: Pre-compiled patterns and single-pass matching
 - **Early Termination**: Stop processing when result limits reached
@@ -197,7 +197,7 @@ search-names clean names.csv --streaming
 search-names search corpus.csv --streaming
 ```
 
-### Optimized Search Engine  
+### Optimized Search Engine
 ```python
 from search_names.optimized_searchengines import create_optimized_search_engine
 
@@ -246,7 +246,7 @@ performance:
   max_memory_mb: 500       # Memory threshold for streaming
   enable_benchmarking: false
 
-# NLP features  
+# NLP features
 nlp:
   use_spacy: true
   spacy_model: "en_core_web_sm"
@@ -265,7 +265,7 @@ All original commands remain available for backward compatibility:
 
 ```bash
 clean_names input.csv
-merge_supp cleaned.csv  
+merge_supp cleaned.csv
 preprocess augmented.csv
 split_text_corpus large_corpus.csv
 search_names corpus.csv
@@ -281,14 +281,14 @@ from search_names.pipeline import clean_names
 # Clean messy names
 result = clean_names(
     infile="politicians.csv",
-    outfile="clean_politicians.csv", 
+    outfile="clean_politicians.csv",
     col="Name",
     all=False  # Remove duplicates
 )
 print(f"Processed {len(result)} names")
 ```
 
-### Advanced Search with Optimizations  
+### Advanced Search with Optimizations
 ```python
 from search_names.pipeline import search_names
 from search_names.pipeline.step4_search import load_names_file
@@ -307,7 +307,7 @@ results = search_names(
     input="news_articles.csv",
     text="article_text",
     names=names,
-    outfile="search_results.csv", 
+    outfile="search_results.csv",
     max_name=50,
     processes=8,
     editlength=[8, 12],        # Fuzzy matching thresholds
@@ -320,7 +320,7 @@ results = search_names(
 ## 🎯 Use Cases
 
 - **Academic Research**: Find mentions of historical figures in digitized texts
-- **Journalism**: Track politician mentions across news coverage  
+- **Journalism**: Track politician mentions across news coverage
 - **Legal Discovery**: Locate person references in legal documents
 - **Genealogy**: Search family names across historical records
 - **Business Intelligence**: Monitor executive mentions in financial reports
@@ -328,7 +328,7 @@ results = search_names(
 ## 📈 Performance
 
 - **Speed**: Process 1M+ documents on modern hardware
-- **Memory**: Streaming support for unlimited dataset sizes  
+- **Memory**: Streaming support for unlimited dataset sizes
 - **Accuracy**: 95%+ precision with proper configuration
 - **Scalability**: Linear scaling across CPU cores
 
