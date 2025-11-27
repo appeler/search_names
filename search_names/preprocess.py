@@ -10,6 +10,9 @@ from copy import copy
 import traceback
 
 from Levenshtein import distance
+from .logging_config import get_logger
+
+logger = get_logger("preprocess")
 
 DEFAULT_OUTPUT = "deduped_augmented_clean_names.csv"
 DEFAULT_DROP_PATTERNS = "drop_patterns.txt"
@@ -52,14 +55,14 @@ def load_drop_patterns(filename):
                     continue
                 drop_patterns.append(l)
     except Exception as e:
-        print('Drop pattern file {0!s} not found'.format(filename))
+        logger.warning(f'Drop pattern file {filename} not found')
     return drop_patterns
 
 
 def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUTPUT, editlength = DEFAULT_EDITLENGTH, drop_patterns = None):
     """Preprocessing names file
     """
-    print("Preprocessing to '{0!s}', please wait...".format(outfile))
+    logger.info(f"Preprocessing to '{outfile}', please wait...")
     o = None
 
     try:
@@ -67,11 +70,11 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
         f = open(infile, 'r')
         reader = csv.DictReader(f)
         out = []
-        print("Build search names...")
+        logger.info("Building search names...")
         for i, r in enumerate(reader):
-            print("#{0}:".format(i))
+            logger.debug(f"#{i}:")
             for p in patterns:
-                print("Pattern: '{0}'".format(p))
+                logger.debug(f"Pattern: '{p}'")
                 parr = p.split()
                 s = []
                 for a in parr:
@@ -90,13 +93,13 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
                     if len(c) > 1:
                         name = ' '.join(c)
                         if name not in drop_patterns:
-                            print(" Name: '{0}'".format(name))
+                            logger.debug(f" Name: '{name}'")
                             new_r = copy(r)
                             new_r['search_name'] = name
                             out.append(new_r)
 
         # Find duplicate indexes
-        print("Find duplicates...")
+        logger.info("Finding duplicates...")
         dup = set()
         for i, r in enumerate(out):
             name1 = r['search_name']
@@ -120,13 +123,13 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
                             dup.add(j)
 
         # Remove duplicates (reversed order)
-        print("De-duplicates...")
+        logger.info("Removing duplicates...")
         dup = sorted(list(dup), reverse=True)
         for i in dup:
             del out[i]
 
         # Write out to output file
-        print("Write the output to file: '{0}'".format(outfile))
+        logger.info(f"Writing output to file: '{outfile}'")
         o = open(outfile, 'w')
         writer = csv.DictWriter(o, fieldnames=reader.fieldnames +
                                 ['search_name'])
@@ -141,7 +144,7 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
             o.close()
         if f:
             f.close()
-    print("Done.")
+    logger.info("Done.")
 
 
 def main(argv=sys.argv[1:]):
@@ -150,7 +153,7 @@ def main(argv=sys.argv[1:]):
 
     args.drop_patterns = load_drop_patterns(args.drop_patterns_file)
 
-    print(args)
+    logger.debug(f"Arguments: {args}")
   
     preprocess(args.input, args.patterns, args.outfile, args.editlength, args.drop_patterns)
 

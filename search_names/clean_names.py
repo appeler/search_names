@@ -7,6 +7,9 @@ import argparse
 import re
 import csv
 from nameparser import HumanName
+from .logging_config import get_logger
+
+logger = get_logger("clean_names")
 
 DEFAULT_OUTPUT = "clean_names.csv"
 re_std_suffix = re.compile("(JR|SR|PHD)[^\.]", flags=re.I)
@@ -38,7 +41,7 @@ def clean_names(infile, outfile=DEFAULT_OUTPUT, col="Name", all=False):
         Returns unique names in format "FirstName LastName AnyRomanNumeral"\
         or "FirstName LastName"
     """
-    print("Processing and exporting, please wait...")
+    logger.info("Processing and exporting, please wait...")
 
     ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
     if outfile:
@@ -92,7 +95,7 @@ def clean_names(infile, outfile=DEFAULT_OUTPUT, col="Name", all=False):
                 suffix = ', '.join(suffix_list)
 
                 if last == '':
-                    print(repr(name))
+                    logger.debug(f"Empty last name for: {repr(name)}")
 
                 # Fixed ROMAN and Title in Middle
                 if mid != "":
@@ -143,7 +146,7 @@ def clean_names(infile, outfile=DEFAULT_OUTPUT, col="Name", all=False):
                         writer.writerow(t)
         if outfile:
             of.close()
-        print("Done.")
+        logger.info("Done.")
         return allnameswithid
     return None
 
@@ -151,7 +154,7 @@ def clean_names(infile, outfile=DEFAULT_OUTPUT, col="Name", all=False):
 def main(argv=sys.argv[1:]):
 
     args = parse_command_line(argv)
-    print(args)
+    logger.debug(f"Arguments: {args}")
 
     clean_names(args.input, args.outfile, args.column, args.all)
 
@@ -159,5 +162,7 @@ def main(argv=sys.argv[1:]):
 
 
 if __name__ == '__main__':
-    print("{0!s}\n".format(os.path.basename(sys.argv[0])))
+    from .logging_config import setup_logging
+    setup_logging()
+    logger.info(f"Starting {os.path.basename(sys.argv[0])}")
     sys.exit(main())

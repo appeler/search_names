@@ -9,6 +9,9 @@ import regex as re
 from Levenshtein import distance
 import time
 import csv
+from .logging_config import get_logger
+
+logger = get_logger("searchengines")
 
 """Constant declaration
 """
@@ -32,8 +35,7 @@ class SearchMultipleKeywords(object):
             else:
                 self.keywords[i].append(k.strip().lower())
 
-        print("Number of unique keywords ID to be searched: {0}"
-              .format(len(self.keywords)))
+        logger.info(f"Number of unique keywords ID to be searched: {len(self.keywords)}")
 
         self.re_keywords = dict()
         for i in self.keywords:
@@ -106,10 +108,9 @@ class NewSearchMultipleKeywords(object):
             if k not in self.keywords:
                 self.keywords[k] = i
             else:
-                print("ERROR: found duplicate keyword '{0}'".format(k))
+                logger.error(f"Found duplicate keyword '{k}'")
 
-        print("Number of unique keywords ID to be searched: {0}"
-              .format(len(self.keywords)))
+        logger.info(f"Number of unique keywords ID to be searched: {len(self.keywords)}")
 
         kw = []
         for k in self.keywords:
@@ -150,7 +151,7 @@ class NewSearchMultipleKeywords(object):
             if fkey not in self.keywords:
                 fkey = a.group(0)
                 nearestkey = self.find_nearest_key(fkey)
-                #print("Approximate match '%s' ==> '%s'" % (fkey, nearestkey))
+                # logger.debug(f"Approximate match '{fkey}' ==> '{nearestkey}'")
                 key = nearestkey
             else:
                 key = fkey
@@ -210,7 +211,7 @@ if __name__ == "__main__":
             c.append(count)
             writer.writerow(c)
         elaspe = time.time() - start_time
-        print("Average rate = {0:f} rows/min".format((i * 60 / elaspe)))
+        logger.info(f"Average rate = {i * 60 / elaspe:.2f} rows/min")
     out.close()
 
     # Test new search
@@ -236,5 +237,5 @@ if __name__ == "__main__":
             c.append(count)
             writer.writerow(c)
         elaspe = time.time() - start_time
-        print("Average rate = {0:f} rows/min".format((i * 60 / elaspe)))
+        logger.info(f"Average rate = {i * 60 / elaspe:.2f} rows/min")
     out.close()

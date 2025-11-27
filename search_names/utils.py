@@ -11,6 +11,9 @@ from nltk.corpus import stopwords
 from nltk.tokenize import wordpunct_tokenize
 from nltk.stem.porter import PorterStemmer
 from nltk.stem.snowball import EnglishStemmer
+from .logging_config import get_logger
+
+logger = get_logger("utils")
 #from ntlk.tokenize import sent_tokenize
 """
 1. Convert to lower case
@@ -132,7 +135,7 @@ def export(outdir, filename, text):
     """Export text to output filename (with directory)
     """
     fname = get_export_path(outdir, filename)
-    print("Exporting text: %s..." % (fname))
+    logger.info(f"Exporting text: {fname}...")
     try:
         extdir = os.path.split(fname)[0]
         if not os.path.exists(extdir):
@@ -186,42 +189,45 @@ def init_nltk():
 
 
 if __name__ == "__main__":
+    from .logging_config import setup_logging
+    setup_logging()
+    
     with open('./test/input-latin-1.txt', "rt") as f:
         text = ''.join(f.readlines())
 
     init_nltk()
 
-    print('-'*20 + 'ORIGINAL' + '-'*20)
-    print(text)
+    logger.info('-'*20 + 'ORIGINAL' + '-'*20)
+    logger.info(text)
     text = re.sub(r'(\d+)\.(\d+)', r'\1DOT\2', text)
-    print(text)
-    print('-'*20 + 'LOWER' + '-'*20)
+    logger.info(text)
+    logger.info('-'*20 + 'LOWER' + '-'*20)
     text = lower(text)
-    print(text)
-    print('-'*20 + 'Remove special chars' + '-'*20)
+    logger.info(text)
+    logger.info('-'*20 + 'Remove special chars' + '-'*20)
     text = remove_special_chars(text)
-    print(text)
-    print('-'*20 + 'Remove accents' + '-'*20)
+    logger.info(text)
+    logger.info('-'*20 + 'Remove accents' + '-'*20)
     text = remove_accents(text)
-    print(text)
-    print('-'*20 + 'Remove stopwords' + '-'*20)
+    logger.info(text)
+    logger.info('-'*20 + 'Remove stopwords' + '-'*20)
     text = remove_stopwords(text)
-    print(text)
-    print('-'*20 + 'Stemmed' + '-'*20)
+    logger.info(text)
+    logger.info('-'*20 + 'Stemmed' + '-'*20)
     text = stemmed(text)
-    print(text)
+    logger.info(text)
     text = re.sub("\s\.", '.', text)
     text = re.sub(r'(\d+)dot(\d+)', r'\1.\2', text)
-    print(text)
-    print('-'*20 + 'Split sentences' + '-'*20)
+    logger.info(text)
+    logger.info('-'*20 + 'Split sentences' + '-'*20)
     st, idx = split_sentences(text)
-    print(st, idx)
+    logger.info(f"{st}, {idx}")
     #st = sent_tokenize(text)
     #print st
-    print('-'*20 + 'Remove punctuation' + '-'*20)
+    logger.info('-'*20 + 'Remove punctuation' + '-'*20)
     text = remove_punctuation(text)
-    print(text)
-    print('-'*20 + 'Remove extra spaces' + '-'*20)
+    logger.info(text)
+    logger.info('-'*20 + 'Remove extra spaces' + '-'*20)
     text = remove_extra_space(text)
-    print(text)
+    logger.info(text)
     export('./test/output', './test/input.txt', text)

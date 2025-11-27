@@ -4,6 +4,9 @@
 import sys
 import argparse
 import csv
+from .logging_config import get_logger
+
+logger = get_logger("merge_supp")
 
 DEFAULT_OUTPUT = "augmented_clean_names.csv"
 DEFAULT_NAME_LOOKUP = "FirstName"
@@ -49,7 +52,7 @@ def load_prefixes(filename, col):
             for r in reader:
                 prefixes[r[col]] = r['prefixes']
     except Exception as e:
-        print('Prefix file {0!s} not found'.format(filename))
+        logger.warning(f'Prefix file {filename} not found')
 
     return prefixes
 
@@ -71,14 +74,13 @@ def load_nick_names(filename):
                     nicks = ';'.join(nicks)
                     for n in names:
                         if n in nick_names:
-                            print("WARNING: duplicate nick name '{0!s}' for "
-                                "'{1!s}'".format(nicks, n))
+                            logger.warning(f"Duplicate nick name '{nicks}' for '{n}'")
                         else:
                             nick_names[n] = nicks
                 else:
-                    print("WARNING: Invalid nick name line '{0!s}'".format(l))
+                    logger.warning(f"Invalid nick name line '{l}'")
     except Exception as e:
-        print('Nick name file {0!s} not found'.format(filename))
+        logger.warning(f'Nick name file {filename} not found')
 
     return nick_names
 
@@ -102,7 +104,7 @@ def merge_supp(infile=None, prefixarg=DEFAULT_PREFIX_LOOKUP, name=DEFAULT_NAME_L
         writer.writeheader()
 
         for i, r in enumerate(reader):
-            print("#{0}: {1!s}".format(i, r[name].lower()))
+            logger.debug(f"#{i}: {r[name].lower()}")
             # Prefix
             k = r[prefixarg]
             if k in prefixes:
@@ -120,23 +122,23 @@ def merge_supp(infile=None, prefixarg=DEFAULT_PREFIX_LOOKUP, name=DEFAULT_NAME_L
             writer.writerow(r)
     except Exception as e:
         raise
-        print(e)
+        logger.error(f"Error: {e}")
     finally:
         if o:
             o.close()
         if f:
             f.close()
 
-    print("Done.")
+    logger.info("Done.")
 
 
 def main(argv=sys.argv[1:]):
 
     args = parse_command_line(argv)
 
-    print(args)
+    logger.debug(f"Arguments: {args}")
 
-    print("Merging to '{0!s}', please wait...".format(args.outfile))
+    logger.info(f"Merging to '{args.outfile}', please wait...")
 
     merge_supp(args.input, args.prefix, args.name, args.outfile, args.prefix_file, args.nickname_file)
 

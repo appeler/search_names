@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "search_names"
-version = "0.2.0"
-description = "Search a long list of names (patterns) in a large text corpus systematically and quickly"
+version = "0.3.0"
+description = "Advanced name search and entity recognition in large text corpora with NLP and AI capabilities"
 authors = [
     {name = "Suriyan Laohaprapanon", email = "suriyant@gmail.com"},
     {name = "Gaurav Sood", email = "gsood07@gmail.com"}
 ]
 license = {text = "MIT"}
-readme = "README.rst"
+readme = "README.md"
 requires-python = ">=3.11"
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -24,18 +24,46 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Utilities"
 ]
-keywords = ["search", "names", "text", "corpus", "pattern"]
+keywords = ["search", "names", "text", "corpus", "pattern", "ner", "nlp", "entity-recognition", "entity-linking", "fuzzy-matching"]
 dependencies = [
     "nameparser",
     "python-Levenshtein",
     "regex",
-    "nltk"
+    "nltk",
+    "typer[all]>=0.9.0",
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0",
+    "rich>=13.0.0",
+    "pandas>=2.0.0",
 ]
 
 [project.optional-dependencies]
-dev = ["ruff", "black", "isort"]
-test = ["coverage", "pytest"]
+dev = ["ruff", "black", "isort", "mypy", "types-PyYAML"]
+test = ["coverage", "pytest", "pytest-asyncio"]
 docs = ["sphinx", "furo"]
+nlp = [
+    "spacy>=3.7.0",
+    "sentence-transformers>=2.2.0",
+    "transformers>=4.21.0",
+]
+ml = [
+    "parsernaam>=0.0.1",  # ML-based name parsing for complex names
+]
+formats = [
+    "pyarrow>=10.0.0",  # For Parquet support
+    "polars>=0.19.0",   # Modern DataFrame library
+]
+search = [
+    "elasticsearch>=8.0.0",
+    "opensearch-py>=2.0.0",
+]
+web = [
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.23.0",
+]
+all = [
+    "search_names[nlp,ml,formats,search,web]"
+]
 
 [project.urls]
 Homepage = "https://github.com/appeler/search_names"
@@ -43,6 +71,10 @@ Repository = "https://github.com/appeler/search_names"
 Issues = "https://github.com/appeler/search_names/issues"
 
 [project.scripts]
+# Modern CLI - primary interface
+search-names = "search_names.cli:main_cli"
+
+# Legacy CLI commands - for backward compatibility
 clean_names = "search_names.clean_names:main"
 merge_supp = "search_names.merge_supp:main"
 preprocess = "search_names.preprocess:main"
@@ -92,3 +124,28 @@ target-version = ['py311']
 profile = "black"
 multi_line_output = 3
 line_length = 88
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "nameparser.*",
+    "parsernaam.*",
+    "Levenshtein.*",
+    "regex.*",
+    "nltk.*",
+]
+ignore_missing_imports = true
