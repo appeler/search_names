@@ -13,6 +13,7 @@ logger = get_logger("file_formats")
 # Optional imports with fallbacks
 try:
     import pyarrow.parquet as pq
+
     HAS_PARQUET = True
 except ImportError:
     logger.debug("pyarrow not available - Parquet support disabled")
@@ -20,6 +21,7 @@ except ImportError:
 
 try:
     import polars as pl
+
     HAS_POLARS = True
 except ImportError:
     logger.debug("polars not available - using pandas only")
@@ -28,6 +30,7 @@ except ImportError:
 
 class FileFormatError(Exception):
     """Exception raised for file format related errors."""
+
     pass
 
 
@@ -47,13 +50,13 @@ def detect_file_format(file_path: str | Path) -> str:
     suffix = path.suffix.lower()
 
     format_map = {
-        '.csv': 'csv',
-        '.json': 'json',
-        '.jsonl': 'json',
-        '.parquet': 'parquet',
-        '.pq': 'parquet',
-        '.xlsx': 'excel',
-        '.xls': 'excel',
+        ".csv": "csv",
+        ".json": "json",
+        ".jsonl": "json",
+        ".parquet": "parquet",
+        ".pq": "parquet",
+        ".xlsx": "excel",
+        ".xls": "excel",
     }
 
     if suffix not in format_map:
@@ -62,7 +65,7 @@ def detect_file_format(file_path: str | Path) -> str:
     file_format = format_map[suffix]
 
     # Check if format is available
-    if file_format == 'parquet' and not HAS_PARQUET:
+    if file_format == "parquet" and not HAS_PARQUET:
         raise FileFormatError("Parquet support requires pyarrow: pip install pyarrow")
 
     return file_format
@@ -72,7 +75,7 @@ def read_file(
     file_path: str | Path,
     file_format: str | None = None,
     engine: str = "pandas",
-    **kwargs
+    **kwargs,
 ) -> pd.DataFrame:
     """Read file in various formats into a pandas DataFrame.
 
@@ -110,19 +113,19 @@ def read_file(
 
 def _read_file_pandas(path: Path, file_format: str, **kwargs) -> pd.DataFrame:
     """Read file using pandas."""
-    if file_format == 'csv':
+    if file_format == "csv":
         # Set sensible defaults for CSV
         csv_kwargs = {
-            'encoding': 'utf-8',
-            'na_values': ['', 'NA', 'NULL', 'null', 'None'],
-            'keep_default_na': True,
+            "encoding": "utf-8",
+            "na_values": ["", "NA", "NULL", "null", "None"],
+            "keep_default_na": True,
         }
         csv_kwargs.update(kwargs)
         return pd.read_csv(path, **csv_kwargs)
 
-    elif file_format == 'json':
+    elif file_format == "json":
         # Handle both regular JSON and JSON Lines
-        json_kwargs = {'encoding': 'utf-8'}
+        json_kwargs = {"encoding": "utf-8"}
         json_kwargs.update(kwargs)
 
         # Try JSON Lines first (more common for large datasets)
@@ -132,13 +135,13 @@ def _read_file_pandas(path: Path, file_format: str, **kwargs) -> pd.DataFrame:
             # Fall back to regular JSON
             return pd.read_json(path, **json_kwargs)
 
-    elif file_format == 'parquet':
+    elif file_format == "parquet":
         if not HAS_PARQUET:
             raise FileFormatError("Parquet support requires pyarrow")
         return pd.read_parquet(path, **kwargs)
 
-    elif file_format == 'excel':
-        excel_kwargs = {'engine': 'openpyxl'}
+    elif file_format == "excel":
+        excel_kwargs = {"engine": "openpyxl"}
         excel_kwargs.update(kwargs)
         return pd.read_excel(path, **excel_kwargs)
 
@@ -148,11 +151,11 @@ def _read_file_pandas(path: Path, file_format: str, **kwargs) -> pd.DataFrame:
 
 def _read_file_polars(path: Path, file_format: str, **kwargs) -> pd.DataFrame:
     """Read file using polars (converted to pandas for compatibility)."""
-    if file_format == 'csv':
+    if file_format == "csv":
         df = pl.read_csv(path, **kwargs)
-    elif file_format == 'json':
+    elif file_format == "json":
         df = pl.read_json(path, **kwargs)
-    elif file_format == 'parquet':
+    elif file_format == "parquet":
         df = pl.read_parquet(path, **kwargs)
     else:
         raise FileFormatError(f"Polars does not support format: {file_format}")
@@ -166,7 +169,7 @@ def write_file(
     file_path: str | Path,
     file_format: str | None = None,
     engine: str = "pandas",
-    **kwargs
+    **kwargs,
 ) -> None:
     """Write DataFrame to file in various formats.
 
@@ -200,31 +203,33 @@ def write_file(
         raise FileFormatError(f"Error writing {file_format} file {path}: {e}") from e
 
 
-def _write_file_pandas(df: pd.DataFrame, path: Path, file_format: str, **kwargs) -> None:
+def _write_file_pandas(
+    df: pd.DataFrame, path: Path, file_format: str, **kwargs
+) -> None:
     """Write file using pandas."""
-    if file_format == 'csv':
+    if file_format == "csv":
         csv_kwargs = {
-            'index': False,
-            'encoding': 'utf-8',
+            "index": False,
+            "encoding": "utf-8",
         }
         csv_kwargs.update(kwargs)
         df.to_csv(path, **csv_kwargs)
 
-    elif file_format == 'json':
+    elif file_format == "json":
         json_kwargs = {
-            'orient': 'records',
-            'lines': True,  # JSON Lines format for better performance
-            'force_ascii': False,
+            "orient": "records",
+            "lines": True,  # JSON Lines format for better performance
+            "force_ascii": False,
         }
         json_kwargs.update(kwargs)
         df.to_json(path, **json_kwargs)
 
-    elif file_format == 'parquet':
+    elif file_format == "parquet":
         if not HAS_PARQUET:
             raise FileFormatError("Parquet support requires pyarrow")
         parquet_kwargs = {
-            'index': False,
-            'compression': 'snappy',  # Good compression/speed tradeoff
+            "index": False,
+            "compression": "snappy",  # Good compression/speed tradeoff
         }
         parquet_kwargs.update(kwargs)
         df.to_parquet(path, **parquet_kwargs)
@@ -233,16 +238,18 @@ def _write_file_pandas(df: pd.DataFrame, path: Path, file_format: str, **kwargs)
         raise FileFormatError(f"Unsupported format for pandas: {file_format}")
 
 
-def _write_file_polars(df: pd.DataFrame, path: Path, file_format: str, **kwargs) -> None:
+def _write_file_polars(
+    df: pd.DataFrame, path: Path, file_format: str, **kwargs
+) -> None:
     """Write file using polars."""
     # Convert pandas to polars
     pl_df = pl.from_pandas(df)
 
-    if file_format == 'csv':
+    if file_format == "csv":
         pl_df.write_csv(path, **kwargs)
-    elif file_format == 'json':
+    elif file_format == "json":
         pl_df.write_json(path, **kwargs)
-    elif file_format == 'parquet':
+    elif file_format == "parquet":
         pl_df.write_parquet(path, **kwargs)
     else:
         raise FileFormatError(f"Polars does not support format: {file_format}")
@@ -252,7 +259,7 @@ def read_file_chunked(
     file_path: str | Path,
     chunk_size: int = 10000,
     file_format: str | None = None,
-    **kwargs
+    **kwargs,
 ) -> Iterator[pd.DataFrame]:
     """Read file in chunks to handle large datasets.
 
@@ -275,11 +282,11 @@ def read_file_chunked(
 
     logger.info(f"Reading {file_format} file in chunks: {path}")
 
-    if file_format == 'csv':
+    if file_format == "csv":
         csv_kwargs = {
-            'encoding': 'utf-8',
-            'chunksize': chunk_size,
-            'na_values': ['', 'NA', 'NULL', 'null', 'None'],
+            "encoding": "utf-8",
+            "chunksize": chunk_size,
+            "na_values": ["", "NA", "NULL", "null", "None"],
         }
         csv_kwargs.update(kwargs)
 
@@ -289,11 +296,11 @@ def read_file_chunked(
         except Exception as e:
             raise FileFormatError(f"Error reading CSV chunks from {path}: {e}") from e
 
-    elif file_format == 'json':
+    elif file_format == "json":
         # JSON Lines format supports chunked reading
         json_kwargs = {
-            'lines': True,
-            'chunksize': chunk_size,
+            "lines": True,
+            "chunksize": chunk_size,
         }
         json_kwargs.update(kwargs)
 
@@ -303,7 +310,7 @@ def read_file_chunked(
         except Exception as e:
             raise FileFormatError(f"Error reading JSON chunks from {path}: {e}") from e
 
-    elif file_format == 'parquet':
+    elif file_format == "parquet":
         if not HAS_PARQUET:
             raise FileFormatError("Parquet support requires pyarrow")
 
@@ -312,10 +319,14 @@ def read_file_chunked(
             for batch in parquet_file.iter_batches(batch_size=chunk_size):
                 yield batch.to_pandas()
         except Exception as e:
-            raise FileFormatError(f"Error reading Parquet chunks from {path}: {e}") from e
+            raise FileFormatError(
+                f"Error reading Parquet chunks from {path}: {e}"
+            ) from e
 
     else:
-        raise FileFormatError(f"Chunked reading not supported for format: {file_format}")
+        raise FileFormatError(
+            f"Chunked reading not supported for format: {file_format}"
+        )
 
 
 def get_file_info(file_path: str | Path) -> dict[str, Any]:
@@ -333,33 +344,33 @@ def get_file_info(file_path: str | Path) -> dict[str, Any]:
         raise FileFormatError(f"File does not exist: {path}")
 
     info = {
-        'path': str(path),
-        'size_bytes': path.stat().st_size,
-        'size_mb': round(path.stat().st_size / 1024 / 1024, 2),
-        'format': None,
-        'rows': None,
-        'columns': None,
-        'column_names': None,
+        "path": str(path),
+        "size_bytes": path.stat().st_size,
+        "size_mb": round(path.stat().st_size / 1024 / 1024, 2),
+        "format": None,
+        "rows": None,
+        "columns": None,
+        "column_names": None,
     }
 
     try:
         file_format = detect_file_format(path)
-        info['format'] = file_format
+        info["format"] = file_format
 
         # Get row/column info for supported formats
-        if file_format in ['csv', 'json', 'parquet']:
+        if file_format in ["csv", "json", "parquet"]:
             # Read just the first few rows to get structure
             try:
                 df_sample = read_file(path, file_format).head(1)
-                info['columns'] = len(df_sample.columns)
-                info['column_names'] = list(df_sample.columns)
+                info["columns"] = len(df_sample.columns)
+                info["column_names"] = list(df_sample.columns)
 
                 # For smaller files, get exact row count
-                if info['size_mb'] < 100:  # Only for files < 100MB
+                if info["size_mb"] < 100:  # Only for files < 100MB
                     df_full = read_file(path, file_format)
-                    info['rows'] = len(df_full)
+                    info["rows"] = len(df_full)
                 else:
-                    info['rows'] = "Large file - use chunked reading"
+                    info["rows"] = "Large file - use chunked reading"
 
             except Exception as e:
                 logger.warning(f"Could not read file structure: {e}")
@@ -372,25 +383,26 @@ def get_file_info(file_path: str | Path) -> dict[str, Any]:
 
 # Convenience functions for common use cases
 
+
 def csv_to_json(input_path: str | Path, output_path: str | Path, **kwargs) -> None:
     """Convert CSV file to JSON format."""
-    df = read_file(input_path, 'csv')
-    write_file(df, output_path, 'json', **kwargs)
+    df = read_file(input_path, "csv")
+    write_file(df, output_path, "json", **kwargs)
 
 
 def csv_to_parquet(input_path: str | Path, output_path: str | Path, **kwargs) -> None:
     """Convert CSV file to Parquet format."""
-    df = read_file(input_path, 'csv')
-    write_file(df, output_path, 'parquet', **kwargs)
+    df = read_file(input_path, "csv")
+    write_file(df, output_path, "parquet", **kwargs)
 
 
 def json_to_csv(input_path: str | Path, output_path: str | Path, **kwargs) -> None:
     """Convert JSON file to CSV format."""
-    df = read_file(input_path, 'json')
-    write_file(df, output_path, 'csv', **kwargs)
+    df = read_file(input_path, "json")
+    write_file(df, output_path, "csv", **kwargs)
 
 
 def parquet_to_csv(input_path: str | Path, output_path: str | Path, **kwargs) -> None:
     """Convert Parquet file to CSV format."""
-    df = read_file(input_path, 'parquet')
-    write_file(df, output_path, 'csv', **kwargs)
+    df = read_file(input_path, "parquet")
+    write_file(df, output_path, "csv", **kwargs)

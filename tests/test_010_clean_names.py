@@ -11,10 +11,9 @@ from search_names import clean_names
 
 
 class TestCleanNames(unittest.TestCase):
-
     def setUp(self):
-        self.input = 'examples/clean_names/sample_input.csv'
-        self.output = 'clean_names.csv'
+        self.input = "examples/clean_names/sample_input.csv"
+        self.output = "clean_names.csv"
 
     def tearDown(self):
         os.unlink(self.output)
@@ -24,5 +23,5 @@ class TestCleanNames(unittest.TestCase):
         self.assertTrue(os.path.exists(self.output))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

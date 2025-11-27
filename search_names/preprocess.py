@@ -18,29 +18,50 @@ DEFAULT_DROP_PATTERNS = "drop_patterns.txt"
 DEFAULT_PATTERNS = ["FirstName LastName", "NickName LastName", "Prefix LastName"]
 DEFAULT_EDITLENGTH = []
 
+
 def parse_command_line(argv):
-    """Parse command line options
-    """
+    """Parse command line options"""
     parser = argparse.ArgumentParser(description="Preprocess Search List")
 
-    parser.add_argument('input', help='Input file name')
+    parser.add_argument("input", help="Input file name")
 
-    parser.add_argument("-o", "--out", type=str, dest="outfile",
-                        default=DEFAULT_OUTPUT,
-                        help=f"Output file in CSV (default: {DEFAULT_OUTPUT!s})"
-                        )
-    parser.add_argument("-d", "--drop-patterns", type=str, dest="drop_patterns_file",
-                        default=DEFAULT_DROP_PATTERNS,
-                        help=f"File with Default Patterns\
-                        (default: {DEFAULT_DROP_PATTERNS!s})")
-    parser.add_argument("-p", "--patterns", type=str, nargs='+', dest="patterns",
-                        default=DEFAULT_PATTERNS,
-                        help=f"List of Default Patterns\
-                        (default: {DEFAULT_PATTERNS!s})")
-    parser.add_argument("-e", "--editlength", type=int, nargs='+', dest="editlength",
-                        default=DEFAULT_EDITLENGTH,
-                        help=f"List of Edit Lengths\
-                        (default: {DEFAULT_EDITLENGTH!s})")
+    parser.add_argument(
+        "-o",
+        "--out",
+        type=str,
+        dest="outfile",
+        default=DEFAULT_OUTPUT,
+        help=f"Output file in CSV (default: {DEFAULT_OUTPUT!s})",
+    )
+    parser.add_argument(
+        "-d",
+        "--drop-patterns",
+        type=str,
+        dest="drop_patterns_file",
+        default=DEFAULT_DROP_PATTERNS,
+        help=f"File with Default Patterns\
+                        (default: {DEFAULT_DROP_PATTERNS!s})",
+    )
+    parser.add_argument(
+        "-p",
+        "--patterns",
+        type=str,
+        nargs="+",
+        dest="patterns",
+        default=DEFAULT_PATTERNS,
+        help=f"List of Default Patterns\
+                        (default: {DEFAULT_PATTERNS!s})",
+    )
+    parser.add_argument(
+        "-e",
+        "--editlength",
+        type=int,
+        nargs="+",
+        dest="editlength",
+        default=DEFAULT_EDITLENGTH,
+        help=f"List of Edit Lengths\
+                        (default: {DEFAULT_EDITLENGTH!s})",
+    )
     return parser.parse_args(argv)
 
 
@@ -50,17 +71,22 @@ def load_drop_patterns(filename):
         with open(filename) as f:
             for line in f:
                 line = line.strip().lower()
-                if len(line): # null string
+                if len(line):  # null string
                     continue
                 drop_patterns.append(line)
     except Exception:
-        logger.warning(f'Drop pattern file {filename} not found')
+        logger.warning(f"Drop pattern file {filename} not found")
     return drop_patterns
 
 
-def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUTPUT, editlength = DEFAULT_EDITLENGTH, drop_patterns = None):
-    """Preprocessing names file
-    """
+def preprocess(
+    infile=None,
+    patterns=DEFAULT_PATTERNS,
+    outfile=DEFAULT_OUTPUT,
+    editlength=DEFAULT_EDITLENGTH,
+    drop_patterns=None,
+):
+    """Preprocessing names file"""
     logger.info(f"Preprocessing to '{outfile}', please wait...")
     o = None
 
@@ -78,11 +104,11 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
                 s = []
                 for a in parr:
                     a = a.strip()
-                    if a == 'Prefix':
-                        prefixes = r['prefixes'].split(';')
+                    if a == "Prefix":
+                        prefixes = r["prefixes"].split(";")
                         s.append(prefixes)
-                    elif a == 'NickName':
-                        nick_names = r['nick_names'].split(';')
+                    elif a == "NickName":
+                        nick_names = r["nick_names"].split(";")
                         s.append(nick_names)
                     else:
                         s.append([r[a].lower()])
@@ -90,30 +116,30 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
                 for c in combines:
                     c = [d for d in c if len(d)]
                     if len(c) > 1:
-                        name = ' '.join(c)
+                        name = " ".join(c)
                         if name not in drop_patterns:
                             logger.debug(f" Name: '{name}'")
                             new_r = copy(r)
-                            new_r['search_name'] = name
+                            new_r["search_name"] = name
                             out.append(new_r)
 
         # Find duplicate indexes
         logger.info("Finding duplicates...")
         dup = set()
         for i, r in enumerate(out):
-            name1 = r['search_name']
+            name1 = r["search_name"]
             # Get max edit distance
             max_dist = 0
             for k, length in enumerate(editlength):
                 if len(name1) > length:
                     max_dist = k + 1
-            uid1 = r['uniqid']
+            uid1 = r["uniqid"]
             if i not in dup:
                 for j in range(i + 1, len(out)):
-                    name2 = out[j]['search_name']
-                    uid2 = out[j]['uniqid']
+                    name2 = out[j]["search_name"]
+                    uid2 = out[j]["uniqid"]
                     if distance(name1, name2) <= max_dist:
-                        if (uid1 != uid2):
+                        if uid1 != uid2:
                             # Drop both if from difference uid
                             dup.add(i)
                             dup.add(j)
@@ -129,9 +155,8 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
 
         # Write out to output file
         logger.info(f"Writing output to file: '{outfile}'")
-        o = open(outfile, 'w')
-        writer = csv.DictWriter(o, fieldnames=reader.fieldnames +
-                                ['search_name'])
+        o = open(outfile, "w")
+        writer = csv.DictWriter(o, fieldnames=reader.fieldnames + ["search_name"])
         writer.writeheader()
         for r in out:
             writer.writerow(r)
@@ -147,19 +172,18 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
 
 
 def main(argv=sys.argv[1:]):
-
     args = parse_command_line(argv)
 
     args.drop_patterns = load_drop_patterns(args.drop_patterns_file)
 
     logger.debug(f"Arguments: {args}")
 
-    preprocess(args.input, args.patterns, args.outfile, args.editlength, args.drop_patterns)
+    preprocess(
+        args.input, args.patterns, args.outfile, args.editlength, args.drop_patterns
+    )
 
     return 0
 
 
 if __name__ == "__main__":
-
     sys.exit(main())
-

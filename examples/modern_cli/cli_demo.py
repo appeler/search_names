@@ -34,22 +34,40 @@ logger = get_logger("cli_demo")
 app = typer.Typer(
     name="name-processor",
     help="Modern name processing CLI with enhanced parsing capabilities",
-    rich_markup_mode="rich"
+    rich_markup_mode="rich",
 )
 
 
 @app.command()
 def process_names(
     input_file: Path = typer.Argument(..., help="Input CSV file containing names"),
-    output_file: Path | None = typer.Option(None, "-o", "--output", help="Output file (auto-detects format from extension)"),
-    name_column: str = typer.Option("Name", "-c", "--column", help="Column containing names to process"),
-    parser_type: str = typer.Option("auto", "-p", "--parser", help="Parser type: humanname, parsernaam, or auto"),
-    config_file: Path | None = typer.Option(None, "--config", help="YAML configuration file"),
-    format: str = typer.Option("csv", "-f", "--format", help="Output format: csv, json, parquet"),
-    show_confidence: bool = typer.Option(True, "--confidence/--no-confidence", help="Include confidence scores"),
-    show_progress: bool = typer.Option(True, "--progress/--no-progress", help="Show progress bar"),
-    batch_size: int = typer.Option(100, "--batch-size", help="Batch size for processing"),
-    ml_threshold: float = typer.Option(0.8, "--ml-threshold", help="ML confidence threshold"),
+    output_file: Path | None = typer.Option(
+        None, "-o", "--output", help="Output file (auto-detects format from extension)"
+    ),
+    name_column: str = typer.Option(
+        "Name", "-c", "--column", help="Column containing names to process"
+    ),
+    parser_type: str = typer.Option(
+        "auto", "-p", "--parser", help="Parser type: humanname, parsernaam, or auto"
+    ),
+    config_file: Path | None = typer.Option(
+        None, "--config", help="YAML configuration file"
+    ),
+    format: str = typer.Option(
+        "csv", "-f", "--format", help="Output format: csv, json, parquet"
+    ),
+    show_confidence: bool = typer.Option(
+        True, "--confidence/--no-confidence", help="Include confidence scores"
+    ),
+    show_progress: bool = typer.Option(
+        True, "--progress/--no-progress", help="Show progress bar"
+    ),
+    batch_size: int = typer.Option(
+        100, "--batch-size", help="Batch size for processing"
+    ),
+    ml_threshold: float = typer.Option(
+        0.8, "--ml-threshold", help="ML confidence threshold"
+    ),
 ):
     """
     Process names in a CSV file with enhanced parsing capabilities.
@@ -73,9 +91,7 @@ def process_names(
         console.print(f"[green]Loaded configuration from {config_file}[/green]")
     else:
         config = NameCleaningConfig(
-            parser_type=parser_type,
-            batch_size=batch_size,
-            ml_threshold=ml_threshold
+            parser_type=parser_type, batch_size=batch_size, ml_threshold=ml_threshold
         )
 
     # Validate input file
@@ -89,7 +105,9 @@ def process_names(
         df = pd.read_csv(input_file)
 
         if name_column not in df.columns:
-            console.print(f"[red]Error: Column '{name_column}' not found in input file[/red]")
+            console.print(
+                f"[red]Error: Column '{name_column}' not found in input file[/red]"
+            )
             console.print(f"Available columns: {', '.join(df.columns)}")
             raise typer.Exit(1)
 
@@ -99,7 +117,7 @@ def process_names(
         parser = NameParser(
             parser_type=config.parser_type,
             batch_size=config.batch_size,
-            ml_threshold=config.ml_threshold
+            ml_threshold=config.ml_threshold,
         )
 
         console.print(f"[blue]Using parser: {config.parser_type}[/blue]")
@@ -109,9 +127,7 @@ def process_names(
             console.print("[dim]Processing names...[/dim]")
 
         processed_df = parser.parse_dataframe(
-            df,
-            name_column=name_column,
-            add_components=True
+            df, name_column=name_column, add_components=True
         )
 
         # Add summary statistics
@@ -126,7 +142,9 @@ def process_names(
         # Save results
         _save_output(processed_df, output_file, format, show_confidence)
 
-        console.print(f"[bold green]✓ Processing complete! Output saved to {output_file}[/bold green]")
+        console.print(
+            f"[bold green]✓ Processing complete! Output saved to {output_file}[/bold green]"
+        )
 
     except Exception as e:
         logger.error(f"Error processing names: {e}")
@@ -137,8 +155,12 @@ def process_names(
 @app.command()
 def compare_parsers(
     names: list[str] = typer.Argument(..., help="Names to parse and compare"),
-    save_results: bool = typer.Option(False, "--save", help="Save comparison results to CSV"),
-    output_file: Path | None = typer.Option(None, "-o", "--output", help="Output file for comparison results"),
+    save_results: bool = typer.Option(
+        False, "--save", help="Save comparison results to CSV"
+    ),
+    output_file: Path | None = typer.Option(
+        None, "-o", "--output", help="Output file for comparison results"
+    ),
 ):
     """
     Compare parsing results across different parsers for given names.
@@ -179,19 +201,21 @@ def compare_parsers(
                     result.first_name or "-",
                     result.middle_name or "-",
                     result.last_name or "-",
-                    f"{result.confidence:.3f}"
+                    f"{result.confidence:.3f}",
                 )
 
-                comparison_data.append({
-                    'name': name,
-                    'parser': parser_name,
-                    'first_name': result.first_name,
-                    'middle_name': result.middle_name,
-                    'last_name': result.last_name,
-                    'title': result.title,
-                    'suffix': result.suffix,
-                    'confidence': result.confidence
-                })
+                comparison_data.append(
+                    {
+                        "name": name,
+                        "parser": parser_name,
+                        "first_name": result.first_name,
+                        "middle_name": result.middle_name,
+                        "last_name": result.last_name,
+                        "title": result.title,
+                        "suffix": result.suffix,
+                        "confidence": result.confidence,
+                    }
+                )
 
         except Exception as e:
             console.print(f"[red]Error processing '{name}': {e}[/red]")
@@ -211,7 +235,9 @@ def compare_parsers(
 
 @app.command()
 def generate_config(
-    output_file: Path = typer.Option("name_config.yaml", "-o", "--output", help="Output configuration file"),
+    output_file: Path = typer.Option(
+        "name_config.yaml", "-o", "--output", help="Output configuration file"
+    ),
     parser_type: str = typer.Option("auto", help="Default parser type"),
     batch_size: int = typer.Option(100, help="Default batch size"),
     ml_threshold: float = typer.Option(0.8, help="ML confidence threshold"),
@@ -225,9 +251,7 @@ def generate_config(
     python cli_demo.py generate-config -o my_config.yaml
     """
     config = NameCleaningConfig(
-        parser_type=parser_type,
-        batch_size=batch_size,
-        ml_threshold=ml_threshold
+        parser_type=parser_type, batch_size=batch_size, ml_threshold=ml_threshold
     )
 
     # Create YAML content
@@ -266,7 +290,9 @@ output:
 @app.command()
 def validate_names(
     input_file: Path = typer.Argument(..., help="Input CSV file"),
-    name_column: str = typer.Option("Name", "-c", "--column", help="Column containing names"),
+    name_column: str = typer.Option(
+        "Name", "-c", "--column", help="Column containing names"
+    ),
     min_confidence: float = typer.Option(0.7, help="Minimum confidence threshold"),
 ):
     """
@@ -302,16 +328,27 @@ def validate_names(
         table.add_column("Percentage", style="green")
 
         table.add_row("Total Names", str(total_names), "100.0%")
-        table.add_row("High Confidence", str(high_confidence), f"{(high_confidence/total_names)*100:.1f}%")
-        table.add_row("Low Confidence", str(low_confidence), f"{(low_confidence/total_names)*100:.1f}%")
+        table.add_row(
+            "High Confidence",
+            str(high_confidence),
+            f"{(high_confidence / total_names) * 100:.1f}%",
+        )
+        table.add_row(
+            "Low Confidence",
+            str(low_confidence),
+            f"{(low_confidence / total_names) * 100:.1f}%",
+        )
 
         console.print(table)
 
         # Show problematic names
         if low_confidence > 0:
             console.print("\n[bold red]Names requiring attention:[/bold red]")
-            problem_names = [(df[name_column].iloc[i], r.confidence)
-                           for i, r in enumerate(results) if r.confidence < min_confidence]
+            problem_names = [
+                (df[name_column].iloc[i], r.confidence)
+                for i, r in enumerate(results)
+                if r.confidence < min_confidence
+            ]
 
             for name, confidence in problem_names[:10]:  # Show first 10
                 console.print(f"  [red]'{name}'[/red] (confidence: {confidence:.3f})")
@@ -328,16 +365,18 @@ def _calculate_processing_stats(df: pd.DataFrame) -> dict:
     """Calculate processing statistics."""
     stats = {}
 
-    if 'parsed_confidence' in df.columns:
-        stats['avg_confidence'] = df['parsed_confidence'].mean()
-        stats['min_confidence'] = df['parsed_confidence'].min()
-        stats['high_confidence_count'] = (df['parsed_confidence'] >= 0.8).sum()
+    if "parsed_confidence" in df.columns:
+        stats["avg_confidence"] = df["parsed_confidence"].mean()
+        stats["min_confidence"] = df["parsed_confidence"].min()
+        stats["high_confidence_count"] = (df["parsed_confidence"] >= 0.8).sum()
 
-    if 'parser_used' in df.columns:
-        stats['parser_usage'] = df['parser_used'].value_counts().to_dict()
+    if "parser_used" in df.columns:
+        stats["parser_usage"] = df["parser_used"].value_counts().to_dict()
 
-    stats['total_processed'] = len(df)
-    stats['successful_parses'] = len(df.dropna(subset=['parsed_first_name', 'parsed_last_name']))
+    stats["total_processed"] = len(df)
+    stats["successful_parses"] = len(
+        df.dropna(subset=["parsed_first_name", "parsed_last_name"])
+    )
 
     return stats
 
@@ -348,39 +387,43 @@ def _display_stats(stats: dict):
     table.add_column("Metric", style="cyan")
     table.add_column("Value", style="magenta")
 
-    table.add_row("Total Processed", str(stats['total_processed']))
-    table.add_row("Successful Parses", str(stats['successful_parses']))
+    table.add_row("Total Processed", str(stats["total_processed"]))
+    table.add_row("Successful Parses", str(stats["successful_parses"]))
 
-    if 'avg_confidence' in stats:
+    if "avg_confidence" in stats:
         table.add_row("Average Confidence", f"{stats['avg_confidence']:.3f}")
         table.add_row("Minimum Confidence", f"{stats['min_confidence']:.3f}")
-        table.add_row("High Confidence (≥0.8)", str(stats['high_confidence_count']))
+        table.add_row("High Confidence (≥0.8)", str(stats["high_confidence_count"]))
 
-    if 'parser_usage' in stats:
-        for parser, count in stats['parser_usage'].items():
+    if "parser_usage" in stats:
+        for parser, count in stats["parser_usage"].items():
             table.add_row(f"Used {parser}", str(count))
 
     console.print(table)
 
 
-def _save_output(df: pd.DataFrame, output_file: Path, format_type: str, include_confidence: bool):
+def _save_output(
+    df: pd.DataFrame, output_file: Path, format_type: str, include_confidence: bool
+):
     """Save output in specified format."""
     # Filter columns if confidence not requested
     if not include_confidence:
-        confidence_cols = [col for col in df.columns if 'confidence' in col.lower()]
-        df = df.drop(columns=confidence_cols, errors='ignore')
+        confidence_cols = [col for col in df.columns if "confidence" in col.lower()]
+        df = df.drop(columns=confidence_cols, errors="ignore")
 
     try:
-        if format_type.lower() == 'csv':
+        if format_type.lower() == "csv":
             df.to_csv(output_file, index=False)
-        elif format_type.lower() == 'json':
-            df.to_json(output_file, orient='records', indent=2)
-        elif format_type.lower() == 'parquet':
+        elif format_type.lower() == "json":
+            df.to_json(output_file, orient="records", indent=2)
+        elif format_type.lower() == "parquet":
             try:
                 df.to_parquet(output_file, index=False)
             except ImportError:
-                console.print("[yellow]Warning: Parquet support requires pyarrow. Falling back to CSV.[/yellow]")
-                output_file = output_file.with_suffix('.csv')
+                console.print(
+                    "[yellow]Warning: Parquet support requires pyarrow. Falling back to CSV.[/yellow]"
+                )
+                output_file = output_file.with_suffix(".csv")
                 df.to_csv(output_file, index=False)
         else:
             raise ValueError(f"Unsupported format: {format_type}")

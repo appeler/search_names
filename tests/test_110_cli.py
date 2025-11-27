@@ -24,13 +24,15 @@ class TestCLI(unittest.TestCase):
     def tearDown(self):
         """Clean up test environment."""
         import shutil
+
         shutil.rmtree(self.temp_dir)
 
-    @patch('search_names.cli.app')
+    @patch("search_names.cli.app")
     def test_cli_import(self, mock_app):
         """Test that CLI can be imported."""
         try:
             from search_names.cli import app, main_cli
+
             self.assertIsNotNone(app)
             self.assertIsNotNone(main_cli)
         except ImportError:
@@ -40,17 +42,18 @@ class TestCLI(unittest.TestCase):
         """Test CLI help command."""
         try:
             from search_names.cli import app
+
             result = self.runner.invoke(app, ["--help"])
             self.assertEqual(result.exit_code, 0)
             # Accept either search-names or search_names in help output
             self.assertTrue(
-                "search-names" in result.stdout.lower() or
-                "search_names" in result.stdout.lower()
+                "search-names" in result.stdout.lower()
+                or "search_names" in result.stdout.lower()
             )
         except ImportError:
             self.skipTest("CLI module not available")
 
-    @patch('search_names.cli.clean_names_func')
+    @patch("search_names.cli.clean_names_func")
     def test_clean_command(self, mock_clean):
         """Test clean command."""
         try:
@@ -61,17 +64,23 @@ class TestCLI(unittest.TestCase):
             input_path.write_text("name\nJohn Doe\nJane Smith")
 
             # Mock the clean function
-            mock_clean.return_value = pd.DataFrame({
-                'original_name': ['John Doe', 'Jane Smith'],
-                'first_name': ['John', 'Jane'],
-                'last_name': ['Doe', 'Smith']
-            })
+            mock_clean.return_value = pd.DataFrame(
+                {
+                    "original_name": ["John Doe", "Jane Smith"],
+                    "first_name": ["John", "Jane"],
+                    "last_name": ["Doe", "Smith"],
+                }
+            )
 
-            result = self.runner.invoke(app, [
-                "clean",
-                str(input_path),
-                "--output", str(Path(self.temp_dir) / "cleaned.csv")
-            ])
+            result = self.runner.invoke(
+                app,
+                [
+                    "clean",
+                    str(input_path),
+                    "--output",
+                    str(Path(self.temp_dir) / "cleaned.csv"),
+                ],
+            )
 
             # Check that command succeeded
             if result.exit_code != 0:
@@ -82,7 +91,7 @@ class TestCLI(unittest.TestCase):
         except ImportError:
             self.skipTest("CLI module not available")
 
-    @patch('search_names.cli.search_names_func')
+    @patch("search_names.cli.search_names_func")
     def test_search_command(self, mock_search):
         """Test search command."""
         try:
@@ -96,18 +105,20 @@ class TestCLI(unittest.TestCase):
             corpus_path.write_text("text\nJohn Doe is here")
 
             # Mock the search function
-            mock_search.return_value = pd.DataFrame({
-                'name': ['John Doe'],
-                'count': [1],
-                'positions': ['0-8']
-            })
+            mock_search.return_value = pd.DataFrame(
+                {"name": ["John Doe"], "count": [1], "positions": ["0-8"]}
+            )
 
-            result = self.runner.invoke(app, [
-                "search",
-                str(names_path),
-                str(corpus_path),
-                "--output", str(Path(self.temp_dir) / "results.csv")
-            ])
+            result = self.runner.invoke(
+                app,
+                [
+                    "search",
+                    str(names_path),
+                    str(corpus_path),
+                    "--output",
+                    str(Path(self.temp_dir) / "results.csv"),
+                ],
+            )
 
             # Check that search was called
             if result.exit_code == 0:
@@ -123,11 +134,9 @@ class TestCLI(unittest.TestCase):
 
             config_path = Path(self.temp_dir) / "config.yaml"
 
-            result = self.runner.invoke(app, [
-                "config",
-                "create",
-                "--path", str(config_path)
-            ])
+            result = self.runner.invoke(
+                app, ["config", "create", "--path", str(config_path)]
+            )
 
             # Check config file was created
             if result.exit_code == 0:
@@ -155,8 +164,8 @@ class TestCLI(unittest.TestCase):
         except ImportError:
             self.skipTest("CLI module not available")
 
-    @patch('search_names.file_formats.pd.read_csv')
-    @patch('search_names.cli.Path')
+    @patch("search_names.file_formats.pd.read_csv")
+    @patch("search_names.cli.Path")
     def test_pipeline_command(self, mock_path, mock_read_csv):
         """Test pipeline command."""
         try:
@@ -164,17 +173,14 @@ class TestCLI(unittest.TestCase):
 
             # Mock file operations
             mock_path.return_value.exists.return_value = True
-            mock_read_csv.return_value = pd.DataFrame({
-                'name': ['John Doe'],
-                'text': ['John Doe is here']
-            })
+            mock_read_csv.return_value = pd.DataFrame(
+                {"name": ["John Doe"], "text": ["John Doe is here"]}
+            )
 
-            result = self.runner.invoke(app, [
-                "pipeline",
-                "names.csv",
-                "corpus.csv",
-                "--output-dir", self.temp_dir
-            ])
+            result = self.runner.invoke(
+                app,
+                ["pipeline", "names.csv", "corpus.csv", "--output-dir", self.temp_dir],
+            )
 
             # Pipeline should run through all steps
             # Even if it fails, we're testing the CLI structure
@@ -222,6 +228,7 @@ class TestCLIIntegration(unittest.TestCase):
     def tearDown(self):
         """Clean up test environment."""
         import shutil
+
         shutil.rmtree(self.temp_dir)
 
     def test_cli_workflow(self):
@@ -238,21 +245,23 @@ class TestCLIIntegration(unittest.TestCase):
 
             # Step 1: Clean names
             clean_output = Path(self.temp_dir) / "cleaned.csv"
-            result_clean = self.runner.invoke(app, [
-                "clean",
-                str(names_csv),
-                "--output", str(clean_output)
-            ])
+            result_clean = self.runner.invoke(
+                app, ["clean", str(names_csv), "--output", str(clean_output)]
+            )
 
             # Step 2: Search (if clean succeeded)
             if result_clean.exit_code == 0 and clean_output.exists():
                 search_output = Path(self.temp_dir) / "results.csv"
-                result_search = self.runner.invoke(app, [
-                    "search",
-                    str(clean_output),
-                    str(corpus_csv),
-                    "--output", str(search_output)
-                ])
+                result_search = self.runner.invoke(
+                    app,
+                    [
+                        "search",
+                        str(clean_output),
+                        str(corpus_csv),
+                        "--output",
+                        str(search_output),
+                    ],
+                )
 
                 # Check search results
                 if result_search.exit_code == 0:
@@ -279,10 +288,9 @@ log_level: DEBUG
             config_path.write_text(config_content)
 
             # Run command with config
-            result = self.runner.invoke(app, [
-                "--config", str(config_path),
-                "--version"
-            ])
+            result = self.runner.invoke(
+                app, ["--config", str(config_path), "--version"]
+            )
 
             # Should succeed
             self.assertEqual(result.exit_code, 0)
@@ -291,5 +299,5 @@ log_level: DEBUG
             self.skipTest("CLI module not available")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

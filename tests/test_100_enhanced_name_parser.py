@@ -28,7 +28,7 @@ class TestParsedName(unittest.TestCase):
             first_name="John",
             last_name="Doe",
             confidence=0.95,
-            parser_used="humanname"
+            parser_used="humanname",
         )
 
         self.assertEqual(parsed.original, "John Doe")
@@ -44,38 +44,31 @@ class TestParsedName(unittest.TestCase):
             first_name="John",
             middle_name="M.",
             last_name="Doe",
-            suffix="Jr."
+            suffix="Jr.",
         )
 
         self.assertEqual(parsed.full_name(), "Dr. John M. Doe Jr.")
 
     def test_full_name_partial(self):
         """Test full_name with missing components."""
-        parsed = ParsedName(
-            original="John Doe",
-            first_name="John",
-            last_name="Doe"
-        )
+        parsed = ParsedName(original="John Doe", first_name="John", last_name="Doe")
 
         self.assertEqual(parsed.full_name(), "John Doe")
 
     def test_to_dict_method(self):
         """Test to_dict method."""
         parsed = ParsedName(
-            original="John Doe",
-            first_name="John",
-            last_name="Doe",
-            confidence=0.9
+            original="John Doe", first_name="John", last_name="Doe", confidence=0.9
         )
 
         result = parsed.to_dict()
 
         self.assertIsInstance(result, dict)
-        self.assertEqual(result['original'], "John Doe")
-        self.assertEqual(result['first_name'], "John")
-        self.assertEqual(result['last_name'], "Doe")
-        self.assertEqual(result['confidence'], 0.9)
-        self.assertEqual(result['parser_used'], "humanname")
+        self.assertEqual(result["original"], "John Doe")
+        self.assertEqual(result["first_name"], "John")
+        self.assertEqual(result["last_name"], "Doe")
+        self.assertEqual(result["confidence"], 0.9)
+        self.assertEqual(result["parser_used"], "humanname")
 
 
 class TestNameParser(unittest.TestCase):
@@ -89,7 +82,7 @@ class TestNameParser(unittest.TestCase):
         self.assertEqual(parser.batch_size, 100)
         self.assertEqual(parser.ml_threshold, 0.8)
 
-    @patch('search_names.enhanced_name_parser.HAS_PARSERNAAM', False)
+    @patch("search_names.enhanced_name_parser.HAS_PARSERNAAM", False)
     def test_name_parser_fallback_to_humanname(self):
         """Test fallback when parsernaam not available."""
         parser = NameParser(parser_type="parsernaam")
@@ -97,7 +90,7 @@ class TestNameParser(unittest.TestCase):
         # Should fall back to humanname
         self.assertEqual(parser.parser_type, "humanname")
 
-    @patch('search_names.enhanced_name_parser.HumanName')
+    @patch("search_names.enhanced_name_parser.HumanName")
     def test_parse_with_humanname(self, mock_humanname):
         """Test parsing with HumanName."""
         mock_parsed = MagicMock()
@@ -120,7 +113,7 @@ class TestNameParser(unittest.TestCase):
         self.assertEqual(result.suffix, "Jr")
         self.assertEqual(result.parser_used, "humanname")
 
-    @patch('search_names.enhanced_name_parser.HumanName')
+    @patch("search_names.enhanced_name_parser.HumanName")
     def test_parse_with_humanname_error(self, mock_humanname):
         """Test error handling in humanname parsing."""
         mock_humanname.side_effect = Exception("Parse error")
@@ -131,16 +124,14 @@ class TestNameParser(unittest.TestCase):
         self.assertEqual(result.confidence, 0.0)
         self.assertEqual(result.parser_used, "humanname")
 
-    @patch('search_names.enhanced_name_parser.HAS_PARSERNAAM', True)
-    @patch('search_names.enhanced_name_parser.ParseNames')
+    @patch("search_names.enhanced_name_parser.HAS_PARSERNAAM", True)
+    @patch("search_names.enhanced_name_parser.ParseNames")
     def test_parse_with_parsernaam(self, mock_parsenames):
         """Test parsing with parsernaam."""
         # Mock parsernaam output
-        mock_result = pd.DataFrame({
-            'first_name': ['John'],
-            'last_name': ['Doe'],
-            'confidence': [0.85]
-        })
+        mock_result = pd.DataFrame(
+            {"first_name": ["John"], "last_name": ["Doe"], "confidence": [0.85]}
+        )
         mock_parsenames.parse.return_value = mock_result
 
         parser = NameParser(parser_type="parsernaam")
@@ -149,7 +140,7 @@ class TestNameParser(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].parser_used, "parsernaam")
 
-    @patch('search_names.enhanced_name_parser.HAS_PARSERNAAM', False)
+    @patch("search_names.enhanced_name_parser.HAS_PARSERNAAM", False)
     def test_parse_with_parsernaam_unavailable(self):
         """Test parsernaam fallback when not available."""
         parser = NameParser()
@@ -193,16 +184,14 @@ class TestNameParser(unittest.TestCase):
         self.assertIsInstance(results[0], ParsedName)
         self.assertIsInstance(results[1], ParsedName)
 
-    @patch('search_names.enhanced_name_parser.HAS_PARSERNAAM', True)
-    @patch('search_names.enhanced_name_parser.ParseNames')
+    @patch("search_names.enhanced_name_parser.HAS_PARSERNAAM", True)
+    @patch("search_names.enhanced_name_parser.ParseNames")
     def test_parse_auto_mode(self, mock_parsenames):
         """Test auto mode with mixed names."""
         # Mock parsernaam for Indian names
-        mock_result = pd.DataFrame({
-            'first_name': ['Rajesh'],
-            'last_name': ['Kumar'],
-            'confidence': [0.9]
-        })
+        mock_result = pd.DataFrame(
+            {"first_name": ["Rajesh"], "last_name": ["Kumar"], "confidence": [0.9]}
+        )
         mock_parsenames.parse.return_value = mock_result
 
         parser = NameParser(parser_type="auto")
@@ -222,49 +211,43 @@ class TestNameParser(unittest.TestCase):
 
     def test_parse_dataframe(self):
         """Test parsing names in a DataFrame."""
-        df = pd.DataFrame({
-            'name': ['John Doe', 'Jane Smith'],
-            'id': [1, 2]
-        })
+        df = pd.DataFrame({"name": ["John Doe", "Jane Smith"], "id": [1, 2]})
 
         parser = NameParser(parser_type="humanname")
-        result_df = parser.parse_dataframe(df, name_column='name')
+        result_df = parser.parse_dataframe(df, name_column="name")
 
         # Check new columns were added
-        self.assertIn('parsed_first_name', result_df.columns)
-        self.assertIn('parsed_last_name', result_df.columns)
-        self.assertIn('parsed_confidence', result_df.columns)
-        self.assertIn('parser_used', result_df.columns)
+        self.assertIn("parsed_first_name", result_df.columns)
+        self.assertIn("parsed_last_name", result_df.columns)
+        self.assertIn("parsed_confidence", result_df.columns)
+        self.assertIn("parser_used", result_df.columns)
 
         # Check data integrity
         self.assertEqual(len(result_df), 2)
 
     def test_parse_dataframe_invalid_column(self):
         """Test error handling for invalid column."""
-        df = pd.DataFrame({'id': [1, 2]})
+        df = pd.DataFrame({"id": [1, 2]})
 
         parser = NameParser()
         with self.assertRaises(ValueError) as context:
-            parser.parse_dataframe(df, name_column='invalid')
+            parser.parse_dataframe(df, name_column="invalid")
 
         self.assertIn("Column 'invalid' not found", str(context.exception))
 
     def test_parse_dataframe_no_components(self):
         """Test DataFrame parsing without adding components."""
-        df = pd.DataFrame({
-            'name': ['John Doe'],
-            'id': [1]
-        })
+        df = pd.DataFrame({"name": ["John Doe"], "id": [1]})
 
         parser = NameParser()
         result_df = parser.parse_dataframe(df, add_components=False)
 
         # Should add parsed_name column instead
-        self.assertIn('parsed_name', result_df.columns)
-        self.assertNotIn('parsed_first_name', result_df.columns)
+        self.assertIn("parsed_name", result_df.columns)
+        self.assertNotIn("parsed_first_name", result_df.columns)
 
         # Check that parsed_name contains ParsedName objects
-        self.assertIsInstance(result_df['parsed_name'].iloc[0], ParsedName)
+        self.assertIsInstance(result_df["parsed_name"].iloc[0], ParsedName)
 
 
 class TestConvenienceFunctions(unittest.TestCase):
@@ -286,14 +269,14 @@ class TestConvenienceFunctions(unittest.TestCase):
 
     def test_parse_names_dataframe(self):
         """Test parse_names with DataFrame."""
-        df = pd.DataFrame({'name': ['John Doe']})
+        df = pd.DataFrame({"name": ["John Doe"]})
         result_df = parse_names(df)
 
         self.assertIsInstance(result_df, pd.DataFrame)
-        self.assertIn('parsed_first_name', result_df.columns)
+        self.assertIn("parsed_first_name", result_df.columns)
 
-    @patch('search_names.enhanced_name_parser.HAS_PARSERNAAM', True)
-    @patch('search_names.enhanced_name_parser.NameParser')
+    @patch("search_names.enhanced_name_parser.HAS_PARSERNAAM", True)
+    @patch("search_names.enhanced_name_parser.NameParser")
     def test_compare_parsers(self, mock_parser_class):
         """Test compare_parsers function."""
         # Mock different parser results
@@ -301,7 +284,7 @@ class TestConvenienceFunctions(unittest.TestCase):
             original="John Doe",
             first_name="John",
             last_name="Doe",
-            parser_used="humanname"
+            parser_used="humanname",
         )
 
         mock_pn_result = ParsedName(
@@ -309,43 +292,40 @@ class TestConvenienceFunctions(unittest.TestCase):
             first_name="John",
             last_name="Doe",
             confidence=0.85,
-            parser_used="parsernaam"
+            parser_used="parsernaam",
         )
 
         mock_auto_result = ParsedName(
-            original="John Doe",
-            first_name="John",
-            last_name="Doe",
-            parser_used="auto"
+            original="John Doe", first_name="John", last_name="Doe", parser_used="auto"
         )
 
         # Setup mock instances
         mock_instances = {
-            'humanname': MagicMock(parse=MagicMock(return_value=mock_hn_result)),
-            'parsernaam': MagicMock(parse=MagicMock(return_value=mock_pn_result)),
-            'auto': MagicMock(parse=MagicMock(return_value=mock_auto_result))
+            "humanname": MagicMock(parse=MagicMock(return_value=mock_hn_result)),
+            "parsernaam": MagicMock(parse=MagicMock(return_value=mock_pn_result)),
+            "auto": MagicMock(parse=MagicMock(return_value=mock_auto_result)),
         }
 
         def get_mock_instance(parser_type=None):
-            return mock_instances.get(parser_type, mock_instances['auto'])
+            return mock_instances.get(parser_type, mock_instances["auto"])
 
         mock_parser_class.side_effect = get_mock_instance
 
         results = compare_parsers("John Doe")
 
-        self.assertIn('humanname', results)
-        self.assertIn('auto', results)
+        self.assertIn("humanname", results)
+        self.assertIn("auto", results)
         if HAS_PARSERNAAM:
-            self.assertIn('parsernaam', results)
+            self.assertIn("parsernaam", results)
 
-    @patch('search_names.enhanced_name_parser.HAS_PARSERNAAM', False)
+    @patch("search_names.enhanced_name_parser.HAS_PARSERNAAM", False)
     def test_compare_parsers_no_parsernaam(self):
         """Test compare_parsers when parsernaam not available."""
         results = compare_parsers("John Doe")
 
-        self.assertIn('humanname', results)
-        self.assertIn('auto', results)
-        self.assertNotIn('parsernaam', results)
+        self.assertIn("humanname", results)
+        self.assertIn("auto", results)
+        self.assertNotIn("parsernaam", results)
 
 
 class TestIntegration(unittest.TestCase):
@@ -373,23 +353,25 @@ class TestIntegration(unittest.TestCase):
 
     def test_dataframe_integration(self):
         """Test DataFrame integration."""
-        df = pd.DataFrame({
-            'id': [1, 2, 3],
-            'name': ["John Doe", "Jane Smith", "Bob Johnson"],
-            'age': [30, 25, 35]
-        })
+        df = pd.DataFrame(
+            {
+                "id": [1, 2, 3],
+                "name": ["John Doe", "Jane Smith", "Bob Johnson"],
+                "age": [30, 25, 35],
+            }
+        )
 
         # Parse names
         result_df = parse_names(df, parser_type="humanname")
 
         # Verify structure
         self.assertEqual(len(result_df), 3)
-        self.assertIn('parsed_first_name', result_df.columns)
-        self.assertIn('parsed_last_name', result_df.columns)
+        self.assertIn("parsed_first_name", result_df.columns)
+        self.assertIn("parsed_last_name", result_df.columns)
 
         # Verify parsing
-        self.assertIsNotNone(result_df['parsed_first_name'].iloc[0])
-        self.assertIsNotNone(result_df['parsed_last_name'].iloc[0])
+        self.assertIsNotNone(result_df["parsed_first_name"].iloc[0])
+        self.assertIsNotNone(result_df["parsed_last_name"].iloc[0])
 
     def test_error_recovery(self):
         """Test error recovery in parsing."""
@@ -413,5 +395,5 @@ class TestIntegration(unittest.TestCase):
         self.assertIsNotNone(results[4].first_name)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

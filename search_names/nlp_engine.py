@@ -10,6 +10,7 @@ logger = get_logger("nlp_engine")
 # Optional imports with graceful degradation
 try:
     import spacy
+
     HAS_SPACY = True
 except ImportError:
     logger.debug("spaCy not available - NER features disabled")
@@ -18,6 +19,7 @@ except ImportError:
 try:
     import numpy as np
     from sentence_transformers import SentenceTransformer
+
     HAS_SENTENCE_TRANSFORMERS = True
 except ImportError:
     logger.debug("sentence-transformers not available - semantic similarity disabled")
@@ -26,13 +28,18 @@ except ImportError:
 
 class NLPEngineError(Exception):
     """Exception raised for NLP engine related errors."""
+
     pass
 
 
 class SpacyNER:
     """spaCy-based Named Entity Recognition for person detection."""
 
-    def __init__(self, model_name: str = "en_core_web_sm", disable_components: list[str] | None = None):
+    def __init__(
+        self,
+        model_name: str = "en_core_web_sm",
+        disable_components: list[str] | None = None,
+    ):
         """Initialize spaCy NER.
 
         Args:
@@ -40,14 +47,22 @@ class SpacyNER:
             disable_components: Pipeline components to disable for speed
         """
         if not HAS_SPACY:
-            raise NLPEngineError("spaCy is required but not installed: pip install spacy")
+            raise NLPEngineError(
+                "spaCy is required but not installed: pip install spacy"
+            )
 
         self.model_name = model_name
         self.nlp = None
 
         # Default components to disable for speed (keep only NER)
         if disable_components is None:
-            disable_components = ["tok2vec", "tagger", "parser", "attribute_ruler", "lemmatizer"]
+            disable_components = [
+                "tok2vec",
+                "tagger",
+                "parser",
+                "attribute_ruler",
+                "lemmatizer",
+            ]
 
         self.disable_components = disable_components
         self._load_model()
@@ -65,7 +80,9 @@ class SpacyNER:
             logger.error(error_msg)
             raise NLPEngineError(error_msg) from e
 
-    def extract_entities(self, text: str, entity_types: set[str] | None = None) -> list[EntityMention]:
+    def extract_entities(
+        self, text: str, entity_types: set[str] | None = None
+    ) -> list[EntityMention]:
         """Extract named entities from text.
 
         Args:
@@ -92,7 +109,7 @@ class SpacyNER:
                         label=ent.label_,
                         start=ent.start_char,
                         end=ent.end_char,
-                        confidence=None  # spaCy doesn't provide confidence scores by default
+                        confidence=None,  # spaCy doesn't provide confidence scores by default
                     )
                     entities.append(entity)
 
@@ -102,7 +119,9 @@ class SpacyNER:
             logger.error(f"Error extracting entities: {e}")
             return []
 
-    def extract_person_entities(self, text: str, min_length: int = 2) -> list[EntityMention]:
+    def extract_person_entities(
+        self, text: str, min_length: int = 2
+    ) -> list[EntityMention]:
         """Extract person entities specifically.
 
         Args:
@@ -126,7 +145,9 @@ class SpacyNER:
 
         return filtered_entities
 
-    def is_person_context(self, text: str, start: int, end: int, context_window: int = 50) -> bool:
+    def is_person_context(
+        self, text: str, start: int, end: int, context_window: int = 50
+    ) -> bool:
         """Check if a mention appears in a person context.
 
         Args:
@@ -146,14 +167,43 @@ class SpacyNER:
         # Person indicators
         person_indicators = {
             # Titles
-            "mr.", "mrs.", "ms.", "dr.", "prof.", "professor", "senator", "congressman",
-            "congresswoman", "president", "vice president", "governor", "mayor", "judge",
+            "mr.",
+            "mrs.",
+            "ms.",
+            "dr.",
+            "prof.",
+            "professor",
+            "senator",
+            "congressman",
+            "congresswoman",
+            "president",
+            "vice president",
+            "governor",
+            "mayor",
+            "judge",
             # Actions/verbs
-            "said", "told", "stated", "announced", "declared", "argued", "claimed",
-            "according to", "spokesperson", "representative",
+            "said",
+            "told",
+            "stated",
+            "announced",
+            "declared",
+            "argued",
+            "claimed",
+            "according to",
+            "spokesperson",
+            "representative",
             # Relationships
-            "son of", "daughter of", "wife of", "husband of", "father", "mother",
-            "brother", "sister", "colleague", "friend", "partner",
+            "son of",
+            "daughter of",
+            "wife of",
+            "husband of",
+            "father",
+            "mother",
+            "brother",
+            "sister",
+            "colleague",
+            "friend",
+            "partner",
         }
 
         return any(indicator in context for indicator in person_indicators)
@@ -212,10 +262,7 @@ class SemanticSimilarity:
             return 0.0
 
     def find_similar_names(
-        self,
-        target_name: str,
-        candidate_names: list[str],
-        threshold: float = 0.8
+        self, target_name: str, candidate_names: list[str], threshold: float = 0.8
     ) -> list[tuple[str, float]]:
         """Find names similar to target name.
 
@@ -248,7 +295,7 @@ class EntityLinker:
     def __init__(
         self,
         knowledge_base: dict[str, dict[str, Any]],
-        semantic_model: SemanticSimilarity | None = None
+        semantic_model: SemanticSimilarity | None = None,
     ):
         """Initialize entity linker.
 
@@ -276,8 +323,8 @@ class EntityLinker:
             self.normalized_index[normalized] = canonical_name
 
             # Add aliases if available
-            if 'aliases' in entity_info:
-                for alias in entity_info['aliases']:
+            if "aliases" in entity_info:
+                for alias in entity_info["aliases"]:
                     self.exact_match_index[alias] = canonical_name
                     normalized_alias = self._normalize_name(alias)
                     self.normalized_index[normalized_alias] = canonical_name
@@ -285,16 +332,15 @@ class EntityLinker:
     def _normalize_name(self, name: str) -> str:
         """Normalize name for matching."""
         import re
+
         # Convert to lowercase and remove punctuation
-        normalized = re.sub(r'[^\w\s]', '', name.lower())
+        normalized = re.sub(r"[^\w\s]", "", name.lower())
         # Collapse whitespace
-        normalized = ' '.join(normalized.split())
+        normalized = " ".join(normalized.split())
         return normalized
 
     def link_entity(
-        self,
-        mention: EntityMention,
-        similarity_threshold: float = 0.8
+        self, mention: EntityMention, similarity_threshold: float = 0.8
     ) -> EntityLinkingResult:
         """Link entity mention to knowledge base.
 
@@ -315,7 +361,7 @@ class EntityLinker:
                 linked_entity_id=canonical_name,
                 linked_entity_name=canonical_name,
                 confidence=1.0,
-                alternative_entities=[]
+                alternative_entities=[],
             )
 
         # Try normalized match
@@ -327,7 +373,7 @@ class EntityLinker:
                 linked_entity_id=canonical_name,
                 linked_entity_name=canonical_name,
                 confidence=0.9,  # Slightly lower confidence for normalized match
-                alternative_entities=[]
+                alternative_entities=[],
             )
 
         # Try semantic similarity if available
@@ -349,7 +395,7 @@ class EntityLinker:
                     linked_entity_id=best_match,
                     linked_entity_name=best_match,
                     confidence=confidence,
-                    alternative_entities=alternatives
+                    alternative_entities=alternatives,
                 )
 
         # No match found
@@ -358,7 +404,7 @@ class EntityLinker:
             linked_entity_id=None,
             linked_entity_name=None,
             confidence=0.0,
-            alternative_entities=[]
+            alternative_entities=[],
         )
 
 

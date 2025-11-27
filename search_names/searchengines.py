@@ -4,6 +4,7 @@
 Using `regex` instead of Python built-in `re` module.
 
 """
+
 import csv
 import time
 
@@ -17,15 +18,15 @@ logger = get_logger("searchengines")
 """Constant declaration
 """
 MAX_RESULT = 20
-DEF_INPUT_FILE = 'deduped_augmented_clean_names.csv'
-RESULT_FIELDS = ['uniqid', 'n', 'match', 'start', 'end']
+DEF_INPUT_FILE = "deduped_augmented_clean_names.csv"
+RESULT_FIELDS = ["uniqid", "n", "match", "start", "end"]
+
 
 class SearchMultipleKeywords:
-    """Search by multiple keywords list
-    """
+    """Search by multiple keywords list"""
+
     def __init__(self, keywords, fuzzy_min_len=None):
-        """Initialize search
-        """
+        """Initialize search"""
         if fuzzy_min_len is None:
             fuzzy_min_len = []
         self.fuzzy_min_len = sorted(fuzzy_min_len)
@@ -36,7 +37,9 @@ class SearchMultipleKeywords:
             else:
                 self.keywords[i].append(k.strip().lower())
 
-        logger.info(f"Number of unique keywords ID to be searched: {len(self.keywords)}")
+        logger.info(
+            f"Number of unique keywords ID to be searched: {len(self.keywords)}"
+        )
 
         self.re_keywords = {}
         for i in self.keywords:
@@ -44,11 +47,11 @@ class SearchMultipleKeywords:
             for k in self.keywords[i]:
                 d = self.get_allow_distance(k)
                 if d:
-                    kw.append(rf'(?:{re.escape(k)}){{e<={d}}}')
+                    kw.append(rf"(?:{re.escape(k)}){{e<={d}}}")
                 else:
                     kw.append(re.escape(k))
-            re_str = '|'.join(kw)
-            re_str = rf'\b(?:{re_str})\b'
+            re_str = "|".join(kw)
+            re_str = rf"\b(?:{re_str})\b"
             self.re_keywords[i] = re.compile(re_str, flags=re.I)
 
     def get_allow_distance(self, k):
@@ -59,8 +62,7 @@ class SearchMultipleKeywords:
         return dist
 
     def search(self, s, n=MAX_RESULT):
-        """Search
-        """
+        """Search"""
         c = []
         if n == 0:
             return c
@@ -76,15 +78,21 @@ class SearchMultipleKeywords:
 
         j = 0
         for k in match:
-            c.extend([k, len(match[k]), ';'.join([m[0] for m in match[k]]),
-                      ';'.join([str(m[1]) for m in match[k]]),
-                      ';'.join([str(m[2]) for m in match[k]])])
+            c.extend(
+                [
+                    k,
+                    len(match[k]),
+                    ";".join([m[0] for m in match[k]]),
+                    ";".join([str(m[1]) for m in match[k]]),
+                    ";".join([str(m[2]) for m in match[k]]),
+                ]
+            )
             j += 1
             if j >= n:
                 break
         while j < n:
             for _a in RESULT_FIELDS:
-                c.append('')
+                c.append("")
             j += 1
         count = 0
         for m in match:
@@ -94,12 +102,10 @@ class SearchMultipleKeywords:
 
 
 class NewSearchMultipleKeywords:
-    """New search by multiple keywords (should be faster if large keywords)
-    """
+    """New search by multiple keywords (should be faster if large keywords)"""
 
     def __init__(self, keywords, fuzzy_min_len=None):
-        """Initialize search
-        """
+        """Initialize search"""
         if fuzzy_min_len is None:
             fuzzy_min_len = []
         self.fuzzy_min_len = sorted(fuzzy_min_len)
@@ -111,18 +117,20 @@ class NewSearchMultipleKeywords:
             else:
                 logger.error(f"Found duplicate keyword '{k}'")
 
-        logger.info(f"Number of unique keywords ID to be searched: {len(self.keywords)}")
+        logger.info(
+            f"Number of unique keywords ID to be searched: {len(self.keywords)}"
+        )
 
         kw = []
         for k in self.keywords:
             d = self.get_allow_distance(k)
             if d:
-                kw.append(rf'(?:{re.escape(k)}){{e<={d}}}')
+                kw.append(rf"(?:{re.escape(k)}){{e<={d}}}")
             else:
                 kw.append(re.escape(k))
 
-        re_str = '|'.join(kw)
-        re_str = rf'\b(?:{re_str})\b'
+        re_str = "|".join(kw)
+        re_str = rf"\b(?:{re_str})\b"
         self.re_keywords = re.compile(re_str)
 
     def get_allow_distance(self, k):
@@ -139,8 +147,7 @@ class NewSearchMultipleKeywords:
                 return k
 
     def search(self, s, n=MAX_RESULT):
-        """Search
-        """
+        """Search"""
         c = []
         if n == 0:
             return c
@@ -164,15 +171,21 @@ class NewSearchMultipleKeywords:
 
         j = 0
         for k in match:
-            c.extend([k, len(match[k]), ';'.join([m[0] for m in match[k]]),
-                      ';'.join([str(m[1]) for m in match[k]]),
-                      ';'.join([str(m[2]) for m in match[k]])])
+            c.extend(
+                [
+                    k,
+                    len(match[k]),
+                    ";".join([m[0] for m in match[k]]),
+                    ";".join([str(m[1]) for m in match[k]]),
+                    ";".join([str(m[2]) for m in match[k]]),
+                ]
+            )
             j += 1
             if j >= n:
                 break
         while j < n:
             for _a in RESULT_FIELDS:
-                c.append('')
+                c.append("")
             j += 1
         count = 0
         for m in match:
@@ -182,30 +195,28 @@ class NewSearchMultipleKeywords:
 
 
 if __name__ == "__main__":
-
-
     keywords = []
-    with open(DEF_INPUT_FILE, 'rb') as f:
+    with open(DEF_INPUT_FILE, "rb") as f:
         reader = csv.DictReader(f)
         for r in reader:
-            keywords.append((r['uniqid'], r['search_name']))
+            keywords.append((r["uniqid"], r["search_name"]))
 
     n_result = 5
     search_obj = SearchMultipleKeywords(keywords, [(10, 1), (15, 2)])
-    out = open('tests/output-1.csv', 'wb')
+    out = open("tests/output-1.csv", "wb")
     writer = csv.writer(out)
-    with open('tests/text_corpus.csv', 'rb') as f:
+    with open("tests/text_corpus.csv", "rb") as f:
         reader = csv.DictReader(f)
         result_header = reader.fieldnames
         for i in range(0, n_result):
             for j in RESULT_FIELDS:
-                result_header.append(f'name{i + 1}.{j}')
-        result_header.append('count')
+                result_header.append(f"name{i + 1}.{j}")
+        result_header.append("count")
         writer.writerow(result_header)
         start_time = time.time()
         for _i, r in enumerate(reader):
-            uid = r['uniqid']
-            text = r['text']
+            uid = r["uniqid"]
+            text = r["text"]
             c = [uid, text]
             result, count = search_obj.search(text, n_result)
             c.extend(result)
@@ -218,20 +229,20 @@ if __name__ == "__main__":
     # Test new search
     n_result = 5
     search_obj = NewSearchMultipleKeywords(keywords, [(10, 1), (15, 2)])
-    out = open('tests/output-2.csv', 'wb')
+    out = open("tests/output-2.csv", "wb")
     writer = csv.writer(out)
-    with open('tests/text_corpus.csv', 'rb') as f:
+    with open("tests/text_corpus.csv", "rb") as f:
         reader = csv.DictReader(f)
         result_header = reader.fieldnames
         for i in range(0, n_result):
             for j in RESULT_FIELDS:
-                result_header.append(f'name{i + 1}.{j}')
-        result_header.append('count')
+                result_header.append(f"name{i + 1}.{j}")
+        result_header.append("count")
         writer.writerow(result_header)
         start_time = time.time()
         for _i, r in enumerate(reader):
-            uid = r['uniqid']
-            text = r['text']
+            uid = r["uniqid"]
+            text = r["text"]
             c = [uid, text]
             result, count = search_obj.search(text, n_result)
             c.extend(result)

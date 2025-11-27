@@ -29,9 +29,9 @@ logger = get_logger("enhanced_name_parsing_demo")
 
 def demo_basic_parsing():
     """Demonstrate basic enhanced name parsing."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BASIC ENHANCED NAME PARSING")
-    print("="*60)
+    print("=" * 60)
 
     # Sample names including some that might benefit from ML parsing
     sample_names = [
@@ -41,8 +41,8 @@ def demo_basic_parsing():
         "UDALL, MORRIS K.",
         "LAROUCHE, LYNDON H.",
         "Rajesh Kumar Sharma",  # Indian name that benefits from ML parsing
-        "Priya Devi Gupta",    # Another Indian name
-        "Dr. Sarah Johnson-Smith", # Complex Western name
+        "Priya Devi Gupta",  # Another Indian name
+        "Dr. Sarah Johnson-Smith",  # Complex Western name
     ]
 
     # Create parser with auto-selection
@@ -67,16 +67,16 @@ def demo_basic_parsing():
 
 def demo_parser_comparison():
     """Demonstrate comparison between different parsers."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("PARSER COMPARISON")
-    print("="*60)
+    print("=" * 60)
 
     # Names that might be parsed differently by different parsers
     test_names = [
         "Rajesh Kumar Sharma",
         "BROWN, EDMUND G JR",
         "Dr. Priya Devi",
-        "SHRIVER, ROBERT SARGENT, JR."
+        "SHRIVER, ROBERT SARGENT, JR.",
     ]
 
     print("Comparing parsers on sample names:")
@@ -87,19 +87,21 @@ def demo_parser_comparison():
         results = compare_parsers(name)
 
         for parser_name, result in results.items():
-            print(f"  {parser_name:12}: {result.first_name} | {result.middle_name} | {result.last_name} "
-                  f"| confidence: {result.confidence:.2f}")
+            print(
+                f"  {parser_name:12}: {result.first_name} | {result.middle_name} | {result.last_name} "
+                f"| confidence: {result.confidence:.2f}"
+            )
 
 
 def demo_dataframe_processing():
     """Demonstrate DataFrame integration with enhanced parsing."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("DATAFRAME PROCESSING")
-    print("="*60)
+    print("=" * 60)
 
     # Create sample data similar to the political candidate data
     data = {
-        'Name': [
+        "Name": [
             "HALL, GUS",
             "BROWN, EDMUND G JR",
             "SHRIVER, ROBERT SARGENT, JR.",
@@ -107,10 +109,10 @@ def demo_dataframe_processing():
             "Priya Sharma Devi",
             "UDALL, MORRIS K.",
             "Dr. Sarah Johnson-Smith",
-            "Mohammad Abdul Rahman"
+            "Mohammad Abdul Rahman",
         ],
-        'Party': [328, 100, 100, 100, 100, 100, 200, 200],
-        'State': [0, 0, 0, 5, 5, 0, 10, 15]
+        "Party": [328, 100, 100, 100, 100, 100, 200, 200],
+        "State": [0, 0, 0, 5, 5, 0, 10, 15],
     }
 
     df = pd.DataFrame(data)
@@ -125,8 +127,13 @@ def demo_dataframe_processing():
     print("-" * 50)
 
     # Display relevant columns
-    display_cols = ['Name', 'parsed_first_name', 'parsed_last_name',
-                   'parsed_confidence', 'parser_used']
+    display_cols = [
+        "Name",
+        "parsed_first_name",
+        "parsed_last_name",
+        "parsed_confidence",
+        "parser_used",
+    ]
     print(enhanced_df[display_cols].to_string(index=False))
 
     return enhanced_df
@@ -134,9 +141,9 @@ def demo_dataframe_processing():
 
 def demo_batch_processing():
     """Demonstrate efficient batch processing."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("BATCH PROCESSING EFFICIENCY")
-    print("="*60)
+    print("=" * 60)
 
     # Create larger dataset for batch processing demo
     names = [
@@ -147,7 +154,7 @@ def demo_batch_processing():
         "Priya Sharma Gupta",
         "Mohammad Abdul Hassan",
         "Chen, Wei-Ming",
-        "Garcia, Maria Santos"
+        "Garcia, Maria Santos",
     ] * 10  # Repeat to create larger dataset
 
     print(f"Processing {len(names)} names in batch...")
@@ -156,7 +163,7 @@ def demo_batch_processing():
     configs = [
         ("HumanName Only", "humanname"),
         ("Auto Selection", "auto"),
-        ("parsernaam (if available)", "parsernaam")
+        ("parsernaam (if available)", "parsernaam"),
     ]
 
     for config_name, parser_type in configs:
@@ -182,20 +189,20 @@ def demo_batch_processing():
 
 def demo_error_handling():
     """Demonstrate robust error handling."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("ERROR HANDLING & EDGE CASES")
-    print("="*60)
+    print("=" * 60)
 
     # Edge cases and problematic names
     edge_cases = [
-        "",                    # Empty string
-        "   ",                # Whitespace only
-        "X",                  # Single character
-        "123",                # Numbers only
-        "Mr. Dr. Prof. John Smith PhD Jr.", # Multiple titles/suffixes
+        "",  # Empty string
+        "   ",  # Whitespace only
+        "X",  # Single character
+        "123",  # Numbers only
+        "Mr. Dr. Prof. John Smith PhD Jr.",  # Multiple titles/suffixes
         "Jean-Claude Van Damme",  # Hyphens
-        "Mary O'Connor",         # Apostrophes
-        "José María García",     # Unicode characters
+        "Mary O'Connor",  # Apostrophes
+        "José María García",  # Unicode characters
     ]
 
     parser = NameParser(parser_type="auto")
@@ -206,19 +213,21 @@ def demo_error_handling():
     for name in edge_cases:
         try:
             result = parser.parse(name)
-            print(f"'{name}' -> "
-                  f"First: '{result.first_name}', "
-                  f"Last: '{result.last_name}', "
-                  f"Confidence: {result.confidence:.2f}")
+            print(
+                f"'{name}' -> "
+                f"First: '{result.first_name}', "
+                f"Last: '{result.last_name}', "
+                f"Confidence: {result.confidence:.2f}"
+            )
         except Exception as e:
             print(f"'{name}' -> ERROR: {e}")
 
 
 def demo_configuration_options():
     """Demonstrate configuration options."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("CONFIGURATION OPTIONS")
-    print("="*60)
+    print("=" * 60)
 
     test_name = "Rajesh Kumar Singh"
 
@@ -238,18 +247,20 @@ def demo_configuration_options():
             parser = NameParser(**kwargs)
             result = parser.parse(test_name)
 
-            print(f"{config_name:20}: "
-                  f"Parser: {result.parser_used:10}, "
-                  f"Confidence: {result.confidence:.3f}")
+            print(
+                f"{config_name:20}: "
+                f"Parser: {result.parser_used:10}, "
+                f"Confidence: {result.confidence:.3f}"
+            )
         except Exception as e:
             print(f"{config_name:20}: ERROR - {e}")
 
 
 def save_example_output(df):
     """Save example output to demonstrate different formats."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SAVING ENHANCED RESULTS")
-    print("="*60)
+    print("=" * 60)
 
     output_dir = Path("enhanced_name_parsing")
     output_dir.mkdir(exist_ok=True)
@@ -257,12 +268,17 @@ def save_example_output(df):
     # Save in different formats
     formats = [
         ("CSV", "enhanced_names.csv", df.to_csv),
-        ("JSON", "enhanced_names.json", lambda f: df.to_json(f, orient="records", indent=2)),
+        (
+            "JSON",
+            "enhanced_names.json",
+            lambda f: df.to_json(f, orient="records", indent=2),
+        ),
     ]
 
     # Try Parquet if available
     try:
         import pyarrow  # noqa: F401
+
         formats.append(("Parquet", "enhanced_names.parquet", df.to_parquet))
     except ImportError:
         print("Parquet format not available (install pyarrow for Parquet support)")
@@ -279,7 +295,7 @@ def save_example_output(df):
 def main():
     """Run all demonstrations."""
     print("Enhanced Name Parsing Demo")
-    print("="*80)
+    print("=" * 80)
     print("This demo showcases the enhanced name parsing capabilities")
     print("of the modernized search_names package.")
 
@@ -292,7 +308,7 @@ def main():
     demo_configuration_options()
     save_example_output(df)
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("Demo completed! Check the output files for saved results.")
     print("\nKey improvements over legacy approach:")
     print("- Dual parser support (HumanName + parsernaam)")
@@ -301,7 +317,7 @@ def main():
     print("- Robust error handling and graceful degradation")
     print("- Modern pandas DataFrame integration")
     print("- Multiple output format support")
-    print("="*80)
+    print("=" * 80)
 
 
 if __name__ == "__main__":

@@ -12,11 +12,10 @@ from search_names.logging_config import get_logger, setup_logging
 
 
 class TestLoggingConfig(unittest.TestCase):
-
     def setUp(self):
         # Clear any existing loggers
         for logger_name in list(logging.Logger.manager.loggerDict.keys()):
-            if logger_name.startswith('search_names'):
+            if logger_name.startswith("search_names"):
                 del logging.Logger.manager.loggerDict[logger_name]
 
     def test_setup_logging_default(self):
@@ -54,8 +53,8 @@ class TestLoggingConfig(unittest.TestCase):
 
         self.assertEqual(logger.name, "search_names.test_module")
 
-    @patch('search_names.logging_config.Console')
-    @patch('search_names.logging_config.RichHandler')
+    @patch("search_names.logging_config.Console")
+    @patch("search_names.logging_config.RichHandler")
     def test_rich_handler_configuration(self, mock_rich_handler, mock_console):
         """Test that RichHandler is configured correctly."""
         mock_console_instance = MagicMock()
@@ -65,10 +64,7 @@ class TestLoggingConfig(unittest.TestCase):
         mock_rich_handler.return_value = mock_handler
 
         setup_logging(
-            level="DEBUG",
-            rich_tracebacks=True,
-            show_time=True,
-            show_path=False
+            level="DEBUG", rich_tracebacks=True, show_time=True, show_path=False
         )
 
         # Verify Console was created
@@ -100,5 +96,5 @@ class TestLoggingConfig(unittest.TestCase):
         self.assertEqual(logger1, logger2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

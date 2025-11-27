@@ -32,6 +32,7 @@ def version_callback(value: bool):
     """Show version information."""
     if value:
         from . import __version__
+
         rprint(f"search_names version [bold green]{__version__}[/bold green]")
         raise typer.Exit()
 
@@ -50,21 +51,25 @@ def config_callback(
 def main(
     ctx: typer.Context,
     version: bool = typer.Option(
-        False, "--version", "-v", callback=version_callback, is_eager=True,
-        help="Show version and exit"
+        False,
+        "--version",
+        "-v",
+        callback=version_callback,
+        is_eager=True,
+        help="Show version and exit",
     ),
     config_file: Path | None = typer.Option(
-        None, "--config", "-c",
+        None,
+        "--config",
+        "-c",
         help="Configuration file path",
         callback=config_callback,
     ),
     verbose: bool = typer.Option(
-        False, "--verbose", "-V",
-        help="Enable verbose logging"
+        False, "--verbose", "-V", help="Enable verbose logging"
     ),
     quiet: bool = typer.Option(
-        False, "--quiet", "-q",
-        help="Suppress non-essential output"
+        False, "--quiet", "-q", help="Suppress non-essential output"
     ),
 ):
     """Search for names in large text corpora with advanced NLP capabilities."""
@@ -80,26 +85,25 @@ def main(
 
     # Store configuration in context
     ctx.ensure_object(dict)
-    ctx.obj['config'] = get_config(config_file)
-    ctx.obj['verbose'] = verbose
-    ctx.obj['quiet'] = quiet
+    ctx.obj["config"] = get_config(config_file)
+    ctx.obj["verbose"] = verbose
+    ctx.obj["quiet"] = quiet
 
 
 @app.command("clean")
 def clean_names_cmd(
     ctx: typer.Context,
-    input_file: Path = typer.Argument(..., help="Input CSV file with names", exists=True),
+    input_file: Path = typer.Argument(
+        ..., help="Input CSV file with names", exists=True
+    ),
     output_file: Path | None = typer.Option(
-        None, "--output", "-o",
-        help="Output CSV file (default: clean_names.csv)"
+        None, "--output", "-o", help="Output CSV file (default: clean_names.csv)"
     ),
     column: str = typer.Option(
-        "Name", "--column", "-c",
-        help="Column name containing names"
+        "Name", "--column", "-c", help="Column name containing names"
     ),
     keep_duplicates: bool = typer.Option(
-        False, "--keep-duplicates", "-a",
-        help="Keep duplicate names (don't remove)"
+        False, "--keep-duplicates", "-a", help="Keep duplicate names (don't remove)"
     ),
 ):
     """Clean and standardize names in a CSV file.
@@ -115,10 +119,7 @@ def clean_names_cmd(
     try:
         with console.status("[bold green]Cleaning names..."):
             result = clean_names_func(
-                str(input_file),
-                str(output_file),
-                column,
-                keep_duplicates
+                str(input_file), str(output_file), column, keep_duplicates
             )
 
         if result:
@@ -137,26 +138,30 @@ def clean_names_cmd(
 @app.command("merge-supp")
 def merge_supplementary_data_cmd(
     ctx: typer.Context,
-    input_file: Path = typer.Argument(..., help="Input CSV file (output from clean command)", exists=True),
+    input_file: Path = typer.Argument(
+        ..., help="Input CSV file (output from clean command)", exists=True
+    ),
     output_file: Path | None = typer.Option(
-        None, "--output", "-o",
-        help="Output CSV file (default: augmented_clean_names.csv)"
+        None,
+        "--output",
+        "-o",
+        help="Output CSV file (default: augmented_clean_names.csv)",
     ),
     name_column: str = typer.Option(
-        "FirstName", "--name-column", "-n",
-        help="Column name for nickname lookup"
+        "FirstName", "--name-column", "-n", help="Column name for nickname lookup"
     ),
     prefix_column: str = typer.Option(
-        "seat", "--prefix-column", "-p",
-        help="Column name for prefix lookup"
+        "seat", "--prefix-column", "-p", help="Column name for prefix lookup"
     ),
     prefix_file: Path | None = typer.Option(
-        None, "--prefix-file",
-        help="CSV file with prefix mappings (default: prefixes.csv)"
+        None,
+        "--prefix-file",
+        help="CSV file with prefix mappings (default: prefixes.csv)",
     ),
     nickname_file: Path | None = typer.Option(
-        None, "--nickname-file",
-        help="Text file with nickname mappings (default: nick_names.txt)"
+        None,
+        "--nickname-file",
+        help="Text file with nickname mappings (default: nick_names.txt)",
     ),
 ):
     """Merge supplementary data (prefixes, nicknames) with cleaned names.
@@ -179,7 +184,7 @@ def merge_supplementary_data_cmd(
                 name_column,
                 str(output_file),
                 prefix_file_str,
-                nickname_file_str
+                nickname_file_str,
             )
 
         rprint(f"✓ Augmented data saved to [bold green]{output_file}[/bold green]")
@@ -193,22 +198,26 @@ def merge_supplementary_data_cmd(
 @app.command("preprocess")
 def preprocess_cmd(
     ctx: typer.Context,
-    input_file: Path = typer.Argument(..., help="Input CSV file (output from merge-supp)", exists=True),
+    input_file: Path = typer.Argument(
+        ..., help="Input CSV file (output from merge-supp)", exists=True
+    ),
     output_file: Path | None = typer.Option(
-        None, "--output", "-o",
-        help="Output CSV file (default: deduped_augmented_clean_names.csv)"
+        None,
+        "--output",
+        "-o",
+        help="Output CSV file (default: deduped_augmented_clean_names.csv)",
     ),
     patterns: list[str] | None = typer.Option(
-        None, "--patterns", "-p",
-        help="Search patterns (e.g., 'FirstName LastName')"
+        None, "--patterns", "-p", help="Search patterns (e.g., 'FirstName LastName')"
     ),
     drop_patterns_file: Path | None = typer.Option(
-        None, "--drop-patterns", "-d",
-        help="File with patterns to drop (default: drop_patterns.txt)"
+        None,
+        "--drop-patterns",
+        "-d",
+        help="File with patterns to drop (default: drop_patterns.txt)",
     ),
     edit_lengths: list[int] | None = typer.Option(
-        None, "--edit-lengths", "-e",
-        help="Edit distance thresholds for fuzzy matching"
+        None, "--edit-lengths", "-e", help="Edit distance thresholds for fuzzy matching"
     ),
 ):
     """Preprocess search list: create patterns, deduplicate, filter.
@@ -223,17 +232,15 @@ def preprocess_cmd(
     if not patterns:
         patterns = ["FirstName LastName", "NickName LastName", "Prefix LastName"]
 
-    drop_file_str = str(drop_patterns_file) if drop_patterns_file else "drop_patterns.txt"
+    drop_file_str = (
+        str(drop_patterns_file) if drop_patterns_file else "drop_patterns.txt"
+    )
     edit_lengths = edit_lengths or []
 
     try:
         with console.status("[bold green]Preprocessing search list..."):
             preprocess_func(
-                str(input_file),
-                str(output_file),
-                patterns,
-                drop_file_str,
-                edit_lengths
+                str(input_file), str(output_file), patterns, drop_file_str, edit_lengths
             )
 
         rprint(f"✓ Preprocessed data saved to [bold green]{output_file}[/bold green]")
@@ -247,14 +254,17 @@ def preprocess_cmd(
 @app.command("split")
 def split_corpus_cmd(
     ctx: typer.Context,
-    input_file: Path = typer.Argument(..., help="Input CSV file with text corpus", exists=True),
+    input_file: Path = typer.Argument(
+        ..., help="Input CSV file with text corpus", exists=True
+    ),
     output_pattern: str | None = typer.Option(
-        None, "--output", "-o",
-        help="Output file pattern (default: chunk_{chunk_id:02d}/{basename}.csv)"
+        None,
+        "--output",
+        "-o",
+        help="Output file pattern (default: chunk_{chunk_id:02d}/{basename}.csv)",
     ),
     chunk_size: int = typer.Option(
-        1000, "--size", "-s",
-        help="Number of rows per chunk"
+        1000, "--size", "-s", help="Number of rows per chunk"
     ),
 ):
     """Split large text corpus into smaller chunks for parallel processing.
@@ -264,11 +274,11 @@ def split_corpus_cmd(
     logger = get_logger("cli.split")
 
     try:
-        with console.status(f"[bold green]Splitting corpus into chunks of {chunk_size}..."):
+        with console.status(
+            f"[bold green]Splitting corpus into chunks of {chunk_size}..."
+        ):
             chunk_count = split_text_corpus_func(
-                str(input_file),
-                output_pattern,
-                chunk_size
+                str(input_file), output_pattern, chunk_size
             )
 
         rprint(f"✓ Split corpus into [bold blue]{chunk_count}[/bold blue] chunks")
@@ -282,34 +292,29 @@ def split_corpus_cmd(
 @app.command("search")
 def search_cmd(
     ctx: typer.Context,
-    input_file: Path = typer.Argument(..., help="Input CSV file with text corpus", exists=True),
+    input_file: Path = typer.Argument(
+        ..., help="Input CSV file with text corpus", exists=True
+    ),
     output_file: Path | None = typer.Option(
-        None, "--output", "-o",
-        help="Output CSV file (default: search_results.csv)"
+        None, "--output", "-o", help="Output CSV file (default: search_results.csv)"
     ),
     names_file: Path | None = typer.Option(
-        None, "--names", "-n",
-        help="CSV file with names to search for"
+        None, "--names", "-n", help="CSV file with names to search for"
     ),
     max_results: int = typer.Option(
-        20, "--max-results", "-m",
-        help="Maximum search results per document"
+        20, "--max-results", "-m", help="Maximum search results per document"
     ),
     processes: int = typer.Option(
-        4, "--processes", "-p",
-        help="Number of parallel processes"
+        4, "--processes", "-p", help="Number of parallel processes"
     ),
     text_column: str = typer.Option(
-        "text", "--text-column", "-t",
-        help="Column name containing text to search"
+        "text", "--text-column", "-t", help="Column name containing text to search"
     ),
     clean_text: bool = typer.Option(
-        False, "--clean",
-        help="Clean text before searching (remove stopwords, etc.)"
+        False, "--clean", help="Clean text before searching (remove stopwords, etc.)"
     ),
     edit_lengths: list[int] | None = typer.Option(
-        None, "--edit-lengths", "-e",
-        help="Edit distance thresholds for fuzzy matching"
+        None, "--edit-lengths", "-e", help="Edit distance thresholds for fuzzy matching"
     ),
 ):
     """Search for names in text corpus using advanced matching techniques.
@@ -338,7 +343,7 @@ def search_cmd(
                 processes,
                 text_column,
                 clean_text,
-                edit_lengths
+                edit_lengths,
             )
 
         rprint(f"✓ Search results saved to [bold green]{output_file}[/bold green]")
@@ -356,8 +361,10 @@ def merge_results_cmd(
     ctx: typer.Context,
     input_files: list[Path] = typer.Argument(..., help="Input CSV files to merge"),
     output_file: Path | None = typer.Option(
-        None, "--output", "-o",
-        help="Output CSV file (default: merged_search_results.csv)"
+        None,
+        "--output",
+        "-o",
+        help="Output CSV file (default: merged_search_results.csv)",
     ),
 ):
     """Merge search results from multiple files into a single file.
@@ -392,8 +399,7 @@ def config_cmd(
     ctx: typer.Context,
     action: str = typer.Argument(..., help="Action: 'show', 'create-sample'"),
     output_file: Path | None = typer.Option(
-        None, "--output", "-o",
-        help="Output file for sample config"
+        None, "--output", "-o", help="Output file for sample config"
     ),
 ):
     """Manage configuration files.
@@ -416,7 +422,9 @@ def config_cmd(
 
         try:
             create_sample_config(str(output_file))
-            rprint(f"✓ Sample configuration created at [bold green]{output_file}[/bold green]")
+            rprint(
+                f"✓ Sample configuration created at [bold green]{output_file}[/bold green]"
+            )
         except Exception as e:
             logger.error(f"Error creating sample config: {e}")
             rprint(f"[bold red]✗ Error: {e}[/bold red]")
@@ -431,23 +439,21 @@ def config_cmd(
 @app.command("pipeline")
 def pipeline_cmd(
     ctx: typer.Context,
-    input_file: Path = typer.Argument(..., help="Input CSV file with raw names", exists=True),
+    input_file: Path = typer.Argument(
+        ..., help="Input CSV file with raw names", exists=True
+    ),
     corpus_file: Path = typer.Argument(..., help="Text corpus CSV file", exists=True),
     output_dir: Path | None = typer.Option(
-        None, "--output-dir", "-d",
-        help="Output directory (default: ./pipeline_output)"
+        None, "--output-dir", "-d", help="Output directory (default: ./pipeline_output)"
     ),
     skip_clean: bool = typer.Option(
-        False, "--skip-clean",
-        help="Skip name cleaning step"
+        False, "--skip-clean", help="Skip name cleaning step"
     ),
     skip_merge: bool = typer.Option(
-        False, "--skip-merge",
-        help="Skip supplementary data merge step"
+        False, "--skip-merge", help="Skip supplementary data merge step"
     ),
     skip_preprocess: bool = typer.Option(
-        False, "--skip-preprocess",
-        help="Skip preprocessing step"
+        False, "--skip-preprocess", help="Skip preprocessing step"
     ),
 ):
     """Run the complete pipeline: clean → merge-supp → preprocess → search.

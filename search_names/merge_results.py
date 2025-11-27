@@ -5,28 +5,28 @@ import logging
 import sys
 from csv import DictReader, DictWriter
 
-LOG_FILE = 'merge_results.log'
-DEFAULT_OUTPUT_FILE = 'merged_search_results.csv'
+LOG_FILE = "merge_results.log"
+DEFAULT_OUTPUT_FILE = "merged_search_results.csv"
 
 
 def setup_logger():
-    """ Set up logging
-    """
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s %(levelname)-8s %(message)s',
-                        datefmt='%m-%d %H:%M',
-                        filename=LOG_FILE,
-                        filemode='w')
+    """Set up logging"""
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        datefmt="%m-%d %H:%M",
+        filename=LOG_FILE,
+        filemode="w",
+    )
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(message)s')
+    formatter = logging.Formatter("%(message)s")
     console.setFormatter(formatter)
-    logging.getLogger('').addHandler(console)
+    logging.getLogger("").addHandler(console)
 
 
-def merge_results(infile = None, outfile = DEFAULT_OUTPUT_FILE):
-
-    out = open(outfile, 'w')
+def merge_results(infile=None, outfile=DEFAULT_OUTPUT_FILE):
+    out = open(outfile, "w")
     count = 0
     try:
         for n, i in enumerate(infile):
@@ -44,24 +44,25 @@ def merge_results(infile = None, outfile = DEFAULT_OUTPUT_FILE):
     finally:
         out.close()
 
-    logging.info(f"Done! (merge: {count} rows, from {len(infile)} files"
-                 )
-
+    logging.info(f"Done! (merge: {count} rows, from {len(infile)} files")
 
 
 def main(argv=sys.argv[1:]):
+    """Parse command line options"""
+    parser = argparse.ArgumentParser(
+        description="Merge search results from multiple chunks"
+    )
 
-    """Parse command line options
-    """
-    parser = argparse.ArgumentParser(description="Merge search results from"
-                                     " multiple chunks")
+    parser.add_argument("inputs", nargs="*", help="CSV input file(s) name")
 
-    parser.add_argument('inputs', nargs='*', help='CSV input file(s) name')
-
-    parser.add_argument("-o", "--out", type=str, dest="outfile",
-                        default=DEFAULT_OUTPUT_FILE,
-                        help=f"Output file in CSV (default: {DEFAULT_OUTPUT_FILE:s})"
-                        )
+    parser.add_argument(
+        "-o",
+        "--out",
+        type=str,
+        dest="outfile",
+        default=DEFAULT_OUTPUT_FILE,
+        help=f"Output file in CSV (default: {DEFAULT_OUTPUT_FILE:s})",
+    )
 
     args = parser.parse_args(argv)
 
@@ -75,5 +76,4 @@ def main(argv=sys.argv[1:]):
 
 
 if __name__ == "__main__":
-
     sys.exit(main())

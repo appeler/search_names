@@ -12,11 +12,10 @@ from search_names.search_names import load_names_file
 
 
 class TestSearch(unittest.TestCase):
-
     def setUp(self):
-        self.input = 'examples/search/text_corpus.csv'
-        self.name_file = 'examples/preprocess/deduped_augmented_clean_names.csv'
-        self.output = 'search_results.csv'
+        self.input = "examples/search/text_corpus.csv"
+        self.name_file = "examples/preprocess/deduped_augmented_clean_names.csv"
+        self.output = "search_results.csv"
 
     def tearDown(self):
         os.unlink(self.output)
@@ -27,5 +26,5 @@ class TestSearch(unittest.TestCase):
         self.assertTrue(os.path.exists(self.output))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

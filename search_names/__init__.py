@@ -12,7 +12,7 @@ from .search_names import search_names
 from .split_text_corpus import split_text_corpus
 
 if not sys.warnoptions:  # allow overriding with `-W` option
-    warnings.filterwarnings('ignore', category=RuntimeWarning, module='runpy')
+    warnings.filterwarnings("ignore", category=RuntimeWarning, module="runpy")
 
 __version__ = "0.4.0"
 
@@ -20,20 +20,20 @@ __version__ = "0.4.0"
 setup_logging()
 
 __all__ = [
-    'clean_names',
-    'preprocess',
-    'search_names',
-    'merge_results',
-    'searchengines',
-    'merge_supp',
-    'split_text_corpus',
-    'setup_logging',
-    'get_logger',
-    'get_config',
-    'get_config_manager',
-    'save_config',
-    'create_sample_config',
-    'models',
-    'file_formats',
-    'nlp_engine',
+    "clean_names",
+    "preprocess",
+    "search_names",
+    "merge_results",
+    "searchengines",
+    "merge_supp",
+    "split_text_corpus",
+    "setup_logging",
+    "get_logger",
+    "get_config",
+    "get_config_manager",
+    "save_config",
+    "create_sample_config",
+    "models",
+    "file_formats",
+    "nlp_engine",
 ]

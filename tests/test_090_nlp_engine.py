@@ -29,8 +29,8 @@ class TestNLPEngineError(unittest.TestCase):
 class TestSpacyNER(unittest.TestCase):
     """Test SpacyNER class."""
 
-    @patch('search_names.nlp_engine.HAS_SPACY', True)
-    @patch('search_names.nlp_engine.spacy', create=True)
+    @patch("search_names.nlp_engine.HAS_SPACY", True)
+    @patch("search_names.nlp_engine.spacy", create=True)
     def test_spacy_ner_init_success(self, mock_spacy):
         """Test successful SpacyNER initialization."""
         mock_nlp = MagicMock()
@@ -42,10 +42,10 @@ class TestSpacyNER(unittest.TestCase):
         self.assertEqual(ner.nlp, mock_nlp)
         mock_spacy.load.assert_called_once_with(
             "en_core_web_sm",
-            disable=["tok2vec", "tagger", "parser", "attribute_ruler", "lemmatizer"]
+            disable=["tok2vec", "tagger", "parser", "attribute_ruler", "lemmatizer"],
         )
 
-    @patch('search_names.nlp_engine.HAS_SPACY', False)
+    @patch("search_names.nlp_engine.HAS_SPACY", False)
     def test_spacy_ner_init_no_spacy(self):
         """Test SpacyNER initialization when spaCy not available."""
         with self.assertRaises(NLPEngineError) as context:
@@ -53,8 +53,8 @@ class TestSpacyNER(unittest.TestCase):
 
         self.assertIn("spaCy is required but not installed", str(context.exception))
 
-    @patch('search_names.nlp_engine.HAS_SPACY', True)
-    @patch('search_names.nlp_engine.spacy', create=True)
+    @patch("search_names.nlp_engine.HAS_SPACY", True)
+    @patch("search_names.nlp_engine.spacy", create=True)
     def test_spacy_ner_model_load_error(self, mock_spacy):
         """Test SpacyNER initialization with model load error."""
         mock_spacy.load.side_effect = OSError("Model not found")
@@ -64,8 +64,8 @@ class TestSpacyNER(unittest.TestCase):
 
         self.assertIn("Could not load spaCy model", str(context.exception))
 
-    @patch('search_names.nlp_engine.HAS_SPACY', True)
-    @patch('search_names.nlp_engine.spacy', create=True)
+    @patch("search_names.nlp_engine.HAS_SPACY", True)
+    @patch("search_names.nlp_engine.spacy", create=True)
     def test_extract_entities(self, mock_spacy):
         """Test entity extraction."""
         # Mock spaCy document and entities
@@ -97,8 +97,8 @@ class TestSpacyNER(unittest.TestCase):
         self.assertEqual(entities[1].text, "New York")
         self.assertEqual(entities[1].label, "GPE")
 
-    @patch('search_names.nlp_engine.HAS_SPACY', True)
-    @patch('search_names.nlp_engine.spacy', create=True)
+    @patch("search_names.nlp_engine.HAS_SPACY", True)
+    @patch("search_names.nlp_engine.spacy", create=True)
     def test_extract_person_entities(self, mock_spacy):
         """Test person entity extraction with filtering."""
         # Mock entities with different lengths
@@ -122,13 +122,15 @@ class TestSpacyNER(unittest.TestCase):
         mock_spacy.load.return_value = mock_nlp
 
         ner = SpacyNER()
-        entities = ner.extract_person_entities("J and   John Doe   are here", min_length=2)
+        entities = ner.extract_person_entities(
+            "J and   John Doe   are here", min_length=2
+        )
 
         self.assertEqual(len(entities), 1)
         self.assertEqual(entities[0].text, "John Doe")  # Whitespace should be stripped
 
-    @patch('search_names.nlp_engine.HAS_SPACY', True)
-    @patch('search_names.nlp_engine.spacy', create=True)
+    @patch("search_names.nlp_engine.HAS_SPACY", True)
+    @patch("search_names.nlp_engine.spacy", create=True)
     def test_is_person_context(self, mock_spacy):
         """Test person context detection."""
         mock_nlp = MagicMock()
@@ -144,8 +146,8 @@ class TestSpacyNER(unittest.TestCase):
         text2 = "The company Apple Inc. reported strong earnings."
         self.assertFalse(ner.is_person_context(text2, 12, 22, context_window=50))
 
-    @patch('search_names.nlp_engine.HAS_SPACY', True)
-    @patch('search_names.nlp_engine.spacy', create=True)
+    @patch("search_names.nlp_engine.HAS_SPACY", True)
+    @patch("search_names.nlp_engine.spacy", create=True)
     def test_extract_entities_error(self, mock_spacy):
         """Test error handling during entity extraction."""
         mock_nlp = MagicMock()
@@ -158,8 +160,8 @@ class TestSpacyNER(unittest.TestCase):
         # Should return empty list on error
         self.assertEqual(entities, [])
 
-    @patch('search_names.nlp_engine.HAS_SPACY', True)
-    @patch('search_names.nlp_engine.spacy', create=True)
+    @patch("search_names.nlp_engine.HAS_SPACY", True)
+    @patch("search_names.nlp_engine.spacy", create=True)
     def test_extract_entities_no_model(self, mock_spacy):
         """Test entity extraction when model not loaded."""
         mock_spacy.load.return_value = None
@@ -176,8 +178,8 @@ class TestSpacyNER(unittest.TestCase):
 class TestSemanticSimilarity(unittest.TestCase):
     """Test SemanticSimilarity class."""
 
-    @patch('search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS', True)
-    @patch('search_names.nlp_engine.SentenceTransformer', create=True)
+    @patch("search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS", True)
+    @patch("search_names.nlp_engine.SentenceTransformer", create=True)
     def test_semantic_similarity_init_success(self, mock_transformer):
         """Test successful SemanticSimilarity initialization."""
         mock_model = MagicMock()
@@ -189,7 +191,7 @@ class TestSemanticSimilarity(unittest.TestCase):
         self.assertEqual(similarity.model, mock_model)
         mock_transformer.assert_called_once_with("test-model")
 
-    @patch('search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS', False)
+    @patch("search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS", False)
     def test_semantic_similarity_init_no_transformers(self):
         """Test initialization when sentence-transformers not available."""
         with self.assertRaises(NLPEngineError) as context:
@@ -197,8 +199,8 @@ class TestSemanticSimilarity(unittest.TestCase):
 
         self.assertIn("sentence-transformers is required", str(context.exception))
 
-    @patch('search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS', True)
-    @patch('search_names.nlp_engine.SentenceTransformer', create=True)
+    @patch("search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS", True)
+    @patch("search_names.nlp_engine.SentenceTransformer", create=True)
     def test_semantic_similarity_model_load_error(self, mock_transformer):
         """Test initialization with model load error."""
         mock_transformer.side_effect = Exception("Model load error")
@@ -206,11 +208,13 @@ class TestSemanticSimilarity(unittest.TestCase):
         with self.assertRaises(NLPEngineError) as context:
             SemanticSimilarity()
 
-        self.assertIn("Could not load sentence transformer model", str(context.exception))
+        self.assertIn(
+            "Could not load sentence transformer model", str(context.exception)
+        )
 
-    @patch('search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS', True)
-    @patch('search_names.nlp_engine.SentenceTransformer', create=True)
-    @patch('search_names.nlp_engine.np', create=True)
+    @patch("search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS", True)
+    @patch("search_names.nlp_engine.SentenceTransformer", create=True)
+    @patch("search_names.nlp_engine.np", create=True)
     def test_compute_similarity(self, mock_np, mock_transformer):
         """Test similarity computation."""
         # Mock embeddings
@@ -230,8 +234,8 @@ class TestSemanticSimilarity(unittest.TestCase):
         self.assertEqual(score, 0.8)
         mock_model.encode.assert_called_once_with(["text1", "text2"])
 
-    @patch('search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS', True)
-    @patch('search_names.nlp_engine.SentenceTransformer', create=True)
+    @patch("search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS", True)
+    @patch("search_names.nlp_engine.SentenceTransformer", create=True)
     def test_compute_similarity_error(self, mock_transformer):
         """Test error handling during similarity computation."""
         mock_model = MagicMock()
@@ -244,8 +248,8 @@ class TestSemanticSimilarity(unittest.TestCase):
         # Should return 0.0 on error
         self.assertEqual(score, 0.0)
 
-    @patch('search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS', True)
-    @patch('search_names.nlp_engine.SentenceTransformer', create=True)
+    @patch("search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS", True)
+    @patch("search_names.nlp_engine.SentenceTransformer", create=True)
     def test_find_similar_names(self, mock_transformer):
         """Test finding similar names."""
         mock_model = MagicMock()
@@ -254,7 +258,7 @@ class TestSemanticSimilarity(unittest.TestCase):
         similarity = SemanticSimilarity()
 
         # Mock compute_similarity method
-        with patch.object(similarity, 'compute_similarity') as mock_compute:
+        with patch.object(similarity, "compute_similarity") as mock_compute:
             mock_compute.side_effect = [0.9, 0.7, 0.6, 0.3]  # Decreasing similarity
 
             candidates = ["John Smith", "Jane Doe", "John Doe", "Bob Wilson"]
@@ -264,8 +268,8 @@ class TestSemanticSimilarity(unittest.TestCase):
             expected = [("John Smith", 0.9), ("Jane Doe", 0.7), ("John Doe", 0.6)]
             self.assertEqual(similar, expected)
 
-    @patch('search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS', True)
-    @patch('search_names.nlp_engine.SentenceTransformer', create=True)
+    @patch("search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS", True)
+    @patch("search_names.nlp_engine.SentenceTransformer", create=True)
     def test_find_similar_names_no_model(self, mock_transformer):
         """Test finding similar names when model not loaded."""
         mock_transformer.return_value = None
@@ -288,13 +292,13 @@ class TestEntityLinker(unittest.TestCase):
             "John Smith": {
                 "id": "person_1",
                 "aliases": ["J. Smith", "Johnny Smith"],
-                "occupation": "Engineer"
+                "occupation": "Engineer",
             },
             "Jane Doe": {
                 "id": "person_2",
                 "aliases": ["J. Doe"],
-                "occupation": "Doctor"
-            }
+                "occupation": "Doctor",
+            },
         }
 
         self.mock_semantic = MagicMock()
@@ -322,12 +326,7 @@ class TestEntityLinker(unittest.TestCase):
         """Test entity linking with exact match."""
         linker = EntityLinker(self.knowledge_base)
 
-        mention = EntityMention(
-            text="John Smith",
-            label="PERSON",
-            start=0,
-            end=10
-        )
+        mention = EntityMention(text="John Smith", label="PERSON", start=0, end=10)
 
         result = linker.link_entity(mention)
 
@@ -339,12 +338,7 @@ class TestEntityLinker(unittest.TestCase):
         """Test entity linking with alias match."""
         linker = EntityLinker(self.knowledge_base)
 
-        mention = EntityMention(
-            text="J. Smith",
-            label="PERSON",
-            start=0,
-            end=8
-        )
+        mention = EntityMention(text="J. Smith", label="PERSON", start=0, end=8)
 
         result = linker.link_entity(mention)
 
@@ -355,12 +349,7 @@ class TestEntityLinker(unittest.TestCase):
         """Test entity linking with normalized match."""
         linker = EntityLinker(self.knowledge_base)
 
-        mention = EntityMention(
-            text="JOHN SMITH",
-            label="PERSON",
-            start=0,
-            end=10
-        )
+        mention = EntityMention(text="JOHN SMITH", label="PERSON", start=0, end=10)
 
         result = linker.link_entity(mention)
 
@@ -371,7 +360,7 @@ class TestEntityLinker(unittest.TestCase):
         """Test entity linking with semantic similarity."""
         self.mock_semantic.find_similar_names.return_value = [
             ("John Smith", 0.85),
-            ("Jane Doe", 0.75)
+            ("Jane Doe", 0.75),
         ]
 
         linker = EntityLinker(self.knowledge_base, self.mock_semantic)
@@ -380,7 +369,7 @@ class TestEntityLinker(unittest.TestCase):
             text="Jon Smith",  # Similar but not exact
             label="PERSON",
             start=0,
-            end=9
+            end=9,
         )
 
         result = linker.link_entity(mention, similarity_threshold=0.8)
@@ -394,12 +383,7 @@ class TestEntityLinker(unittest.TestCase):
         """Test entity linking when no match found."""
         linker = EntityLinker(self.knowledge_base)
 
-        mention = EntityMention(
-            text="Unknown Person",
-            label="PERSON",
-            start=0,
-            end=14
-        )
+        mention = EntityMention(text="Unknown Person", label="PERSON", start=0, end=14)
 
         result = linker.link_entity(mention)
 
@@ -413,17 +397,16 @@ class TestNLPEngine(unittest.TestCase):
 
     def setUp(self):
         """Set up test data."""
-        self.sample_kb = {
-            "John Smith": {"id": "1"},
-            "Jane Doe": {"id": "2"}
-        }
+        self.sample_kb = {"John Smith": {"id": "1"}, "Jane Doe": {"id": "2"}}
 
-    @patch('search_names.nlp_engine.HAS_SPACY', True)
-    @patch('search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS', True)
-    @patch('search_names.nlp_engine.SpacyNER')
-    @patch('search_names.nlp_engine.SemanticSimilarity')
-    @patch('search_names.nlp_engine.EntityLinker')
-    def test_nlp_engine_init_all_components(self, mock_linker, mock_similarity, mock_ner):
+    @patch("search_names.nlp_engine.HAS_SPACY", True)
+    @patch("search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS", True)
+    @patch("search_names.nlp_engine.SpacyNER")
+    @patch("search_names.nlp_engine.SemanticSimilarity")
+    @patch("search_names.nlp_engine.EntityLinker")
+    def test_nlp_engine_init_all_components(
+        self, mock_linker, mock_similarity, mock_ner
+    ):
         """Test NLP engine initialization with all components."""
         mock_ner_instance = MagicMock()
         mock_similarity_instance = MagicMock()
@@ -437,29 +420,25 @@ class TestNLPEngine(unittest.TestCase):
             knowledge_base=self.sample_kb,
             enable_ner=True,
             enable_similarity=True,
-            enable_linking=True
+            enable_linking=True,
         )
 
         self.assertEqual(engine.spacy_ner, mock_ner_instance)
         self.assertEqual(engine.semantic_similarity, mock_similarity_instance)
         self.assertEqual(engine.entity_linker, mock_linker_instance)
 
-    @patch('search_names.nlp_engine.HAS_SPACY', False)
-    @patch('search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS', False)
+    @patch("search_names.nlp_engine.HAS_SPACY", False)
+    @patch("search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS", False)
     def test_nlp_engine_init_no_dependencies(self):
         """Test NLP engine initialization without optional dependencies."""
-        engine = NLPEngine(
-            enable_ner=True,
-            enable_similarity=True,
-            enable_linking=True
-        )
+        engine = NLPEngine(enable_ner=True, enable_similarity=True, enable_linking=True)
 
         self.assertIsNone(engine.spacy_ner)
         self.assertIsNone(engine.semantic_similarity)
         self.assertIsNone(engine.entity_linker)
 
-    @patch('search_names.nlp_engine.HAS_SPACY', True)
-    @patch('search_names.nlp_engine.SpacyNER')
+    @patch("search_names.nlp_engine.HAS_SPACY", True)
+    @patch("search_names.nlp_engine.SpacyNER")
     def test_nlp_engine_init_with_errors(self, mock_ner):
         """Test NLP engine initialization handling component errors."""
         mock_ner.side_effect = NLPEngineError("spaCy initialization error")
@@ -469,16 +448,11 @@ class TestNLPEngine(unittest.TestCase):
 
         self.assertIsNone(engine.spacy_ner)
 
-    @patch('search_names.nlp_engine.HAS_SPACY', True)
-    @patch('search_names.nlp_engine.SpacyNER')
+    @patch("search_names.nlp_engine.HAS_SPACY", True)
+    @patch("search_names.nlp_engine.SpacyNER")
     def test_process_text_with_entities(self, mock_ner):
         """Test text processing with entity extraction."""
-        mock_entity = EntityMention(
-            text="John Doe",
-            label="PERSON",
-            start=0,
-            end=8
-        )
+        mock_entity = EntityMention(text="John Doe", label="PERSON", start=0, end=8)
 
         mock_ner_instance = MagicMock()
         mock_ner_instance.extract_person_entities.return_value = [mock_entity]
@@ -499,8 +473,8 @@ class TestNLPEngine(unittest.TestCase):
         self.assertEqual(results["entities"], [])
         self.assertEqual(results["person_entities"], [])
 
-    @patch('search_names.nlp_engine.HAS_SPACY', True)
-    @patch('search_names.nlp_engine.SpacyNER')
+    @patch("search_names.nlp_engine.HAS_SPACY", True)
+    @patch("search_names.nlp_engine.SpacyNER")
     def test_enhance_name_search(self, mock_ner):
         """Test enhanced name search functionality."""
         mock_ner_instance = MagicMock()
@@ -547,10 +521,10 @@ class TestNLPEngine(unittest.TestCase):
 class TestIntegration(unittest.TestCase):
     """Integration tests for NLP components."""
 
-    @patch('search_names.nlp_engine.HAS_SPACY', True)
-    @patch('search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS', True)
-    @patch('search_names.nlp_engine.spacy', create=True)
-    @patch('search_names.nlp_engine.SentenceTransformer', create=True)
+    @patch("search_names.nlp_engine.HAS_SPACY", True)
+    @patch("search_names.nlp_engine.HAS_SENTENCE_TRANSFORMERS", True)
+    @patch("search_names.nlp_engine.spacy", create=True)
+    @patch("search_names.nlp_engine.SentenceTransformer", create=True)
     def test_full_pipeline(self, mock_transformer, mock_spacy):
         """Test full NLP pipeline integration."""
         # Mock spaCy
@@ -573,21 +547,21 @@ class TestIntegration(unittest.TestCase):
 
         knowledge_base = {
             "John Smith": {"id": "person_1"},
-            "Jane Doe": {"id": "person_2"}
+            "Jane Doe": {"id": "person_2"},
         }
 
         engine = NLPEngine(
             knowledge_base=knowledge_base,
             enable_ner=True,
             enable_similarity=True,
-            enable_linking=True
+            enable_linking=True,
         )
 
         # Process text with entity linking
         results = engine.process_text(
             "John Smith is a software engineer.",
             extract_entities=True,
-            link_entities=True
+            link_entities=True,
         )
 
         # Verify results structure
@@ -597,5 +571,5 @@ class TestIntegration(unittest.TestCase):
         self.assertGreater(len(results["entities"]), 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -7,10 +7,12 @@ import pandas as pd
 
 try:
     from .logging_config import get_logger
+
     logger = get_logger("enhanced_name_parser")
 except ImportError:
     # Fallback for when module is imported directly
     import logging
+
     logger = logging.getLogger("enhanced_name_parser")
 
 # Import nameparser (always available)
@@ -19,6 +21,7 @@ from nameparser import HumanName
 # Try importing parsernaam
 try:
     from parsernaam.parse import ParseNames
+
     HAS_PARSERNAAM = True
 except ImportError:
     logger.debug("parsernaam not available - ML-based name parsing disabled")
@@ -28,6 +31,7 @@ except ImportError:
 @dataclass
 class ParsedName:
     """Unified parsed name representation."""
+
     original: str
     first_name: str | None = None
     middle_name: str | None = None
@@ -75,7 +79,7 @@ class NameParser:
         self,
         parser_type: str = "auto",
         batch_size: int = 100,
-        ml_threshold: float = 0.8
+        ml_threshold: float = 0.8,
     ):
         """Initialize name parser.
 
@@ -90,7 +94,9 @@ class NameParser:
 
         # Validate parser availability
         if parser_type == "parsernaam" and not HAS_PARSERNAAM:
-            logger.warning("parsernaam requested but not available, falling back to humanname")
+            logger.warning(
+                "parsernaam requested but not available, falling back to humanname"
+            )
             self.parser_type = "humanname"
 
         logger.info(f"Initialized NameParser with type: {self.parser_type}")
@@ -109,7 +115,7 @@ class NameParser:
                 suffix=parsed.suffix if parsed.suffix else None,
                 nickname=parsed.nickname if parsed.nickname else None,
                 confidence=1.0,
-                parser_used="humanname"
+                parser_used="humanname",
             )
         except Exception as e:
             logger.error(f"Error parsing name '{name}' with HumanName: {e}")
@@ -123,7 +129,7 @@ class NameParser:
 
         try:
             # Create DataFrame for parsernaam
-            df = pd.DataFrame({'name': names})
+            df = pd.DataFrame({"name": names})
 
             # Parse names
             results = ParseNames.parse(df)
@@ -135,14 +141,16 @@ class NameParser:
                 # We need to reconstruct the name components
                 name_parts = self._extract_name_parts_from_parsernaam(row)
 
-                parsed_names.append(ParsedName(
-                    original=names[idx],
-                    first_name=name_parts.get('first_name'),
-                    middle_name=name_parts.get('middle_name'),
-                    last_name=name_parts.get('last_name'),
-                    confidence=name_parts.get('confidence', 0.8),
-                    parser_used="parsernaam"
-                ))
+                parsed_names.append(
+                    ParsedName(
+                        original=names[idx],
+                        first_name=name_parts.get("first_name"),
+                        middle_name=name_parts.get("middle_name"),
+                        last_name=name_parts.get("last_name"),
+                        confidence=name_parts.get("confidence", 0.8),
+                        parser_used="parsernaam",
+                    )
+                )
 
             return parsed_names
 
@@ -156,22 +164,22 @@ class NameParser:
         # parsernaam returns predictions for each word
         # This is a simplified extraction - could be enhanced
         parts = {
-            'first_name': None,
-            'middle_name': None,
-            'last_name': None,
-            'confidence': 0.8
+            "first_name": None,
+            "middle_name": None,
+            "last_name": None,
+            "confidence": 0.8,
         }
 
         # Extract based on parsernaam's predictions
         # Note: This depends on parsernaam's actual output format
         # which may need adjustment based on the library's API
         try:
-            if 'first_name' in row:
-                parts['first_name'] = row['first_name']
-            if 'last_name' in row:
-                parts['last_name'] = row['last_name']
-            if 'confidence' in row:
-                parts['confidence'] = row['confidence']
+            if "first_name" in row:
+                parts["first_name"] = row["first_name"]
+            if "last_name" in row:
+                parts["last_name"] = row["last_name"]
+            if "confidence" in row:
+                parts["confidence"] = row["confidence"]
         except Exception:
             pass
 
@@ -181,10 +189,30 @@ class NameParser:
         """Check if name appears to be Indian."""
         # Common Indian name patterns and suffixes
         indian_patterns = [
-            'kumar', 'kumari', 'devi', 'singh', 'das', 'rao', 'reddy',
-            'sharma', 'gupta', 'patel', 'shah', 'mehta', 'varma',
-            'krishna', 'ram', 'sai', 'venkat', 'raj', 'mohan',
-            'swamy', 'naidu', 'choudhury', 'mukherjee', 'chatterjee'
+            "kumar",
+            "kumari",
+            "devi",
+            "singh",
+            "das",
+            "rao",
+            "reddy",
+            "sharma",
+            "gupta",
+            "patel",
+            "shah",
+            "mehta",
+            "varma",
+            "krishna",
+            "ram",
+            "sai",
+            "venkat",
+            "raj",
+            "mohan",
+            "swamy",
+            "naidu",
+            "choudhury",
+            "mukherjee",
+            "chatterjee",
         ]
 
         name_lower = name.lower()
@@ -205,7 +233,9 @@ class NameParser:
                 return self.parse_with_humanname(name)
             elif self.parser_type == "parsernaam":
                 results = self.parse_with_parsernaam([name])
-                return results[0] if results else ParsedName(original=name, confidence=0.0)
+                return (
+                    results[0] if results else ParsedName(original=name, confidence=0.0)
+                )
             else:  # auto
                 # Use parsernaam for Indian names, humanname otherwise
                 if HAS_PARSERNAAM and self.is_indian_name(name):
@@ -252,10 +282,7 @@ class NameParser:
             return results
 
     def parse_dataframe(
-        self,
-        df: pd.DataFrame,
-        name_column: str = "name",
-        add_components: bool = True
+        self, df: pd.DataFrame, name_column: str = "name", add_components: bool = True
     ) -> pd.DataFrame:
         """Parse names in a DataFrame.
 
@@ -275,16 +302,16 @@ class NameParser:
 
         if add_components:
             # Add parsed components as new columns
-            df['parsed_first_name'] = [p.first_name for p in parsed]
-            df['parsed_middle_name'] = [p.middle_name for p in parsed]
-            df['parsed_last_name'] = [p.last_name for p in parsed]
-            df['parsed_title'] = [p.title for p in parsed]
-            df['parsed_suffix'] = [p.suffix for p in parsed]
-            df['parsed_confidence'] = [p.confidence for p in parsed]
-            df['parser_used'] = [p.parser_used for p in parsed]
+            df["parsed_first_name"] = [p.first_name for p in parsed]
+            df["parsed_middle_name"] = [p.middle_name for p in parsed]
+            df["parsed_last_name"] = [p.last_name for p in parsed]
+            df["parsed_title"] = [p.title for p in parsed]
+            df["parsed_suffix"] = [p.suffix for p in parsed]
+            df["parsed_confidence"] = [p.confidence for p in parsed]
+            df["parser_used"] = [p.parser_used for p in parsed]
         else:
             # Just add the parsed name objects
-            df['parsed_name'] = parsed
+            df["parsed_name"] = parsed
 
         return df
 
@@ -292,7 +319,7 @@ class NameParser:
 def parse_names(
     names: str | list[str] | pd.DataFrame,
     parser_type: str = "auto",
-    name_column: str | None = "name"
+    name_column: str | None = "name",
 ) -> ParsedName | list[ParsedName] | pd.DataFrame:
     """Convenience function to parse names.
 
@@ -325,15 +352,15 @@ def compare_parsers(name: str) -> dict[str, ParsedName]:
 
     # Parse with HumanName
     hn_parser = NameParser(parser_type="humanname")
-    results['humanname'] = hn_parser.parse(name)
+    results["humanname"] = hn_parser.parse(name)
 
     # Parse with parsernaam if available
     if HAS_PARSERNAAM:
         pn_parser = NameParser(parser_type="parsernaam")
-        results['parsernaam'] = pn_parser.parse(name)
+        results["parsernaam"] = pn_parser.parse(name)
 
     # Parse with auto
     auto_parser = NameParser(parser_type="auto")
-    results['auto'] = auto_parser.parse(name)
+    results["auto"] = auto_parser.parse(name)
 
     return results
