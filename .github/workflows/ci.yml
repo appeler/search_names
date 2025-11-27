@@ -51,6 +51,13 @@ jobs:
       run: |
         uv run ruff format --check .
 
+    - name: Set environment for tests
+      run: |
+        echo "TOKENIZERS_PARALLELISM=false" >> $GITHUB_ENV
+        echo "CUDA_VISIBLE_DEVICES=" >> $GITHUB_ENV
+        echo "OMP_NUM_THREADS=1" >> $GITHUB_ENV
+        echo "PYTHONUNBUFFERED=1" >> $GITHUB_ENV
+
     - name: Run tests
       run: |
         uv run pytest tests/ -v
