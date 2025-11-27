@@ -190,7 +190,7 @@ class TestNameParser(unittest.TestCase):
         self.assertIsInstance(results[0], ParsedName)
         self.assertIsInstance(results[1], ParsedName)
         self.assertIsInstance(results[2], ParsedName)
-        
+
         # John Smith should use humanname
         self.assertEqual(results[0].parser_used, "humanname")
         # Rajesh Kumar should use parsernaam (Indian name detection)
@@ -272,9 +272,9 @@ class TestConvenienceFunctions(unittest.TestCase):
         self.assertIn("humanname", results)
         self.assertIn("parsernaam", results)
         self.assertIn("auto", results)
-        
+
         # Each should return a ParsedName object
-        for parser_type, result in results.items():
+        for _parser_type, result in results.items():
             self.assertIsInstance(result, ParsedName)
             self.assertEqual(result.original, "John Doe")
 
@@ -284,11 +284,11 @@ class TestConvenienceFunctions(unittest.TestCase):
 
         # All parsers should be available
         self.assertIn("humanname", results)
-        self.assertIn("parsernaam", results) 
+        self.assertIn("parsernaam", results)
         self.assertIn("auto", results)
-        
+
         # Each should return a ParsedName object
-        for parser_type, result in results.items():
+        for _parser_type, result in results.items():
             self.assertIsInstance(result, ParsedName)
             self.assertEqual(result.original, "Rajesh Kumar")
 

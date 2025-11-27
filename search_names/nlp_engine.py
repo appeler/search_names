@@ -32,7 +32,6 @@ class SpacyNER:
             model_name: spaCy model to load
             disable_components: Pipeline components to disable for speed
         """
-        # spaCy is now always available as a main dependency
 
         self.model_name = model_name
         self.nlp = None
@@ -201,7 +200,6 @@ class SemanticSimilarity:
         Args:
             model_name: Sentence transformer model name
         """
-        # sentence-transformers is now always available as a main dependency
 
         self.model_name = model_name
         self.model = None
