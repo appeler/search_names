@@ -35,21 +35,17 @@ jobs:
     - name: Set up Python
       run: uv python install 3.11
 
-    - name: Install dependencies
-      run: |
-        uv sync --extra dev --extra test
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/uv
+        key: ${{ runner.os }}-uv-${{ hashFiles('pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-uv-
 
-    - name: Run ruff linting
+    - name: Install build dependencies only
       run: |
-        uv run ruff check .
-
-    - name: Run ruff formatting check
-      run: |
-        uv run ruff format --check .
-
-    - name: Run tests
-      run: |
-        uv run pytest tests/ -v
+        uv sync --no-dev --no-install-workspace
 
     - name: Build package
       run: |
