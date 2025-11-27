@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-import sys
 import argparse
 import csv
+import sys
+
 from .logging_config import get_logger
 
 logger = get_logger("merge_supp")
@@ -23,35 +23,35 @@ def parse_command_line(argv):
 
     parser.add_argument("-o", "--out", type=str, dest="outfile",
                         default=DEFAULT_OUTPUT,
-                        help="Output file in CSV (default: {0!s})"
-                        .format(DEFAULT_OUTPUT))
+                        help=f"Output file in CSV (default: {DEFAULT_OUTPUT!s})"
+                        )
     parser.add_argument("-n", "--name", type=str, dest="name",
                         default=DEFAULT_NAME_LOOKUP,
-                        help="Name of column use for nick name look up\
-                        (default: {0!s})".format(DEFAULT_NAME_LOOKUP))
+                        help=f"Name of column use for nick name look up\
+                        (default: {DEFAULT_NAME_LOOKUP!s})")
     parser.add_argument("-p", "--prefix", type=str, dest="prefix",
                         default=DEFAULT_PREFIX_LOOKUP,
-                        help="Name of column use for prefix look up\
-                        (default: {0!s})".format(DEFAULT_PREFIX_LOOKUP))
+                        help=f"Name of column use for prefix look up\
+                        (default: {DEFAULT_PREFIX_LOOKUP!s})")
     parser.add_argument("--prefix-file", type=str, dest="prefix_file",
                         default=PREFIX_FILE,
-                        help="CSV File contains list of prefixes\
-                        (default: {0!s})".format(PREFIX_FILE))
+                        help=f"CSV File contains list of prefixes\
+                        (default: {PREFIX_FILE!s})")
     parser.add_argument("--nick-name-file", type=str, dest="nickname_file",
                         default=NICK_NAMES_FILE,
-                        help="Text File contains list of nick names\
-                        (default: {0!s})".format(NICK_NAMES_FILE))
+                        help=f"Text File contains list of nick names\
+                        (default: {NICK_NAMES_FILE!s})")
     return parser.parse_args(argv)
 
 
 def load_prefixes(filename, col):
     prefixes = {}
     try:
-        with open(filename, 'r') as f:
+        with open(filename) as f:
             reader = csv.DictReader(f)
             for r in reader:
                 prefixes[r[col]] = r['prefixes']
-    except Exception as e:
+    except Exception:
         logger.warning(f'Prefix file {filename} not found')
 
     return prefixes
@@ -79,7 +79,7 @@ def load_nick_names(filename):
                             nick_names[n] = nicks
                 else:
                     logger.warning(f"Invalid nick name line '{l}'")
-    except Exception as e:
+    except Exception:
         logger.warning(f'Nick name file {filename} not found')
 
     return nick_names
@@ -89,14 +89,14 @@ def merge_supp(infile=None, prefixarg=DEFAULT_PREFIX_LOOKUP, name=DEFAULT_NAME_L
                prefix_file=PREFIX_FILE, nickname_file=NICK_NAMES_FILE):
     """Merge supplement data to names file
     """
-    
+
     prefixes = load_prefixes(prefix_file, prefixarg)
     nick_names = load_nick_names(nickname_file)
 
     try:
         f = None
         o = None
-        f = open(infile, 'r')
+        f = open(infile)
         reader = csv.DictReader(f)
         o = open(outfile, 'w')
         writer = csv.DictWriter(o, fieldnames=reader.fieldnames +

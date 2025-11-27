@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 Tests for config module
@@ -8,11 +7,16 @@ Tests for config module
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from search_names.config import (
-    Config, SearchConfig, NameCleaningConfig, ConfigManager,
-    get_config, get_config_manager, save_config, create_sample_config
+    Config,
+    ConfigManager,
+    NameCleaningConfig,
+    SearchConfig,
+    create_sample_config,
+    get_config,
+    get_config_manager,
 )
 
 
@@ -22,7 +26,7 @@ class TestConfigDataClasses(unittest.TestCase):
     def test_search_config_defaults(self):
         """Test SearchConfig default values."""
         config = SearchConfig()
-        
+
         self.assertEqual(config.max_results, 20)
         self.assertEqual(config.fuzzy_min_lengths, [(10, 1), (15, 2)])
         self.assertEqual(config.processes, 4)
@@ -31,10 +35,10 @@ class TestConfigDataClasses(unittest.TestCase):
     def test_name_cleaning_config_defaults(self):
         """Test NameCleaningConfig default values."""
         config = NameCleaningConfig()
-        
+
         self.assertEqual(config.default_patterns, [
-            "FirstName LastName", 
-            "NickName LastName", 
+            "FirstName LastName",
+            "NickName LastName",
             "Prefix LastName"
         ])
         self.assertTrue(config.drop_duplicates)
@@ -42,7 +46,7 @@ class TestConfigDataClasses(unittest.TestCase):
     def test_config_defaults(self):
         """Test main Config default values."""
         config = Config()
-        
+
         self.assertIsInstance(config.search, SearchConfig)
         self.assertIsInstance(config.name_cleaning, NameCleaningConfig)
         self.assertEqual(config.log_level, "INFO")
@@ -64,7 +68,7 @@ class TestConfigManager(unittest.TestCase):
         """Test ConfigManager when no config file exists."""
         manager = ConfigManager(self.config_path)
         config = manager.load_config()
-        
+
         self.assertIsInstance(config, Config)
         # Should load defaults when no file exists
         self.assertEqual(config.search.max_results, 20)
@@ -87,7 +91,7 @@ log_level: DEBUG
 
         manager = ConfigManager(self.config_path)
         config = manager.load_config()
-        
+
         self.assertEqual(config.search.max_results, 50)
         self.assertEqual(config.search.processes, 8)
         self.assertFalse(config.name_cleaning.drop_duplicates)
@@ -99,14 +103,14 @@ log_level: DEBUG
         config = Config()
         config.search.max_results = 100
         config.log_level = "WARNING"
-        
+
         manager = ConfigManager(self.config_path)
         manager.save_config(config)
-        
+
         # Load it back
         manager2 = ConfigManager(self.config_path)
         loaded_config = manager2.load_config()
-        
+
         self.assertEqual(loaded_config.search.max_results, 100)
         self.assertEqual(loaded_config.log_level, "WARNING")
 
@@ -119,7 +123,7 @@ log_level: DEBUG
         manager = ConfigManager(self.config_path)
         # Should fall back to defaults without error
         config = manager.load_config()
-        
+
         self.assertIsInstance(config, Config)
         self.assertEqual(config.search.max_results, 20)  # Default value
 
@@ -128,14 +132,14 @@ log_level: DEBUG
         """Test that ConfigManager searches standard config locations."""
         # Mock that the third path exists
         mock_exists.side_effect = lambda: False
-        
+
         def exists_side_effect():
             # Return True only for the third call (second path)
             exists_side_effect.call_count += 1
             return exists_side_effect.call_count == 3
         exists_side_effect.call_count = 0
         mock_exists.side_effect = exists_side_effect
-        
+
         manager = ConfigManager()
         # Should find the config file
         self.assertIsNotNone(manager.config_path)
@@ -152,7 +156,7 @@ class TestConfigGlobalFunctions(unittest.TestCase):
     def test_get_config_default(self):
         """Test get_config returns default configuration."""
         config = get_config()
-        
+
         self.assertIsInstance(config, Config)
         self.assertEqual(config.search.max_results, 20)
 
@@ -161,10 +165,10 @@ class TestConfigGlobalFunctions(unittest.TestCase):
         """Test that get_config_manager returns singleton."""
         mock_manager = MagicMock()
         mock_config_manager.return_value = mock_manager
-        
+
         manager1 = get_config_manager()
         manager2 = get_config_manager()
-        
+
         # Should be the same instance
         self.assertEqual(manager1, manager2)
         # ConfigManager should only be called once
@@ -177,16 +181,16 @@ class TestConfigGlobalFunctions(unittest.TestCase):
 
         try:
             create_sample_config(temp_path)
-            
+
             # Verify file was created
             self.assertTrue(Path(temp_path).exists())
-            
+
             # Verify it's valid YAML
-            with open(temp_path, 'r') as f:
+            with open(temp_path) as f:
                 content = f.read()
                 self.assertIn('search:', content)
                 self.assertIn('max_results:', content)
-                
+
         finally:
             Path(temp_path).unlink(missing_ok=True)
 
@@ -203,7 +207,7 @@ class TestConfigValidation(unittest.TestCase):
             },
             'log_level': 'DEBUG'
         }
-        
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
             import yaml
             yaml.dump(config_dict, f)
@@ -212,39 +216,39 @@ class TestConfigValidation(unittest.TestCase):
         try:
             manager = ConfigManager(temp_path)
             config = manager.load_config()
-            
+
             # Check that nested values were updated
             self.assertEqual(config.search.max_results, 100)
             self.assertEqual(config.search.processes, 2)
             # Check that other nested values kept defaults
             self.assertEqual(config.search.chunk_size, 1000)  # Should keep default
-            
+
             # Check top-level value
             self.assertEqual(config.log_level, 'DEBUG')
-            
+
         finally:
             Path(temp_path).unlink(missing_ok=True)
 
     def test_config_serialization_completeness(self):
         """Test that all config fields are properly serialized."""
         config = Config()
-        
+
         with tempfile.NamedTemporaryFile(suffix='.yaml', delete=False) as f:
             temp_path = f.name
 
         try:
             manager = ConfigManager(temp_path)
             manager.save_config(config)
-            
+
             # Load and verify all sections exist
-            with open(temp_path, 'r') as f:
+            with open(temp_path) as f:
                 import yaml
                 saved_data = yaml.safe_load(f)
-            
+
             required_sections = ['search', 'name_cleaning', 'text_processing', 'files', 'nlp']
             for section in required_sections:
                 self.assertIn(section, saved_data)
-                
+
         finally:
             Path(temp_path).unlink(missing_ok=True)
 

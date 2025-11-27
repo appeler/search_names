@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "search_names"
-version = "0.3.0"
+version = "0.4.0"
 description = "Advanced name search and entity recognition in large text corpora with NLP and AI capabilities"
 authors = [
     {name = "Suriyan Laohaprapanon", email = "suriyant@gmail.com"},

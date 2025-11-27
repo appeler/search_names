@@ -1,15 +1,13 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 Tests for secc_caste_ln.py
 """
 
 import os
-import shutil
 import unittest
+
 from search_names import preprocess
-from . import capture
 
 
 class TestPreprocess(unittest.TestCase):

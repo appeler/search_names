@@ -1,9 +1,10 @@
 """Pydantic models for data validation in search_names package."""
 
-from typing import List, Optional, Dict, Any, Union
-from pydantic import BaseModel, Field, validator, root_validator
 from datetime import datetime
 from enum import Enum
+from typing import Any
+
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class NameFormat(str, Enum):
@@ -36,21 +37,23 @@ class LogLevel(str, Enum):
 class CleanedName(BaseModel):
     """Model for a cleaned name record."""
     uniqid: str = Field(..., description="Unique identifier for the name")
-    first_name: Optional[str] = Field(None, description="First name")
-    middle_name: Optional[str] = Field(None, description="Middle name or initial")
-    last_name: Optional[str] = Field(None, description="Last name")
-    prefix: Optional[str] = Field(None, description="Title or prefix (Mr., Dr., etc.)")
-    suffix: Optional[str] = Field(None, description="Suffix (Jr., Sr., III, etc.)")
-    roman_numeral: Optional[str] = Field(None, description="Roman numeral")
+    first_name: str | None = Field(None, description="First name")
+    middle_name: str | None = Field(None, description="Middle name or initial")
+    last_name: str | None = Field(None, description="Last name")
+    prefix: str | None = Field(None, description="Title or prefix (Mr., Dr., etc.)")
+    suffix: str | None = Field(None, description="Suffix (Jr., Sr., III, etc.)")
+    roman_numeral: str | None = Field(None, description="Roman numeral")
     original_name: str = Field(..., description="Original name as provided")
-    
-    @validator('uniqid')
+
+    @field_validator('uniqid')
+    @classmethod
     def uniqid_must_not_be_empty(cls, v):
         if not v or not v.strip():
             raise ValueError('uniqid cannot be empty')
         return v.strip()
-    
-    @validator('original_name')
+
+    @field_validator('original_name')
+    @classmethod
     def original_name_must_not_be_empty(cls, v):
         if not v or not v.strip():
             raise ValueError('original_name cannot be empty')
@@ -59,11 +62,12 @@ class CleanedName(BaseModel):
 
 class SupplementaryData(BaseModel):
     """Model for supplementary name data."""
-    prefixes: Optional[str] = Field(None, description="Semi-colon separated prefixes")
-    nick_names: Optional[str] = Field(None, description="Semi-colon separated nicknames")
-    aliases: Optional[str] = Field(None, description="Semi-colon separated aliases")
-    
-    @validator('prefixes', 'nick_names', 'aliases', pre=True)
+    prefixes: str | None = Field(None, description="Semi-colon separated prefixes")
+    nick_names: str | None = Field(None, description="Semi-colon separated nicknames")
+    aliases: str | None = Field(None, description="Semi-colon separated aliases")
+
+    @field_validator('prefixes', 'nick_names', 'aliases', mode='before')
+    @classmethod
     def clean_string_lists(cls, v):
         if v is None:
             return v
@@ -77,9 +81,10 @@ class SearchPattern(BaseModel):
     pattern: str = Field(..., description="Search pattern (e.g., 'FirstName LastName')")
     uniqid: str = Field(..., description="Unique identifier")
     search_name: str = Field(..., description="Actual name to search for")
-    confidence: Optional[float] = Field(None, ge=0.0, le=1.0, description="Confidence score")
-    
-    @validator('pattern')
+    confidence: float | None = Field(None, ge=0.0, le=1.0, description="Confidence score")
+
+    @field_validator('pattern')
+    @classmethod
     def pattern_must_be_valid(cls, v):
         valid_patterns = {e.value for e in NameFormat}
         if v not in valid_patterns:
@@ -91,46 +96,48 @@ class SearchResult(BaseModel):
     """Model for search results."""
     uniqid: str = Field(..., description="Unique identifier from search list")
     match_count: int = Field(0, ge=0, description="Number of matches found")
-    matches: List[str] = Field(default_factory=list, description="Matched text")
-    start_positions: List[int] = Field(default_factory=list, description="Start positions")
-    end_positions: List[int] = Field(default_factory=list, description="End positions")
-    confidence_scores: List[float] = Field(default_factory=list, description="Confidence scores")
-    
-    @root_validator
-    def validate_list_lengths(cls, values):
+    matches: list[str] = Field(default_factory=list, description="Matched text")
+    start_positions: list[int] = Field(default_factory=list, description="Start positions")
+    end_positions: list[int] = Field(default_factory=list, description="End positions")
+    confidence_scores: list[float] = Field(default_factory=list, description="Confidence scores")
+
+    @model_validator(mode='after')
+    def validate_list_lengths(self):
         """Ensure all lists have the same length."""
-        match_count = values.get('match_count', 0)
-        matches = values.get('matches', [])
-        starts = values.get('start_positions', [])
-        ends = values.get('end_positions', [])
-        scores = values.get('confidence_scores', [])
-        
+        match_count = self.match_count
+        matches = self.matches
+        starts = self.start_positions
+        ends = self.end_positions
+        scores = self.confidence_scores
+
         if match_count != len(matches):
             raise ValueError('match_count must equal length of matches list')
-        
+
         if len(matches) != len(starts) or len(matches) != len(ends):
             raise ValueError('matches, start_positions, and end_positions must have same length')
-        
+
         if scores and len(scores) != len(matches):
             raise ValueError('confidence_scores must be empty or same length as matches')
-        
-        return values
+
+        return self
 
 
 class TextDocument(BaseModel):
     """Model for text documents to be searched."""
     uniqid: str = Field(..., description="Unique identifier for the document")
     text: str = Field(..., description="Text content to search")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
-    preprocessed_text: Optional[str] = Field(None, description="Preprocessed text")
-    
-    @validator('uniqid')
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    preprocessed_text: str | None = Field(None, description="Preprocessed text")
+
+    @field_validator('uniqid')
+    @classmethod
     def uniqid_must_not_be_empty(cls, v):
         if not v or not v.strip():
             raise ValueError('uniqid cannot be empty')
         return v.strip()
-    
-    @validator('text')
+
+    @field_validator('text')
+    @classmethod
     def text_must_not_be_empty(cls, v):
         if not v or not v.strip():
             raise ValueError('text cannot be empty')
@@ -145,12 +152,13 @@ class SearchJobConfig(BaseModel):
     max_results: int = Field(20, ge=1, description="Maximum results per document")
     processes: int = Field(4, ge=1, description="Number of parallel processes")
     chunk_size: int = Field(1000, ge=1, description="Chunk size for processing")
-    fuzzy_min_lengths: List[tuple] = Field(default_factory=list, description="Fuzzy matching parameters")
+    fuzzy_min_lengths: list[tuple] = Field(default_factory=list, description="Fuzzy matching parameters")
     clean_text: bool = Field(False, description="Whether to clean text before search")
-    input_columns: List[str] = Field(default_factory=list, description="Input columns to include")
-    search_columns: List[str] = Field(default_factory=list, description="Search result columns")
-    
-    @validator('fuzzy_min_lengths')
+    input_columns: list[str] = Field(default_factory=list, description="Input columns to include")
+    search_columns: list[str] = Field(default_factory=list, description="Search result columns")
+
+    @field_validator('fuzzy_min_lengths')
+    @classmethod
     def validate_fuzzy_lengths(cls, v):
         for item in v:
             if not isinstance(item, (list, tuple)) or len(item) != 2:
@@ -168,12 +176,13 @@ class NameSearchJob(BaseModel):
     config: SearchJobConfig = Field(..., description="Job configuration")
     status: str = Field("pending", description="Job status")
     created_at: datetime = Field(default_factory=datetime.now, description="Creation timestamp")
-    started_at: Optional[datetime] = Field(None, description="Start timestamp")
-    completed_at: Optional[datetime] = Field(None, description="Completion timestamp")
-    error_message: Optional[str] = Field(None, description="Error message if failed")
+    started_at: datetime | None = Field(None, description="Start timestamp")
+    completed_at: datetime | None = Field(None, description="Completion timestamp")
+    error_message: str | None = Field(None, description="Error message if failed")
     results_count: int = Field(0, ge=0, description="Total number of results")
-    
-    @validator('status')
+
+    @field_validator('status')
+    @classmethod
     def status_must_be_valid(cls, v):
         valid_statuses = {'pending', 'running', 'completed', 'failed'}
         if v not in valid_statuses:
@@ -185,13 +194,12 @@ class FuzzyMatchConfig(BaseModel):
     """Model for fuzzy matching configuration."""
     min_length: int = Field(..., ge=1, description="Minimum string length for this edit distance")
     edit_distance: int = Field(..., ge=0, description="Maximum edit distance allowed")
-    
-    @validator('edit_distance')
-    def edit_distance_reasonable(cls, v, values):
-        min_length = values.get('min_length', 0)
-        if v > min_length // 2:
+
+    @model_validator(mode='after')
+    def edit_distance_reasonable(self):
+        if self.edit_distance > self.min_length // 2:
             raise ValueError('edit_distance should not exceed half the min_length')
-        return v
+        return self
 
 
 class EntityMention(BaseModel):
@@ -200,24 +208,22 @@ class EntityMention(BaseModel):
     label: str = Field(..., description="Entity label (PERSON, ORG, etc.)")
     start: int = Field(..., ge=0, description="Start position in text")
     end: int = Field(..., ge=0, description="End position in text")
-    confidence: Optional[float] = Field(None, ge=0.0, le=1.0, description="Confidence score")
-    
-    @root_validator
-    def validate_positions(cls, values):
-        start = values.get('start', 0)
-        end = values.get('end', 0)
-        if end <= start:
+    confidence: float | None = Field(None, ge=0.0, le=1.0, description="Confidence score")
+
+    @model_validator(mode='after')
+    def validate_positions(self):
+        if self.end <= self.start:
             raise ValueError('end position must be greater than start position')
-        return values
+        return self
 
 
 class EntityLinkingResult(BaseModel):
     """Model for entity linking results."""
     mention: EntityMention = Field(..., description="Original mention")
-    linked_entity_id: Optional[str] = Field(None, description="Linked entity ID")
-    linked_entity_name: Optional[str] = Field(None, description="Canonical entity name")
+    linked_entity_id: str | None = Field(None, description="Linked entity ID")
+    linked_entity_name: str | None = Field(None, description="Canonical entity name")
     confidence: float = Field(0.0, ge=0.0, le=1.0, description="Linking confidence")
-    alternative_entities: List[Dict[str, Any]] = Field(default_factory=list, description="Alternative entity candidates")
+    alternative_entities: list[dict[str, Any]] = Field(default_factory=list, description="Alternative entity candidates")
 
 
 class ProcessingStats(BaseModel):
@@ -229,33 +235,29 @@ class ProcessingStats(BaseModel):
     documents_per_second: float = Field(0.0, ge=0.0)
     errors_count: int = Field(0, ge=0)
     warnings_count: int = Field(0, ge=0)
-    
-    @root_validator
-    def calculate_derived_stats(cls, values):
-        processed = values.get('processed_documents', 0)
-        time_taken = values.get('processing_time_seconds', 0.0)
-        
-        if time_taken > 0:
-            values['documents_per_second'] = processed / time_taken
+
+    @model_validator(mode='after')
+    def calculate_derived_stats(self):
+        if self.processing_time_seconds > 0:
+            self.documents_per_second = self.processed_documents / self.processing_time_seconds
         else:
-            values['documents_per_second'] = 0.0
-        
-        return values
-    
-    
+            self.documents_per_second = 0.0
+        return self
+
+
 # Input/Output models for API endpoints
 
 class SearchRequest(BaseModel):
     """Model for search API requests."""
-    documents: List[TextDocument] = Field(..., min_items=1)
-    search_patterns: List[SearchPattern] = Field(..., min_items=1)
-    config: Optional[SearchJobConfig] = Field(None)
+    documents: list[TextDocument] = Field(..., min_length=1)
+    search_patterns: list[SearchPattern] = Field(..., min_length=1)
+    config: SearchJobConfig | None = Field(None)
 
 
 class SearchResponse(BaseModel):
     """Model for search API responses."""
     job_id: str
-    results: List[SearchResult]
+    results: list[SearchResult]
     stats: ProcessingStats
     status: str = "completed"
-    message: Optional[str] = None
+    message: str | None = None

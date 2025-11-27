@@ -1,21 +1,27 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 Tests for file_formats module
 """
 
-import os
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import pandas as pd
 
 from search_names.file_formats import (
-    detect_file_format, read_file, write_file, read_file_chunked,
-    get_file_info, FileFormatError, csv_to_json, csv_to_parquet,
-    json_to_csv, parquet_to_csv
+    FileFormatError,
+    csv_to_json,
+    csv_to_parquet,
+    detect_file_format,
+    get_file_info,
+    json_to_csv,
+    parquet_to_csv,
+    read_file,
+    read_file_chunked,
+    write_file,
 )
 
 
@@ -50,7 +56,7 @@ class TestFileFormatDetection(unittest.TestCase):
         """Test that unsupported formats raise FileFormatError."""
         with self.assertRaises(FileFormatError) as context:
             detect_file_format("test.txt")
-        
+
         self.assertIn("Unsupported file format", str(context.exception))
 
     @patch('search_names.file_formats.HAS_PARQUET', False)
@@ -58,7 +64,7 @@ class TestFileFormatDetection(unittest.TestCase):
         """Test error when parquet format is requested but pyarrow unavailable."""
         with self.assertRaises(FileFormatError) as context:
             detect_file_format("test.parquet")
-        
+
         self.assertIn("Parquet support requires pyarrow", str(context.exception))
 
 
@@ -81,9 +87,9 @@ class TestFileReading(unittest.TestCase):
         """Test reading CSV files."""
         csv_path = Path(self.temp_dir) / "test.csv"
         self.test_data.to_csv(csv_path, index=False)
-        
+
         df = read_file(csv_path)
-        
+
         self.assertEqual(len(df), 3)
         self.assertListEqual(list(df.columns), ['name', 'age', 'city'])
         self.assertEqual(df.iloc[0]['name'], 'John Doe')
@@ -92,29 +98,29 @@ class TestFileReading(unittest.TestCase):
         """Test reading JSON files."""
         json_path = Path(self.temp_dir) / "test.json"
         self.test_data.to_json(json_path, orient='records', lines=True)
-        
+
         df = read_file(json_path)
-        
+
         self.assertEqual(len(df), 3)
         self.assertIn('name', df.columns)
 
     def test_read_nonexistent_file_error(self):
         """Test that reading nonexistent file raises error."""
         nonexistent_path = Path(self.temp_dir) / "nonexistent.csv"
-        
+
         with self.assertRaises(FileFormatError) as context:
             read_file(nonexistent_path)
-        
+
         self.assertIn("File does not exist", str(context.exception))
 
     def test_auto_format_detection(self):
         """Test that file format is auto-detected when not specified."""
         csv_path = Path(self.temp_dir) / "test.csv"
         self.test_data.to_csv(csv_path, index=False)
-        
+
         # Don't specify format - should auto-detect
         df = read_file(csv_path, file_format=None)
-        
+
         self.assertEqual(len(df), 3)
 
     @patch('search_names.file_formats.HAS_POLARS', True)
@@ -124,12 +130,12 @@ class TestFileReading(unittest.TestCase):
         mock_df = MagicMock()
         mock_df.to_pandas.return_value = self.test_data
         mock_pl.read_csv.return_value = mock_df
-        
+
         csv_path = Path(self.temp_dir) / "test.csv"
         self.test_data.to_csv(csv_path, index=False)
-        
+
         df = read_file(csv_path, engine="polars")
-        
+
         mock_pl.read_csv.assert_called_once()
         mock_df.to_pandas.assert_called_once()
 
@@ -151,11 +157,11 @@ class TestFileWriting(unittest.TestCase):
     def test_write_csv_file(self):
         """Test writing CSV files."""
         csv_path = Path(self.temp_dir) / "output.csv"
-        
+
         write_file(self.test_data, csv_path)
-        
+
         self.assertTrue(csv_path.exists())
-        
+
         # Verify content
         df_read = pd.read_csv(csv_path)
         self.assertEqual(len(df_read), 2)
@@ -164,11 +170,11 @@ class TestFileWriting(unittest.TestCase):
     def test_write_json_file(self):
         """Test writing JSON files."""
         json_path = Path(self.temp_dir) / "output.json"
-        
+
         write_file(self.test_data, json_path)
-        
+
         self.assertTrue(json_path.exists())
-        
+
         # Verify content
         df_read = pd.read_json(json_path, lines=True)
         self.assertEqual(len(df_read), 2)
@@ -176,9 +182,9 @@ class TestFileWriting(unittest.TestCase):
     def test_write_creates_directories(self):
         """Test that writing creates necessary directories."""
         nested_path = Path(self.temp_dir) / "subdir1" / "subdir2" / "output.csv"
-        
+
         write_file(self.test_data, nested_path)
-        
+
         self.assertTrue(nested_path.exists())
         self.assertTrue(nested_path.parent.exists())
 
@@ -186,7 +192,7 @@ class TestFileWriting(unittest.TestCase):
     def test_write_parquet_file(self):
         """Test writing Parquet files."""
         parquet_path = Path(self.temp_dir) / "output.parquet"
-        
+
         with patch('pandas.DataFrame.to_parquet') as mock_to_parquet:
             write_file(self.test_data, parquet_path)
             mock_to_parquet.assert_called_once()
@@ -195,10 +201,10 @@ class TestFileWriting(unittest.TestCase):
     def test_write_parquet_unavailable_error(self):
         """Test error when writing parquet without pyarrow."""
         parquet_path = Path(self.temp_dir) / "output.parquet"
-        
+
         with self.assertRaises(FileFormatError) as context:
             write_file(self.test_data, parquet_path)
-        
+
         self.assertIn("Parquet support requires pyarrow", str(context.exception))
 
 
@@ -222,15 +228,15 @@ class TestChunkedReading(unittest.TestCase):
         """Test reading CSV file in chunks."""
         csv_path = Path(self.temp_dir) / "large.csv"
         self.large_data.to_csv(csv_path, index=False)
-        
+
         chunks = []
         for chunk in read_file_chunked(csv_path, chunk_size=100):
             chunks.append(chunk)
-        
+
         # Should have 10 chunks of 100 rows each
         self.assertEqual(len(chunks), 10)
         self.assertEqual(len(chunks[0]), 100)
-        
+
         # Verify data integrity
         combined = pd.concat(chunks, ignore_index=True)
         self.assertEqual(len(combined), 1000)
@@ -239,9 +245,9 @@ class TestChunkedReading(unittest.TestCase):
         """Test reading JSON Lines file in chunks."""
         json_path = Path(self.temp_dir) / "large.json"
         self.large_data.to_json(json_path, orient='records', lines=True)
-        
+
         chunks = list(read_file_chunked(json_path, chunk_size=200, file_format="json"))
-        
+
         # Should have 5 chunks of 200 rows each
         self.assertEqual(len(chunks), 5)
         self.assertEqual(len(chunks[0]), 200)
@@ -251,26 +257,26 @@ class TestChunkedReading(unittest.TestCase):
     def test_chunked_parquet_reading(self, mock_pq):
         """Test reading Parquet file in chunks."""
         parquet_path = Path(self.temp_dir) / "large.parquet"
-        
+
         # Mock parquet file and batches
         mock_file = MagicMock()
         mock_batch = MagicMock()
         mock_batch.to_pandas.return_value = self.large_data.iloc[:100]
         mock_file.iter_batches.return_value = [mock_batch, mock_batch]
         mock_pq.ParquetFile.return_value = mock_file
-        
+
         chunks = list(read_file_chunked(parquet_path, chunk_size=100, file_format="parquet"))
-        
+
         self.assertEqual(len(chunks), 2)
         mock_pq.ParquetFile.assert_called_once_with(parquet_path)
 
     def test_unsupported_format_for_chunking(self):
         """Test that unsupported formats for chunking raise error."""
         excel_path = Path(self.temp_dir) / "test.xlsx"
-        
+
         with self.assertRaises(FileFormatError) as context:
             list(read_file_chunked(excel_path, file_format="excel"))
-        
+
         self.assertIn("Chunked reading not supported for format: excel", str(context.exception))
 
 
@@ -292,9 +298,9 @@ class TestFileInfo(unittest.TestCase):
         """Test getting file info for CSV file."""
         csv_path = Path(self.temp_dir) / "test.csv"
         self.test_data.to_csv(csv_path, index=False)
-        
+
         info = get_file_info(csv_path)
-        
+
         self.assertEqual(info['format'], 'csv')
         self.assertEqual(info['rows'], 3)
         self.assertEqual(info['columns'], 2)
@@ -304,22 +310,22 @@ class TestFileInfo(unittest.TestCase):
     def test_get_file_info_nonexistent(self):
         """Test that getting info for nonexistent file raises error."""
         nonexistent_path = Path(self.temp_dir) / "nonexistent.csv"
-        
+
         with self.assertRaises(FileFormatError) as context:
             get_file_info(nonexistent_path)
-        
+
         self.assertIn("File does not exist", str(context.exception))
 
     @patch('search_names.file_formats.detect_file_format')
     def test_get_file_info_unsupported_format(self, mock_detect):
         """Test file info handling of unsupported formats."""
         mock_detect.side_effect = FileFormatError("Unsupported format")
-        
+
         txt_path = Path(self.temp_dir) / "test.txt"
         txt_path.write_text("some content")
-        
+
         info = get_file_info(txt_path)
-        
+
         self.assertIsNone(info['format'])
         self.assertGreater(info['size_bytes'], 0)
 
@@ -327,13 +333,13 @@ class TestFileInfo(unittest.TestCase):
         """Test that large files get special handling."""
         csv_path = Path(self.temp_dir) / "test.csv"
         self.test_data.to_csv(csv_path, index=False)
-        
+
         with patch('search_names.file_formats.Path.stat') as mock_stat:
             # Mock file size > 100MB
             mock_stat.return_value.st_size = 200 * 1024 * 1024
-            
+
             info = get_file_info(csv_path)
-            
+
             self.assertEqual(info['rows'], "Large file - use chunked reading")
 
 
@@ -355,11 +361,11 @@ class TestConvenienceFunctions(unittest.TestCase):
         """Test CSV to JSON conversion."""
         csv_path = Path(self.temp_dir) / "input.csv"
         json_path = Path(self.temp_dir) / "output.json"
-        
+
         self.test_data.to_csv(csv_path, index=False)
-        
+
         csv_to_json(csv_path, json_path)
-        
+
         self.assertTrue(json_path.exists())
         df_json = pd.read_json(json_path, lines=True)
         self.assertEqual(len(df_json), 2)
@@ -369,9 +375,9 @@ class TestConvenienceFunctions(unittest.TestCase):
         """Test CSV to Parquet conversion."""
         csv_path = Path(self.temp_dir) / "input.csv"
         parquet_path = Path(self.temp_dir) / "output.parquet"
-        
+
         self.test_data.to_csv(csv_path, index=False)
-        
+
         with patch('pandas.DataFrame.to_parquet') as mock_to_parquet:
             csv_to_parquet(csv_path, parquet_path)
             mock_to_parquet.assert_called_once()
@@ -380,11 +386,11 @@ class TestConvenienceFunctions(unittest.TestCase):
         """Test JSON to CSV conversion."""
         json_path = Path(self.temp_dir) / "input.json"
         csv_path = Path(self.temp_dir) / "output.csv"
-        
+
         self.test_data.to_json(json_path, orient='records', lines=True)
-        
+
         json_to_csv(json_path, csv_path)
-        
+
         self.assertTrue(csv_path.exists())
         df_csv = pd.read_csv(csv_path)
         self.assertEqual(len(df_csv), 2)
@@ -394,12 +400,12 @@ class TestConvenienceFunctions(unittest.TestCase):
     def test_parquet_to_csv_conversion(self, mock_read_parquet):
         """Test Parquet to CSV conversion."""
         mock_read_parquet.return_value = self.test_data
-        
+
         parquet_path = Path(self.temp_dir) / "input.parquet"
         csv_path = Path(self.temp_dir) / "output.csv"
-        
+
         parquet_to_csv(parquet_path, csv_path)
-        
+
         mock_read_parquet.assert_called_once_with(parquet_path)
         self.assertTrue(csv_path.exists())
 
@@ -418,7 +424,7 @@ class TestErrorHandling(unittest.TestCase):
         """Test handling of corrupted file reading."""
         csv_path = Path(self.temp_dir) / "corrupted.csv"
         csv_path.write_text("invalid,csv,content\nwith,missing\n")
-        
+
         # Should handle the error gracefully
         try:
             df = read_file(csv_path)
@@ -434,9 +440,9 @@ class TestErrorHandling(unittest.TestCase):
         readonly_dir = Path(self.temp_dir) / "readonly"
         readonly_dir.mkdir()
         readonly_dir.chmod(0o444)  # Read-only
-        
+
         output_path = readonly_dir / "output.csv"
-        
+
         try:
             with self.assertRaises(FileFormatError):
                 write_file(pd.DataFrame({'a': [1]}), output_path)

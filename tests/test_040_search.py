@@ -1,16 +1,14 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 Tests for secc_caste_ln.py
 """
 
 import os
-import shutil
 import unittest
+
 from search_names import search_names
 from search_names.search_names import load_names_file
-from . import capture
 
 
 class TestSearch(unittest.TestCase):

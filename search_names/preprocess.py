@@ -1,15 +1,14 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-import sys
 import argparse
 import csv
 import itertools
-
-from copy import copy
+import sys
 import traceback
+from copy import copy
 
 from Levenshtein import distance
+
 from .logging_config import get_logger
 
 logger = get_logger("preprocess")
@@ -28,20 +27,20 @@ def parse_command_line(argv):
 
     parser.add_argument("-o", "--out", type=str, dest="outfile",
                         default=DEFAULT_OUTPUT,
-                        help="Output file in CSV (default: {0!s})"
-                        .format(DEFAULT_OUTPUT))
+                        help=f"Output file in CSV (default: {DEFAULT_OUTPUT!s})"
+                        )
     parser.add_argument("-d", "--drop-patterns", type=str, dest="drop_patterns_file",
                         default=DEFAULT_DROP_PATTERNS,
-                        help="File with Default Patterns\
-                        (default: {0!s})".format(DEFAULT_DROP_PATTERNS))
+                        help=f"File with Default Patterns\
+                        (default: {DEFAULT_DROP_PATTERNS!s})")
     parser.add_argument("-p", "--patterns", type=str, nargs='+', dest="patterns",
                         default=DEFAULT_PATTERNS,
-                        help="List of Default Patterns\
-                        (default: {0!s})".format(DEFAULT_PATTERNS))
+                        help=f"List of Default Patterns\
+                        (default: {DEFAULT_PATTERNS!s})")
     parser.add_argument("-e", "--editlength", type=int, nargs='+', dest="editlength",
                         default=DEFAULT_EDITLENGTH,
-                        help="List of Edit Lengths\
-                        (default: {0!s})".format(DEFAULT_EDITLENGTH))
+                        help=f"List of Edit Lengths\
+                        (default: {DEFAULT_EDITLENGTH!s})")
     return parser.parse_args(argv)
 
 
@@ -54,7 +53,7 @@ def load_drop_patterns(filename):
                 if len(l): # null string
                     continue
                 drop_patterns.append(l)
-    except Exception as e:
+    except Exception:
         logger.warning(f'Drop pattern file {filename} not found')
     return drop_patterns
 
@@ -67,7 +66,7 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
 
     try:
         f = None
-        f = open(infile, 'r')
+        f = open(infile)
         reader = csv.DictReader(f)
         out = []
         logger.info("Building search names...")
@@ -124,7 +123,7 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
 
         # Remove duplicates (reversed order)
         logger.info("Removing duplicates...")
-        dup = sorted(list(dup), reverse=True)
+        dup = sorted(dup, reverse=True)
         for i in dup:
             del out[i]
 
@@ -136,7 +135,7 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
         writer.writeheader()
         for r in out:
             writer.writerow(r)
-    except Exception as e:
+    except Exception:
         traceback.print_exc()
 
     finally:
@@ -154,7 +153,7 @@ def main(argv=sys.argv[1:]):
     args.drop_patterns = load_drop_patterns(args.drop_patterns_file)
 
     logger.debug(f"Arguments: {args}")
-  
+
     preprocess(args.input, args.patterns, args.outfile, args.editlength, args.drop_patterns)
 
     return 0

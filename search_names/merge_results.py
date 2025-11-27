@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-import sys
 import argparse
 import logging
-from csv import DictWriter, DictReader
+import sys
+from csv import DictReader, DictWriter
 
 LOG_FILE = 'merge_results.log'
 DEFAULT_OUTPUT_FILE = 'merged_search_results.csv'
@@ -26,13 +25,13 @@ def setup_logger():
 
 
 def merge_results(infile = None, outfile = DEFAULT_OUTPUT_FILE):
-   
+
     out = open(outfile, 'w')
     count = 0
     try:
         for n, i in enumerate(infile):
-            logging.info("Merging...: '{0}'".format(i))
-            with open(i, 'r') as f:
+            logging.info(f"Merging...: '{i}'")
+            with open(i) as f:
                 reader = DictReader(f)
                 if n == 0:
                     writer = DictWriter(out, fieldnames=reader.fieldnames)
@@ -45,8 +44,8 @@ def merge_results(infile = None, outfile = DEFAULT_OUTPUT_FILE):
     finally:
         out.close()
 
-    logging.info("Done! (merge: {0} rows, from {1} files"
-                 .format(count, len(infile)))
+    logging.info(f"Done! (merge: {count} rows, from {len(infile)} files"
+                 )
 
 
 
@@ -61,15 +60,15 @@ def main(argv=sys.argv[1:]):
 
     parser.add_argument("-o", "--out", type=str, dest="outfile",
                         default=DEFAULT_OUTPUT_FILE,
-                        help="Output file in CSV (default: {0:s})"
-                        .format(DEFAULT_OUTPUT_FILE))
+                        help=f"Output file in CSV (default: {DEFAULT_OUTPUT_FILE:s})"
+                        )
 
     args = parser.parse_args(argv)
 
     setup_logger()
 
     logging.info(str(args))
-    
+
     merge_results(args.inputs, args.outfile)
 
     return 0

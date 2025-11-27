@@ -1,18 +1,19 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-import os
-import sys
 import argparse
-import re
 import csv
+import os
+import re
+import sys
+
 from nameparser import HumanName
+
 from .logging_config import get_logger
 
 logger = get_logger("clean_names")
 
 DEFAULT_OUTPUT = "clean_names.csv"
-re_std_suffix = re.compile("(JR|SR|PHD)[^\.]", flags=re.I)
+re_std_suffix = re.compile(r"(JR|SR|PHD)[^\.]", flags=re.I)
 
 def parse_command_line(argv):
     """Parse command line options
@@ -23,8 +24,8 @@ def parse_command_line(argv):
 
     parser.add_argument("-o", "--out", action="store",
                         type=str, dest="outfile", default=DEFAULT_OUTPUT,
-                        help="Output file in CSV (default: {0!s})"
-                        .format(DEFAULT_OUTPUT))
+                        help=f"Output file in CSV (default: {DEFAULT_OUTPUT!s})"
+                        )
     parser.add_argument("-c", "--column", action="store",
                         type=str, dest="column", default="Name",
                         help="Column name file in CSV contains Name list \

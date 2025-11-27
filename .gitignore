@@ -53,3 +53,5 @@ docs/_build/
 
 # Log files
 *.log
+.DS_Store
+/nltk_data

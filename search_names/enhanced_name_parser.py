@@ -1,8 +1,9 @@
 """Enhanced name parser with support for both HumanName and parsernaam."""
 
-from typing import List, Dict, Any, Optional, Union, Tuple
-import pandas as pd
 from dataclasses import dataclass
+from typing import Any
+
+import pandas as pd
 
 try:
     from .logging_config import get_logger
@@ -28,15 +29,15 @@ except ImportError:
 class ParsedName:
     """Unified parsed name representation."""
     original: str
-    first_name: Optional[str] = None
-    middle_name: Optional[str] = None
-    last_name: Optional[str] = None
-    title: Optional[str] = None
-    suffix: Optional[str] = None
-    nickname: Optional[str] = None
+    first_name: str | None = None
+    middle_name: str | None = None
+    last_name: str | None = None
+    title: str | None = None
+    suffix: str | None = None
+    nickname: str | None = None
     confidence: float = 1.0
     parser_used: str = "humanname"
-    
+
     def full_name(self) -> str:
         """Get full name from components."""
         parts = []
@@ -51,8 +52,8 @@ class ParsedName:
         if self.suffix:
             parts.append(self.suffix)
         return " ".join(parts)
-    
-    def to_dict(self) -> Dict[str, Any]:
+
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "original": self.original,
@@ -69,15 +70,15 @@ class ParsedName:
 
 class NameParser:
     """Enhanced name parser with multiple backend support."""
-    
+
     def __init__(
-        self, 
+        self,
         parser_type: str = "auto",
         batch_size: int = 100,
         ml_threshold: float = 0.8
     ):
         """Initialize name parser.
-        
+
         Args:
             parser_type: "humanname", "parsernaam", or "auto"
             batch_size: Batch size for parsernaam processing
@@ -86,19 +87,19 @@ class NameParser:
         self.parser_type = parser_type
         self.batch_size = batch_size
         self.ml_threshold = ml_threshold
-        
+
         # Validate parser availability
         if parser_type == "parsernaam" and not HAS_PARSERNAAM:
             logger.warning("parsernaam requested but not available, falling back to humanname")
             self.parser_type = "humanname"
-        
+
         logger.info(f"Initialized NameParser with type: {self.parser_type}")
-    
+
     def parse_with_humanname(self, name: str) -> ParsedName:
         """Parse name using HumanName."""
         try:
             parsed = HumanName(name)
-            
+
             return ParsedName(
                 original=name,
                 first_name=parsed.first if parsed.first else None,
@@ -113,27 +114,27 @@ class NameParser:
         except Exception as e:
             logger.error(f"Error parsing name '{name}' with HumanName: {e}")
             return ParsedName(original=name, confidence=0.0, parser_used="humanname")
-    
-    def parse_with_parsernaam(self, names: List[str]) -> List[ParsedName]:
+
+    def parse_with_parsernaam(self, names: list[str]) -> list[ParsedName]:
         """Parse names using parsernaam (batch processing)."""
         if not HAS_PARSERNAAM:
             logger.warning("parsernaam not available, using humanname")
             return [self.parse_with_humanname(name) for name in names]
-        
+
         try:
             # Create DataFrame for parsernaam
             df = pd.DataFrame({'name': names})
-            
+
             # Parse names
             results = ParseNames.parse(df)
-            
+
             # Convert results to ParsedName objects
             parsed_names = []
             for idx, row in results.iterrows():
                 # parsernaam returns predictions for each token
                 # We need to reconstruct the name components
                 name_parts = self._extract_name_parts_from_parsernaam(row)
-                
+
                 parsed_names.append(ParsedName(
                     original=names[idx],
                     first_name=name_parts.get('first_name'),
@@ -142,15 +143,15 @@ class NameParser:
                     confidence=name_parts.get('confidence', 0.8),
                     parser_used="parsernaam"
                 ))
-            
+
             return parsed_names
-            
+
         except Exception as e:
             logger.error(f"Error parsing names with parsernaam: {e}")
             # Fall back to humanname
             return [self.parse_with_humanname(name) for name in names]
-    
-    def _extract_name_parts_from_parsernaam(self, row: pd.Series) -> Dict[str, Any]:
+
+    def _extract_name_parts_from_parsernaam(self, row: pd.Series) -> dict[str, Any]:
         """Extract name parts from parsernaam output."""
         # parsernaam returns predictions for each word
         # This is a simplified extraction - could be enhanced
@@ -160,7 +161,7 @@ class NameParser:
             'last_name': None,
             'confidence': 0.8
         }
-        
+
         # Extract based on parsernaam's predictions
         # Note: This depends on parsernaam's actual output format
         # which may need adjustment based on the library's API
@@ -173,9 +174,9 @@ class NameParser:
                 parts['confidence'] = row['confidence']
         except Exception:
             pass
-        
+
         return parts
-    
+
     def is_indian_name(self, name: str) -> bool:
         """Check if name appears to be Indian."""
         # Common Indian name patterns and suffixes
@@ -185,16 +186,16 @@ class NameParser:
             'krishna', 'ram', 'sai', 'venkat', 'raj', 'mohan',
             'swamy', 'naidu', 'choudhury', 'mukherjee', 'chatterjee'
         ]
-        
+
         name_lower = name.lower()
         return any(pattern in name_lower for pattern in indian_patterns)
-    
-    def parse(self, name: Union[str, List[str]]) -> Union[ParsedName, List[ParsedName]]:
+
+    def parse(self, name: str | list[str]) -> ParsedName | list[ParsedName]:
         """Parse one or more names.
-        
+
         Args:
             name: Single name string or list of names
-            
+
         Returns:
             ParsedName or list of ParsedName objects
         """
@@ -212,10 +213,10 @@ class NameParser:
                     return results[0] if results else self.parse_with_humanname(name)
                 else:
                     return self.parse_with_humanname(name)
-        
+
         # Handle list of names
         names_list = name if isinstance(name, list) else [name]
-        
+
         if self.parser_type == "humanname":
             return [self.parse_with_humanname(n) for n in names_list]
         elif self.parser_type == "parsernaam":
@@ -226,7 +227,7 @@ class NameParser:
             indian_indices = []
             regular_names = []
             regular_indices = []
-            
+
             for i, n in enumerate(names_list):
                 if HAS_PARSERNAAM and self.is_indian_name(n):
                     indian_names.append(n)
@@ -234,44 +235,44 @@ class NameParser:
                 else:
                     regular_names.append(n)
                     regular_indices.append(i)
-            
+
             # Parse each group
             results = [None] * len(names_list)
-            
+
             # Parse Indian names with parsernaam
             if indian_names:
                 parsed_indian = self.parse_with_parsernaam(indian_names)
                 for i, idx in enumerate(indian_indices):
                     results[idx] = parsed_indian[i]
-            
+
             # Parse regular names with humanname
             for i, idx in enumerate(regular_indices):
                 results[idx] = self.parse_with_humanname(regular_names[i])
-            
+
             return results
-    
+
     def parse_dataframe(
-        self, 
-        df: pd.DataFrame, 
+        self,
+        df: pd.DataFrame,
         name_column: str = "name",
         add_components: bool = True
     ) -> pd.DataFrame:
         """Parse names in a DataFrame.
-        
+
         Args:
             df: Input DataFrame
             name_column: Column containing names
             add_components: Whether to add parsed components as new columns
-            
+
         Returns:
             DataFrame with parsed names
         """
         if name_column not in df.columns:
             raise ValueError(f"Column '{name_column}' not found in DataFrame")
-        
+
         names = df[name_column].tolist()
         parsed = self.parse(names)
-        
+
         if add_components:
             # Add parsed components as new columns
             df['parsed_first_name'] = [p.first_name for p in parsed]
@@ -284,55 +285,55 @@ class NameParser:
         else:
             # Just add the parsed name objects
             df['parsed_name'] = parsed
-        
+
         return df
 
 
 def parse_names(
-    names: Union[str, List[str], pd.DataFrame],
+    names: str | list[str] | pd.DataFrame,
     parser_type: str = "auto",
-    name_column: Optional[str] = "name"
-) -> Union[ParsedName, List[ParsedName], pd.DataFrame]:
+    name_column: str | None = "name"
+) -> ParsedName | list[ParsedName] | pd.DataFrame:
     """Convenience function to parse names.
-    
+
     Args:
         names: Single name, list of names, or DataFrame
         parser_type: "humanname", "parsernaam", or "auto"
         name_column: Column name if input is DataFrame
-        
+
     Returns:
         Parsed results in same format as input
     """
     parser = NameParser(parser_type=parser_type)
-    
+
     if isinstance(names, pd.DataFrame):
         return parser.parse_dataframe(names, name_column=name_column)
     else:
         return parser.parse(names)
 
 
-def compare_parsers(name: str) -> Dict[str, ParsedName]:
+def compare_parsers(name: str) -> dict[str, ParsedName]:
     """Compare results from different parsers.
-    
+
     Args:
         name: Name to parse
-        
+
     Returns:
         Dictionary with results from each parser
     """
     results = {}
-    
+
     # Parse with HumanName
     hn_parser = NameParser(parser_type="humanname")
     results['humanname'] = hn_parser.parse(name)
-    
+
     # Parse with parsernaam if available
     if HAS_PARSERNAAM:
         pn_parser = NameParser(parser_type="parsernaam")
         results['parsernaam'] = pn_parser.parse(name)
-    
+
     # Parse with auto
     auto_parser = NameParser(parser_type="auto")
     results['auto'] = auto_parser.parse(name)
-    
+
     return results

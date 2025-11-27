@@ -1,16 +1,16 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-import re
 import os
+import re
 import string
 import unicodedata
 
 import nltk
 from nltk.corpus import stopwords
-from nltk.tokenize import wordpunct_tokenize
 from nltk.stem.porter import PorterStemmer
 from nltk.stem.snowball import EnglishStemmer
+from nltk.tokenize import wordpunct_tokenize
+
 from .logging_config import get_logger
 
 logger = get_logger("utils")
@@ -41,7 +41,7 @@ def remove_accents(text):
     """Remove diacritics
     """
     nkfd_form = unicodedata.normalize('NFKD', text)
-    text = u"".join([c for c in nkfd_form if not unicodedata.combining(c)])
+    text = "".join([c for c in nkfd_form if not unicodedata.combining(c)])
 
     text = re.sub(r'[\x80-\xFF]', '', text)
 
@@ -59,7 +59,7 @@ def remove_special_chars(text):
     """
     schars = ''.join([a for a in string.punctuation if a not in ".,?"])
 
-    text = re.sub('[%s]' % re.escape(schars), '', text)
+    text = re.sub(f'[{re.escape(schars)}]', '', text)
     return text
 
 
@@ -92,7 +92,7 @@ def remove_stopwords(text, swords=None):
 def remove_punctuation(text):
     """Replace punctuation mark with space
     """
-    text = re.sub('[%s]' % re.escape(string.punctuation), '', text)
+    text = re.sub(f'[{re.escape(string.punctuation)}]', '', text)
     return text
 
 
@@ -140,7 +140,7 @@ def export(outdir, filename, text):
         extdir = os.path.split(fname)[0]
         if not os.path.exists(extdir):
             os.makedirs(extdir)
-        with open(fname, 'wt') as f:
+        with open(fname, "w") as f:
             f.write(text.encode('ascii', 'ignore'))
         return True
     except:
@@ -191,8 +191,8 @@ def init_nltk():
 if __name__ == "__main__":
     from .logging_config import setup_logging
     setup_logging()
-    
-    with open('./test/input-latin-1.txt', "rt") as f:
+
+    with open('./test/input-latin-1.txt') as f:
         text = ''.join(f.readlines())
 
     init_nltk()
@@ -216,7 +216,7 @@ if __name__ == "__main__":
     logger.info('-'*20 + 'Stemmed' + '-'*20)
     text = stemmed(text)
     logger.info(text)
-    text = re.sub("\s\.", '.', text)
+    text = re.sub(r"\s\.", '.', text)
     text = re.sub(r'(\d+)dot(\d+)', r'\1.\2', text)
     logger.info(text)
     logger.info('-'*20 + 'Split sentences' + '-'*20)

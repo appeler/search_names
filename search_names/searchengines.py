@@ -1,14 +1,15 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 Using `regex` instead of Python built-in `re` module.
 
 """
+import csv
+import time
+
 import regex as re
 from Levenshtein import distance
-import time
-import csv
+
 from .logging_config import get_logger
 
 logger = get_logger("searchengines")
@@ -19,7 +20,7 @@ MAX_RESULT = 20
 DEF_INPUT_FILE = 'deduped_augmented_clean_names.csv'
 RESULT_FIELDS = ['uniqid', 'n', 'match', 'start', 'end']
 
-class SearchMultipleKeywords(object):
+class SearchMultipleKeywords:
     """Search by multiple keywords list
     """
     def __init__(self, keywords, fuzzy_min_len=None):
@@ -37,17 +38,17 @@ class SearchMultipleKeywords(object):
 
         logger.info(f"Number of unique keywords ID to be searched: {len(self.keywords)}")
 
-        self.re_keywords = dict()
+        self.re_keywords = {}
         for i in self.keywords:
             kw = []
             for k in self.keywords[i]:
                 d = self.get_allow_distance(k)
                 if d:
-                    kw.append(r'(?:{0}){{e<={1}}}'.format(re.escape(k), d))
+                    kw.append(rf'(?:{re.escape(k)}){{e<={d}}}')
                 else:
                     kw.append(re.escape(k))
             re_str = '|'.join(kw)
-            re_str = r'\b(?:{0})\b'.format(re_str)
+            re_str = rf'\b(?:{re_str})\b'
             self.re_keywords[i] = re.compile(re_str, flags=re.I)
 
     def get_allow_distance(self, k):
@@ -64,7 +65,7 @@ class SearchMultipleKeywords(object):
         if n == 0:
             return c
 
-        match = dict()
+        match = {}
         for k in self.re_keywords:
             for a in self.re_keywords[k].finditer(s):
                 name = a.group(0).strip()
@@ -92,7 +93,7 @@ class SearchMultipleKeywords(object):
         return c, count
 
 
-class NewSearchMultipleKeywords(object):
+class NewSearchMultipleKeywords:
     """New search by multiple keywords (should be faster if large keywords)
     """
 
@@ -116,12 +117,12 @@ class NewSearchMultipleKeywords(object):
         for k in self.keywords:
             d = self.get_allow_distance(k)
             if d:
-                kw.append(r'(?:{0}){{e<={1}}}'.format(re.escape(k), d))
+                kw.append(rf'(?:{re.escape(k)}){{e<={d}}}')
             else:
                 kw.append(re.escape(k))
 
         re_str = '|'.join(kw)
-        re_str = r'\b(?:{0})\b'.format(re_str)
+        re_str = rf'\b(?:{re_str})\b'
         self.re_keywords = re.compile(re_str)
 
     def get_allow_distance(self, k):
@@ -145,7 +146,7 @@ class NewSearchMultipleKeywords(object):
             return c
 
         j = 0
-        match = dict()
+        match = {}
         for a in self.re_keywords.finditer(s):
             fkey = a.group(0).strip()
             if fkey not in self.keywords:
@@ -181,7 +182,7 @@ class NewSearchMultipleKeywords(object):
 
 
 if __name__ == "__main__":
-    
+
 
     keywords = []
     with open(DEF_INPUT_FILE, 'rb') as f:
@@ -198,7 +199,7 @@ if __name__ == "__main__":
         result_header = reader.fieldnames
         for i in range(0, n_result):
             for j in RESULT_FIELDS:
-                result_header.append('name{0}.{1}'.format(i + 1, j))
+                result_header.append(f'name{i + 1}.{j}')
         result_header.append('count')
         writer.writerow(result_header)
         start_time = time.time()
@@ -224,7 +225,7 @@ if __name__ == "__main__":
         result_header = reader.fieldnames
         for i in range(0, n_result):
             for j in RESULT_FIELDS:
-                result_header.append('name{0}.{1}'.format(i + 1, j))
+                result_header.append(f'name{i + 1}.{j}')
         result_header.append('count')
         writer.writerow(result_header)
         start_time = time.time()

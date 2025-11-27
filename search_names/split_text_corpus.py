@@ -1,14 +1,13 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-import os
-from os.path import splitext, basename, dirname
-import ctypes
 import argparse
-import logging
 import csv
-from csv import DictWriter, DictReader
+import ctypes
+import logging
+import os
 import sys
+from csv import DictReader, DictWriter
+from os.path import basename, dirname, splitext
 
 try:
     csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
@@ -35,7 +34,7 @@ def setup_logger():
     logging.getLogger('').addHandler(console)
 
 def split_text_corpus(infile=None, outfile=None, size=1000):
-    with open(infile, 'r') as f:
+    with open(infile) as f:
         reader = DictReader(f)
         header = reader.fieldnames
         if 'uniqid' not in header:
@@ -51,8 +50,8 @@ def split_text_corpus(infile=None, outfile=None, size=1000):
                 filename = splitext(basename(infile))[0]
                 chunk_name = outfile.format(basename=filename,
                                                  chunk_id=chunk_id)
-                logging.info("Create new chunk: {0}, filename: {1}"
-                             .format(chunk_id, chunk_name))
+                logging.info(f"Create new chunk: {chunk_id}, filename: {chunk_name}"
+                             )
                 d = dirname(chunk_name)
                 if not os.path.exists(d):
                     os.makedirs(d)
@@ -83,11 +82,11 @@ def main(argv=sys.argv[1:]):
 
     parser.add_argument("-o", "--out", type=str, dest="outfile",
                         default=DEFAULT_OUTPUT_FORMAT,
-                        help="Output file in CSV (default: {0:s})"
-                        .format(DEFAULT_OUTPUT_FORMAT))
+                        help=f"Output file in CSV (default: {DEFAULT_OUTPUT_FORMAT:s})"
+                        )
     parser.add_argument('-s', '--size', type=int, default=DEFAULT_CHUNK_SIZE,
-                        help='Number of row in each chunk (default: {0:d})'
-                        .format(DEFAULT_CHUNK_SIZE))
+                        help=f'Number of row in each chunk (default: {DEFAULT_CHUNK_SIZE:d})'
+                        )
 
     args = parser.parse_args(argv)
 
