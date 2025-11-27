@@ -366,7 +366,7 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(len(results), len(names))
 
         # Check each result
-        for result, original in zip(results, names):
+        for result, original in zip(results, names, strict=False):
             self.assertEqual(result.original, original)
             self.assertIsNotNone(result.first_name or result.last_name)
             self.assertEqual(result.parser_used, "humanname")

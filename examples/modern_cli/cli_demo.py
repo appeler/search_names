@@ -53,15 +53,15 @@ def process_names(
 ):
     """
     Process names in a CSV file with enhanced parsing capabilities.
-    
+
     [bold green]Examples:[/bold green]
-    
+
     [dim]# Basic processing with auto parser selection[/dim]
     python cli_demo.py process-names input.csv -o output.csv
-    
-    [dim]# Use specific parser with JSON output[/dim]  
+
+    [dim]# Use specific parser with JSON output[/dim]
     python cli_demo.py process-names input.csv -p parsernaam -f json -o output.json
-    
+
     [dim]# Use configuration file[/dim]
     python cli_demo.py process-names input.csv --config config.yaml -o output.parquet
     """
@@ -142,12 +142,12 @@ def compare_parsers(
 ):
     """
     Compare parsing results across different parsers for given names.
-    
+
     [bold green]Examples:[/bold green]
-    
+
     [dim]# Compare parsing for specific names[/dim]
     python cli_demo.py compare-parsers "John Smith" "Rajesh Kumar Singh" "Dr. Mary Johnson-Brown"
-    
+
     [dim]# Save comparison results[/dim]
     python cli_demo.py compare-parsers "Complex Name" --save -o comparison.csv
     """
@@ -218,9 +218,9 @@ def generate_config(
 ):
     """
     Generate a sample YAML configuration file.
-    
+
     [bold green]Example:[/bold green]
-    
+
     [dim]# Generate default configuration[/dim]
     python cli_demo.py generate-config -o my_config.yaml
     """
@@ -250,7 +250,7 @@ ml_threshold: {config.ml_threshold}
 logging:
   level: INFO
   rich_logging: true
-  
+
 # Output formatting
 output:
   include_confidence: true
@@ -271,9 +271,9 @@ def validate_names(
 ):
     """
     Validate name parsing quality and identify problematic names.
-    
+
     [bold green]Example:[/bold green]
-    
+
     [dim]# Validate names with default threshold[/dim]
     python cli_demo.py validate-names input.csv --min-confidence 0.8
     """

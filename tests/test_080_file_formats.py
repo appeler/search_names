@@ -134,7 +134,7 @@ class TestFileReading(unittest.TestCase):
         csv_path = Path(self.temp_dir) / "test.csv"
         self.test_data.to_csv(csv_path, index=False)
 
-        df = read_file(csv_path, engine="polars")
+        read_file(csv_path, engine="polars")
 
         mock_pl.read_csv.assert_called_once()
         mock_df.to_pandas.assert_called_once()
