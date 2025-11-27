@@ -35,10 +35,14 @@ jobs:
     - name: Set up Python
       run: uv python install 3.11
 
+    - name: Setup uv cache
+      run: |
+        echo "UV_CACHE_DIR=$(uv cache dir)" >> $GITHUB_ENV
+
     - name: Cache dependencies
       uses: actions/cache@v4
       with:
-        path: ~/.cache/uv
+        path: ${{ env.UV_CACHE_DIR }}
         key: ${{ runner.os }}-uv-${{ hashFiles('pyproject.toml') }}
         restore-keys: |
           ${{ runner.os }}-uv-
