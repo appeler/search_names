@@ -1,0 +1,65 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "search_names"
+version = "0.2.0"
+description = "Search a long list of names (patterns) in a large text corpus systematically and quickly"
+authors = [
+    {name = "Suriyan Laohaprapanon", email = "suriyant@gmail.com"},
+    {name = "Gaurav Sood", email = "gsood07@gmail.com"}
+]
+license = {text = "MIT"}
+readme = "README.rst"
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities"
+]
+keywords = ["search", "names", "text", "corpus", "pattern"]
+dependencies = [
+    "nameparser",
+    "python-Levenshtein",
+    "regex",
+    "nltk",
+    "six"
+]
+
+[project.optional-dependencies]
+dev = ["check-manifest"]
+test = ["coverage", "pytest", "tox"]
+docs = ["sphinx", "furo"]
+
+[project.urls]
+Homepage = "https://github.com/appeler/search_names"
+Repository = "https://github.com/appeler/search_names"
+Issues = "https://github.com/appeler/search_names/issues"
+
+[project.scripts]
+clean_names = "search_names.clean_names:main"
+merge_supp = "search_names.merge_supp:main"
+preprocess = "search_names.preprocess:main"
+split_text_corpus = "search_names.split_text_corpus:main"
+search_names = "search_names.search_names:main"
+merge_results = "search_names.merge_results:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["search_names"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"examples" = "share/search_names/examples"
+
+[tool.pytest.ini_options]
+testpaths = ["search_names/tests"]
+python_files = "test_*.py"
+python_functions = "test_*"

@@ -1,4 +1,0 @@
-include README.rst
-include LICENSE
-include search-names/preprocess.cfg
-include search-names/search_names.cfg
