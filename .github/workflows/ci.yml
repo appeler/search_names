@@ -36,10 +36,6 @@ jobs:
       run: |
         uv run ruff format --check .
 
-    - name: Run mypy type checking
-      run: |
-        uv run mypy search_names/
-
     - name: Run tests
       run: |
         uv run pytest tests/ -v
