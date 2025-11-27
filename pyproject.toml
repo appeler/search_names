@@ -12,16 +12,14 @@ authors = [
 ]
 license = {text = "MIT"}
 readme = "README.rst"
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Utilities"
@@ -31,13 +29,12 @@ dependencies = [
     "nameparser",
     "python-Levenshtein",
     "regex",
-    "nltk",
-    "six"
+    "nltk"
 ]
 
 [project.optional-dependencies]
-dev = ["check-manifest"]
-test = ["coverage", "pytest", "tox"]
+dev = ["ruff", "black", "isort"]
+test = ["coverage", "pytest"]
 docs = ["sphinx", "furo"]
 
 [project.urls]
@@ -60,6 +57,38 @@ packages = ["search_names"]
 "examples" = "share/search_names/examples"
 
 [tool.pytest.ini_options]
-testpaths = ["search_names/tests"]
+testpaths = ["tests"]
 python_files = "test_*.py"
 python_functions = "test_*"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501", # line too long, handled by formatter
+    "B008", # do not perform function calls in argument defaults
+    "C901", # too complex
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402"]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88

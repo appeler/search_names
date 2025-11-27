@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13"]
 
     steps:
     - uses: actions/checkout@v4
@@ -28,13 +28,14 @@ jobs:
       run: |
         uv sync --extra test --extra dev
 
+    - name: Run ruff linting
+      run: |
+        uv run ruff check .
+
+    - name: Run ruff formatting check
+      run: |
+        uv run ruff format --check .
+
     - name: Run tests
       run: |
-        uv run pytest search_names/tests/ -v
-
-    - name: Run linting (if available)
-      run: |
-        if uv run which ruff >/dev/null 2>&1; then
-          uv run ruff check .
-        fi
-      continue-on-error: true
+        uv run pytest tests/ -v

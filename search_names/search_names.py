@@ -11,8 +11,6 @@ import argparse
 import logging
 import csv
 import gzip
-import six
-from six.moves import range
 try:
     csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
 except:
@@ -20,7 +18,7 @@ except:
 import time
 import signal
 
-from six.moves.configparser import ConfigParser
+from configparser import ConfigParser
 from .searchengines import (SearchMultipleKeywords, NewSearchMultipleKeywords,
                            RESULT_FIELDS)
 
