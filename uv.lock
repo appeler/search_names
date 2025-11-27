@@ -2164,11 +2164,14 @@ dependencies = [
     { name = "nameparser" },
     { name = "nltk" },
     { name = "pandas" },
+    { name = "parsernaam" },
     { name = "pydantic" },
     { name = "python-levenshtein" },
     { name = "pyyaml" },
     { name = "regex" },
     { name = "rich" },
+    { name = "sentence-transformers" },
+    { name = "spacy" },
     { name = "typer" },
 ]
 
@@ -2177,11 +2180,8 @@ all = [
     { name = "elasticsearch" },
     { name = "fastapi" },
     { name = "opensearch-py" },
-    { name = "parsernaam" },
     { name = "polars" },
     { name = "pyarrow" },
-    { name = "sentence-transformers" },
-    { name = "spacy" },
     { name = "transformers" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -2198,12 +2198,7 @@ formats = [
     { name = "polars" },
     { name = "pyarrow" },
 ]
-ml = [
-    { name = "parsernaam" },
-]
 nlp = [
-    { name = "sentence-transformers" },
-    { name = "spacy" },
     { name = "transformers" },
 ]
 search = [
@@ -2232,7 +2227,7 @@ requires-dist = [
     { name = "nltk" },
     { name = "opensearch-py", marker = "extra == 'search'", specifier = ">=2.0.0" },
     { name = "pandas", specifier = ">=2.0.0" },
-    { name = "parsernaam", marker = "extra == 'ml'", specifier = ">=0.0.1" },
+    { name = "parsernaam", specifier = ">=0.2.0" },
     { name = "polars", marker = "extra == 'formats'", specifier = ">=0.19.0" },
     { name = "pyarrow", marker = "extra == 'formats'", specifier = ">=10.0.0" },
     { name = "pydantic", specifier = ">=2.0.0" },
@@ -2244,8 +2239,8 @@ requires-dist = [
     { name = "rich", specifier = ">=13.0.0" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "search-names", extras = ["nlp", "ml", "formats", "search", "web"], marker = "extra == 'all'" },
-    { name = "sentence-transformers", marker = "extra == 'nlp'", specifier = ">=2.2.0" },
-    { name = "spacy", marker = "extra == 'nlp'", specifier = ">=3.7.0" },
+    { name = "sentence-transformers", specifier = ">=2.2.0" },
+    { name = "spacy", specifier = ">=3.7.0" },
     { name = "sphinx", marker = "extra == 'docs'" },
     { name = "transformers", marker = "extra == 'nlp'", specifier = ">=4.21.0" },
     { name = "typer", extras = ["all"], specifier = ">=0.9.0" },

@@ -2,28 +2,14 @@
 
 from typing import Any
 
+import numpy as np
+import spacy
+from sentence_transformers import SentenceTransformer
+
 from .logging_config import get_logger
 from .models import EntityLinkingResult, EntityMention
 
 logger = get_logger("nlp_engine")
-
-# Optional imports with graceful degradation
-try:
-    import spacy
-
-    HAS_SPACY = True
-except ImportError:
-    logger.debug("spaCy not available - NER features disabled")
-    HAS_SPACY = False
-
-try:
-    import numpy as np
-    from sentence_transformers import SentenceTransformer
-
-    HAS_SENTENCE_TRANSFORMERS = True
-except ImportError:
-    logger.debug("sentence-transformers not available - semantic similarity disabled")
-    HAS_SENTENCE_TRANSFORMERS = False
 
 
 class NLPEngineError(Exception):
@@ -46,10 +32,7 @@ class SpacyNER:
             model_name: spaCy model to load
             disable_components: Pipeline components to disable for speed
         """
-        if not HAS_SPACY:
-            raise NLPEngineError(
-                "spaCy is required but not installed: pip install spacy"
-            )
+        # spaCy is now always available as a main dependency
 
         self.model_name = model_name
         self.nlp = None
@@ -218,11 +201,7 @@ class SemanticSimilarity:
         Args:
             model_name: Sentence transformer model name
         """
-        if not HAS_SENTENCE_TRANSFORMERS:
-            raise NLPEngineError(
-                "sentence-transformers is required but not installed: "
-                "pip install sentence-transformers"
-            )
+        # sentence-transformers is now always available as a main dependency
 
         self.model_name = model_name
         self.model = None
@@ -435,13 +414,13 @@ class NLPEngine:
         self.entity_linker = None
 
         # Initialize components based on configuration
-        if enable_ner and HAS_SPACY:
+        if enable_ner:
             try:
                 self.spacy_ner = SpacyNER(spacy_model)
             except NLPEngineError as e:
                 logger.warning(f"Could not initialize spaCy NER: {e}")
 
-        if enable_similarity and HAS_SENTENCE_TRANSFORMERS:
+        if enable_similarity:
             try:
                 self.semantic_similarity = SemanticSimilarity(similarity_model)
             except NLPEngineError as e:

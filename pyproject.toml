@@ -35,6 +35,9 @@ dependencies = [
     "pyyaml>=6.0",
     "rich>=13.0.0",
     "pandas>=2.0.0",
+    "parsernaam>=0.2.0",
+    "spacy>=3.7.0",
+    "sentence-transformers>=2.2.0",
 ]
 
 [project.optional-dependencies]
@@ -42,16 +45,14 @@ dev = ["ruff", "black", "isort"]
 test = ["coverage", "pytest", "pytest-asyncio"]
 docs = ["sphinx", "furo"]
 nlp = [
-    "spacy>=3.7.0",
-    "sentence-transformers>=2.2.0",
-    "transformers>=4.21.0",
+    "transformers>=4.21.0",  # Additional transformers for advanced NLP
 ]
 ml = [
-    "parsernaam>=0.0.1",  # ML-based name parsing for complex names
+    # Core ML features now included in main dependencies
 ]
 formats = [
-    "pyarrow>=10.0.0",  # For Parquet support
-    "polars>=0.19.0",   # Modern DataFrame library
+    "pyarrow>=10.0.0",  # For users who need Parquet support
+    "polars>=0.19.0",   # For users who need Polars DataFrame library
 ]
 search = [
     "elasticsearch>=8.0.0",
@@ -71,16 +72,8 @@ Repository = "https://github.com/appeler/search-names"
 Issues = "https://github.com/appeler/search-names/issues"
 
 [project.scripts]
-# Modern CLI - primary interface
+# Modern CLI - unified interface for the complete pipeline
 search-names = "search_names.cli:main_cli"
-
-# Legacy CLI commands - for backward compatibility
-clean_names = "search_names.clean_names:main"
-merge_supp = "search_names.merge_supp:main"
-preprocess = "search_names.preprocess:main"
-split_text_corpus = "search_names.split_text_corpus:main"
-search_names = "search_names.search_names:main"
-merge_results = "search_names.merge_results:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["search_names"]

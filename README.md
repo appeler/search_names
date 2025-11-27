@@ -45,30 +45,67 @@ search-names config create-sample
 # Run complete pipeline
 search-names pipeline input_names.csv text_corpus.csv
 
-# Individual steps
-search-names clean input_names.csv
-search-names merge-supp clean_names.csv  
-search-names preprocess augmented_names.csv
-search-names search text_corpus.csv
+# Individual pipeline steps
+search-names clean input_names.csv --streaming           # Step 1: Clean names
+search-names merge-supp clean_names.csv                  # Step 2: Augment data
+search-names preprocess augmented_names.csv              # Step 3: Preprocess
+search-names search text_corpus.csv --optimized --streaming  # Step 4: Search
+
+# Performance options
+search-names search corpus.csv --optimized               # Use optimized search engine
+search-names search large_corpus.csv --streaming         # Memory-efficient streaming
+search-names clean huge_names.csv --streaming            # Chunked processing
 ```
 
 ### Python API
 
 ```python
 import search_names
+from search_names.pipeline import clean_names, augment_names, preprocess_names, search_names
+from search_names.pipeline.step4_search import load_names_file
 
 # Load configuration
 config = search_names.get_config()
 
-# Clean and standardize names
-cleaned = search_names.clean_names("input.csv")
+# Step 1: Clean and standardize names
+result = clean_names(
+    infile="input_names.csv",
+    outfile="clean_names.csv", 
+    col="Name",
+    all=False  # Remove duplicates
+)
 
-# Search with modern features
-results = search_names.search_names(
-    "corpus.csv", 
-    "preprocessed_names.csv",
-    use_nlp=True,
-    confidence_threshold=0.8
+# Step 2: Augment with supplementary data
+augment_names(
+    infile="clean_names.csv",
+    prefixarg="seat",           # Column for prefix lookup
+    name="FirstName",           # Column for nickname lookup  
+    outfile="augmented.csv",
+    prefix_file="prefixes.csv", 
+    nickname_file="nick_names.txt"
+)
+
+# Step 3: Create optimized search patterns  
+preprocess_names(
+    infile="augmented.csv",
+    patterns=["FirstName LastName", "NickName LastName"],
+    outfile="preprocessed.csv",
+    editlength=[10, 15],        # Fuzzy matching lengths
+    drop_patterns=["common", "the"]  # Patterns to exclude
+)
+
+# Step 4: High-performance search with optimization
+names = load_names_file("preprocessed.csv")
+result = search_names(
+    input="text_corpus.csv",
+    text="text",               # Text column name
+    names=names,               # Preprocessed name list
+    outfile="results.csv",
+    use_optimized=True,        # Use vectorized search engine  
+    use_streaming=True,        # Memory-efficient for large files
+    processes=8,               # Parallel processing
+    max_name=20,               # Max results per document
+    clean=True                 # Clean text before search
 )
 ```
 
@@ -123,10 +160,12 @@ Execute high-performance name search:
 - **Confidence Scoring**: Quantify match uncertainty
 
 ### Performance & Scalability
-- **Async Processing**: Modern parallelization with asyncio
-- **Streaming**: Handle datasets larger than memory
-- **Caching**: Intelligent result caching
-- **Distributed**: Scale across multiple machines
+- **Optimized Search Engine**: Vectorized string matching with NumPy
+- **Streaming Processing**: Handle datasets larger than memory with chunking
+- **Parallel Search**: Multi-process search with configurable worker count  
+- **Memory Management**: Automatic streaming for large files (>500MB)
+- **Regex Optimization**: Pre-compiled patterns and single-pass matching
+- **Early Termination**: Stop processing when result limits reached
 
 ### Developer Experience
 - **Type Hints**: Full type annotation support
@@ -138,10 +177,49 @@ Execute high-performance name search:
 
 | Format | Input | Output | Description |
 |--------|-------|--------|-------------|
-| CSV | ✅ | ✅ | Traditional comma-separated values |
-| JSON | ✅ | ✅ | Structured data format |
-| Parquet | ✅ | ✅ | High-performance columnar format |
-| Excel | ✅ | ❌ | Microsoft Excel files |
+| CSV | ✅ | ✅ | Primary format with full pipeline support |
+| Compressed CSV | ✅ | ✅ | Gzip-compressed CSV files (.csv.gz) |
+| Text Files | ✅ | ❌ | Nickname/pattern lookup files (.txt) |
+
+**Note**: Focus on CSV format ensures maximum compatibility and performance. Optional formats like Parquet and JSON can be added via the `[all]` installation option if needed.
+
+## ⚡ Performance Optimizations
+
+The package includes several performance optimizations for handling large-scale data:
+
+### Automatic Streaming
+```bash
+# Files >500MB automatically use streaming
+search-names search large_corpus.csv --optimized
+
+# Force streaming for any file size
+search-names clean names.csv --streaming
+search-names search corpus.csv --streaming
+```
+
+### Optimized Search Engine  
+```python
+from search_names.optimized_searchengines import create_optimized_search_engine
+
+# Up to 10x faster than original implementation
+engine = create_optimized_search_engine(names, use_streaming=True)
+results = engine.search_file_streaming("large_corpus.csv", "results.csv")
+```
+
+### Memory Management
+- **Chunked Processing**: Processes files in 1000-row chunks by default
+- **Progress Tracking**: Real-time progress reporting for long operations
+- **Memory Estimation**: Automatic file size analysis to choose processing method
+- **Resource Cleanup**: Proper cleanup of temporary files and memory
+
+### Benchmarking
+```python
+from search_names.optimized_searchengines import benchmark_search_engines
+
+# Compare performance between engines
+speedup = benchmark_search_engines(keywords, test_text, iterations=100)
+print(f"Optimized engine is {speedup:.1f}x faster")
+```
 
 ## ⚙️ Configuration
 
@@ -159,6 +237,14 @@ search:
   max_results: 20
   fuzzy_min_lengths: [[10, 1], [15, 2]]
   processes: 4
+  use_optimized: true      # Use optimized search engine
+  use_streaming: false     # Auto-detect large files
+
+# Performance settings
+performance:
+  chunk_size: 1000         # Rows per chunk for streaming
+  max_memory_mb: 500       # Memory threshold for streaming
+  enable_benchmarking: false
 
 # NLP features  
 nlp:
@@ -170,6 +256,7 @@ nlp:
 text_processing:
   remove_stopwords: true
   normalize_unicode: true
+  streaming_for_large_files: true
 ```
 
 ## 🔄 Legacy CLI Support
@@ -189,33 +276,44 @@ merge_results chunk_*.csv
 
 ### Basic Name Cleaning
 ```python
-from search_names import clean_names
+from search_names.pipeline import clean_names
 
 # Clean messy names
 result = clean_names(
-    "politicians.csv", 
-    output_file="clean_politicians.csv",
-    column="Name"
+    infile="politicians.csv",
+    outfile="clean_politicians.csv", 
+    col="Name",
+    all=False  # Remove duplicates
 )
+print(f"Processed {len(result)} names")
 ```
 
-### Advanced Search with NLP
+### Advanced Search with Optimizations  
 ```python
-from search_names import search_names
-from search_names.models import SearchJobConfig
+from search_names.pipeline import search_names
+from search_names.pipeline.step4_search import load_names_file
+from search_names.optimized_searchengines import benchmark_search_engines
 
-config = SearchJobConfig(
-    max_results=50,
-    processes=8,
-    fuzzy_min_lengths=[(8, 1), (12, 2)],
-    clean_text=True
-)
+# Load preprocessed names
+names = load_names_file("politician_names.csv")
 
+# Benchmark performance (optional)
+test_text = "President Biden met with Senator Warren yesterday"
+speedup = benchmark_search_engines(names, test_text, iterations=10)
+print(f"Optimized engine is {speedup:.1f}x faster")
+
+# Run optimized search
 results = search_names(
-    "news_articles.csv",
-    "politician_names.csv", 
-    "search_results.csv",
-    config=config
+    input="news_articles.csv",
+    text="article_text",
+    names=names,
+    outfile="search_results.csv", 
+    max_name=50,
+    processes=8,
+    editlength=[8, 12],        # Fuzzy matching thresholds
+    use_optimized=True,        # Use vectorized engine
+    use_streaming=True,        # Stream large files
+    clean=True                 # Clean text preprocessing
 )
 ```
 

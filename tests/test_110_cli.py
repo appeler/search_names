@@ -53,7 +53,7 @@ class TestCLI(unittest.TestCase):
         except ImportError:
             self.skipTest("CLI module not available")
 
-    @patch("search_names.cli.clean_names_func")
+    @patch("search_names.cli.clean_names")
     def test_clean_command(self, mock_clean):
         """Test clean command."""
         try:
@@ -91,8 +91,9 @@ class TestCLI(unittest.TestCase):
         except ImportError:
             self.skipTest("CLI module not available")
 
-    @patch("search_names.cli.search_names_func")
-    def test_search_command(self, mock_search):
+    @patch("search_names.cli.search_names")
+    @patch("search_names.pipeline.step4_search.load_names_file")
+    def test_search_command(self, mock_load_names, mock_search):
         """Test search command."""
         try:
             from search_names.cli import app
@@ -104,10 +105,9 @@ class TestCLI(unittest.TestCase):
             corpus_path = Path(self.temp_dir) / "corpus.csv"
             corpus_path.write_text("text\nJohn Doe is here")
 
-            # Mock the search function
-            mock_search.return_value = pd.DataFrame(
-                {"name": ["John Doe"], "count": [1], "positions": ["0-8"]}
-            )
+            # Mock the search function and name loading
+            mock_load_names.return_value = [("1", "John Doe")]
+            mock_search.return_value = None
 
             result = self.runner.invoke(
                 app,
@@ -164,7 +164,7 @@ class TestCLI(unittest.TestCase):
         except ImportError:
             self.skipTest("CLI module not available")
 
-    @patch("search_names.file_formats.pd.read_csv")
+    @patch("pandas.read_csv")
     @patch("search_names.cli.Path")
     def test_pipeline_command(self, mock_path, mock_read_csv):
         """Test pipeline command."""

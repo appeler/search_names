@@ -18,14 +18,8 @@ except ImportError:
 # Import nameparser (always available)
 from nameparser import HumanName
 
-# Try importing parsernaam
-try:
-    from parsernaam.parse import ParseNames
-
-    HAS_PARSERNAAM = True
-except ImportError:
-    logger.debug("parsernaam not available - ML-based name parsing disabled")
-    HAS_PARSERNAAM = False
+# Import parsernaam (now a main dependency)
+from parsernaam.parse import ParseNames
 
 
 @dataclass
@@ -92,12 +86,7 @@ class NameParser:
         self.batch_size = batch_size
         self.ml_threshold = ml_threshold
 
-        # Validate parser availability
-        if parser_type == "parsernaam" and not HAS_PARSERNAAM:
-            logger.warning(
-                "parsernaam requested but not available, falling back to humanname"
-            )
-            self.parser_type = "humanname"
+        # parsernaam is now always available as a main dependency
 
         logger.info(f"Initialized NameParser with type: {self.parser_type}")
 
@@ -123,9 +112,7 @@ class NameParser:
 
     def parse_with_parsernaam(self, names: list[str]) -> list[ParsedName]:
         """Parse names using parsernaam (batch processing)."""
-        if not HAS_PARSERNAAM:
-            logger.warning("parsernaam not available, using humanname")
-            return [self.parse_with_humanname(name) for name in names]
+        # parsernaam is now always available
 
         try:
             # Create DataFrame for parsernaam
@@ -238,7 +225,7 @@ class NameParser:
                 )
             else:  # auto
                 # Use parsernaam for Indian names, humanname otherwise
-                if HAS_PARSERNAAM and self.is_indian_name(name):
+                if self.is_indian_name(name):
                     results = self.parse_with_parsernaam([name])
                     return results[0] if results else self.parse_with_humanname(name)
                 else:
@@ -259,7 +246,7 @@ class NameParser:
             regular_indices = []
 
             for i, n in enumerate(names_list):
-                if HAS_PARSERNAAM and self.is_indian_name(n):
+                if self.is_indian_name(n):
                     indian_names.append(n)
                     indian_indices.append(i)
                 else:
@@ -354,10 +341,9 @@ def compare_parsers(name: str) -> dict[str, ParsedName]:
     hn_parser = NameParser(parser_type="humanname")
     results["humanname"] = hn_parser.parse(name)
 
-    # Parse with parsernaam if available
-    if HAS_PARSERNAAM:
-        pn_parser = NameParser(parser_type="parsernaam")
-        results["parsernaam"] = pn_parser.parse(name)
+    # Parse with parsernaam
+    pn_parser = NameParser(parser_type="parsernaam")
+    results["parsernaam"] = pn_parser.parse(name)
 
     # Parse with auto
     auto_parser = NameParser(parser_type="auto")

@@ -7,13 +7,10 @@ from rich import print as rprint
 from rich.console import Console
 from rich.progress import Progress
 
-from .clean_names import clean_names as clean_names_func
 from .config import create_sample_config, get_config
 from .logging_config import get_logger, setup_logging
 from .merge_results import merge_results as merge_results_func
-from .merge_supp import merge_supp as merge_supp_func
-from .preprocess import preprocess as preprocess_func
-from .search_names import search_names as search_names_func
+from .pipeline import augment_names, clean_names, preprocess_names, search_names
 from .split_text_corpus import split_text_corpus as split_text_corpus_func
 
 # Initialize console for rich output
@@ -105,6 +102,9 @@ def clean_names_cmd(
     keep_duplicates: bool = typer.Option(
         False, "--keep-duplicates", "-a", help="Keep duplicate names (don't remove)"
     ),
+    use_streaming: bool = typer.Option(
+        False, "--streaming", help="Use streaming for large files (memory efficient)"
+    ),
 ):
     """Clean and standardize names in a CSV file.
 
@@ -118,9 +118,16 @@ def clean_names_cmd(
 
     try:
         with console.status("[bold green]Cleaning names..."):
-            result = clean_names_func(
-                str(input_file), str(output_file), column, keep_duplicates
-            )
+            if use_streaming:
+                from .pipeline.step1_clean import clean_names_streaming
+
+                result = clean_names_streaming(
+                    str(input_file), str(output_file), column, keep_duplicates
+                )
+            else:
+                result = clean_names(
+                    str(input_file), str(output_file), column, keep_duplicates
+                )
 
         if result:
             rprint(f"✓ Cleaned names saved to [bold green]{output_file}[/bold green]")
@@ -178,7 +185,7 @@ def merge_supplementary_data_cmd(
 
     try:
         with console.status("[bold green]Merging supplementary data..."):
-            merge_supp_func(
+            augment_names(
                 str(input_file),
                 prefix_column,
                 name_column,
@@ -239,8 +246,13 @@ def preprocess_cmd(
 
     try:
         with console.status("[bold green]Preprocessing search list..."):
-            preprocess_func(
-                str(input_file), str(output_file), patterns, drop_file_str, edit_lengths
+            # Load drop patterns first
+            from .pipeline.step3_preprocess import load_drop_patterns
+
+            drop_patterns = load_drop_patterns(drop_file_str)
+
+            preprocess_names(
+                str(input_file), patterns, str(output_file), edit_lengths, drop_patterns
             )
 
         rprint(f"✓ Preprocessed data saved to [bold green]{output_file}[/bold green]")
@@ -316,6 +328,14 @@ def search_cmd(
     edit_lengths: list[int] | None = typer.Option(
         None, "--edit-lengths", "-e", help="Edit distance thresholds for fuzzy matching"
     ),
+    use_optimized: bool = typer.Option(
+        True,
+        "--optimized/--no-optimized",
+        help="Use optimized search engine (default: True)",
+    ),
+    use_streaming: bool = typer.Option(
+        False, "--streaming", help="Use streaming for large files (memory efficient)"
+    ),
 ):
     """Search for names in text corpus using advanced matching techniques.
 
@@ -335,15 +355,25 @@ def search_cmd(
         with Progress() as progress:
             progress.add_task("[bold green]Searching names...", total=None)
 
-            result = search_names_func(
+            # Load names first
+            from .pipeline.step4_search import load_names_file
+
+            names = load_names_file(str(names_file))
+
+            result = search_names(
                 str(input_file),
-                str(names_file),
-                str(output_file),
-                max_results,
-                processes,
                 text_column,
-                clean_text,
+                None,  # input_cols - use default
+                names,
+                None,  # search_cols - use default
+                max_results,
                 edit_lengths,
+                str(output_file),
+                False,  # overwritten
+                processes,
+                clean_text,
+                use_optimized,
+                use_streaming,
             )
 
         rprint(f"✓ Search results saved to [bold green]{output_file}[/bold green]")
@@ -472,7 +502,7 @@ def pipeline_cmd(
         if not skip_clean:
             clean_output = output_dir / "01_clean_names.csv"
             rprint("[bold blue]Step 1:[/bold blue] Cleaning names...")
-            clean_names_func(str(input_file), str(clean_output), "Name", False)
+            clean_names(str(input_file), str(clean_output), "Name", False)
             rprint(f"✓ Names cleaned: {clean_output}")
         else:
             clean_output = input_file
@@ -481,7 +511,7 @@ def pipeline_cmd(
         if not skip_merge:
             merge_output = output_dir / "02_augmented_names.csv"
             rprint("[bold blue]Step 2:[/bold blue] Merging supplementary data...")
-            merge_supp_func(str(clean_output), "seat", "FirstName", str(merge_output))
+            augment_names(str(clean_output), "seat", "FirstName", str(merge_output))
             rprint(f"✓ Supplementary data merged: {merge_output}")
         else:
             merge_output = clean_output
@@ -490,7 +520,17 @@ def pipeline_cmd(
         if not skip_preprocess:
             preprocess_output = output_dir / "03_preprocessed_names.csv"
             rprint("[bold blue]Step 3:[/bold blue] Preprocessing...")
-            preprocess_func(str(merge_output), str(preprocess_output))
+            # Load drop patterns for preprocessing
+            from .pipeline.step3_preprocess import load_drop_patterns
+
+            drop_patterns = load_drop_patterns("drop_patterns.txt")
+            preprocess_names(
+                str(merge_output),
+                ["FirstName LastName", "NickName LastName", "Prefix LastName"],
+                str(preprocess_output),
+                [],
+                drop_patterns,
+            )
             rprint(f"✓ Data preprocessed: {preprocess_output}")
         else:
             preprocess_output = merge_output
@@ -498,7 +538,23 @@ def pipeline_cmd(
         # Step 4: Search
         search_output = output_dir / "04_search_results.csv"
         rprint("[bold blue]Step 4:[/bold blue] Searching...")
-        search_names_func(str(corpus_file), str(preprocess_output), str(search_output))
+        # Load names for search
+        from .pipeline.step4_search import load_names_file
+
+        names = load_names_file(str(preprocess_output))
+        search_names(
+            str(corpus_file),
+            "text",  # text column
+            None,  # input_cols - use default
+            names,
+            None,  # search_cols - use default
+            20,  # max_name - use default
+            [],  # editlength - use default
+            str(search_output),
+            False,  # overwritten
+            4,  # processes - use default
+            False,  # clean - use default
+        )
         rprint(f"✓ Search completed: {search_output}")
 
         rprint("\n[bold green]✓ Pipeline completed successfully![/bold green]")

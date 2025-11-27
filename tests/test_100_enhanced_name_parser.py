@@ -10,7 +10,6 @@ from unittest.mock import MagicMock, patch
 import pandas as pd
 
 from search_names.enhanced_name_parser import (
-    HAS_PARSERNAAM,
     NameParser,
     ParsedName,
     compare_parsers,
@@ -82,13 +81,12 @@ class TestNameParser(unittest.TestCase):
         self.assertEqual(parser.batch_size, 100)
         self.assertEqual(parser.ml_threshold, 0.8)
 
-    @patch("search_names.enhanced_name_parser.HAS_PARSERNAAM", False)
-    def test_name_parser_fallback_to_humanname(self):
-        """Test fallback when parsernaam not available."""
+    def test_name_parser_parsernaam_available(self):
+        """Test parsernaam parser is always available."""
         parser = NameParser(parser_type="parsernaam")
 
-        # Should fall back to humanname
-        self.assertEqual(parser.parser_type, "humanname")
+        # parsernaam should be available as main dependency
+        self.assertEqual(parser.parser_type, "parsernaam")
 
     @patch("search_names.enhanced_name_parser.HumanName")
     def test_parse_with_humanname(self, mock_humanname):
@@ -124,31 +122,27 @@ class TestNameParser(unittest.TestCase):
         self.assertEqual(result.confidence, 0.0)
         self.assertEqual(result.parser_used, "humanname")
 
-    @patch("search_names.enhanced_name_parser.HAS_PARSERNAAM", True)
-    @patch("search_names.enhanced_name_parser.ParseNames")
-    def test_parse_with_parsernaam(self, mock_parsenames):
-        """Test parsing with parsernaam."""
-        # Mock parsernaam output
-        mock_result = pd.DataFrame(
-            {"first_name": ["John"], "last_name": ["Doe"], "confidence": [0.85]}
-        )
-        mock_parsenames.parse.return_value = mock_result
-
+    def test_parse_with_parsernaam(self):
+        """Test parsing with parsernaam using real module."""
         parser = NameParser(parser_type="parsernaam")
         results = parser.parse_with_parsernaam(["John Doe"])
 
+        # Should return parsed results
         self.assertEqual(len(results), 1)
+        self.assertIsInstance(results[0], ParsedName)
         self.assertEqual(results[0].parser_used, "parsernaam")
+        self.assertEqual(results[0].original, "John Doe")
 
-    @patch("search_names.enhanced_name_parser.HAS_PARSERNAAM", False)
-    def test_parse_with_parsernaam_unavailable(self):
-        """Test parsernaam fallback when not available."""
+    def test_parse_with_parsernaam_batch(self):
+        """Test parsernaam with batch processing."""
         parser = NameParser()
-        results = parser.parse_with_parsernaam(["John Doe"])
+        results = parser.parse_with_parsernaam(["John Doe", "Rajesh Kumar"])
 
-        # Should fall back to humanname
-        self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].parser_used, "humanname")
+        # Should parse both names
+        self.assertEqual(len(results), 2)
+        for result in results:
+            self.assertIsInstance(result, ParsedName)
+            self.assertEqual(result.parser_used, "parsernaam")
 
     def test_is_indian_name(self):
         """Test Indian name detection."""
@@ -184,16 +178,8 @@ class TestNameParser(unittest.TestCase):
         self.assertIsInstance(results[0], ParsedName)
         self.assertIsInstance(results[1], ParsedName)
 
-    @patch("search_names.enhanced_name_parser.HAS_PARSERNAAM", True)
-    @patch("search_names.enhanced_name_parser.ParseNames")
-    def test_parse_auto_mode(self, mock_parsenames):
-        """Test auto mode with mixed names."""
-        # Mock parsernaam for Indian names
-        mock_result = pd.DataFrame(
-            {"first_name": ["Rajesh"], "last_name": ["Kumar"], "confidence": [0.9]}
-        )
-        mock_parsenames.parse.return_value = mock_result
-
+    def test_parse_auto_mode(self):
+        """Test auto mode with mixed names using real parsernaam."""
         parser = NameParser(parser_type="auto")
 
         # Test with mixed names
@@ -201,11 +187,14 @@ class TestNameParser(unittest.TestCase):
         results = parser.parse(names)
 
         self.assertEqual(len(results), 3)
+        self.assertIsInstance(results[0], ParsedName)
+        self.assertIsInstance(results[1], ParsedName)
+        self.assertIsInstance(results[2], ParsedName)
+        
         # John Smith should use humanname
         self.assertEqual(results[0].parser_used, "humanname")
-        # Rajesh Kumar should use parsernaam (if available)
-        if HAS_PARSERNAAM:
-            self.assertEqual(results[1].parser_used, "parsernaam")
+        # Rajesh Kumar should use parsernaam (Indian name detection)
+        self.assertEqual(results[1].parser_used, "parsernaam")
         # Jane Doe should use humanname
         self.assertEqual(results[2].parser_used, "humanname")
 
@@ -275,57 +264,33 @@ class TestConvenienceFunctions(unittest.TestCase):
         self.assertIsInstance(result_df, pd.DataFrame)
         self.assertIn("parsed_first_name", result_df.columns)
 
-    @patch("search_names.enhanced_name_parser.HAS_PARSERNAAM", True)
-    @patch("search_names.enhanced_name_parser.NameParser")
-    def test_compare_parsers(self, mock_parser_class):
-        """Test compare_parsers function."""
-        # Mock different parser results
-        mock_hn_result = ParsedName(
-            original="John Doe",
-            first_name="John",
-            last_name="Doe",
-            parser_used="humanname",
-        )
-
-        mock_pn_result = ParsedName(
-            original="John Doe",
-            first_name="John",
-            last_name="Doe",
-            confidence=0.85,
-            parser_used="parsernaam",
-        )
-
-        mock_auto_result = ParsedName(
-            original="John Doe", first_name="John", last_name="Doe", parser_used="auto"
-        )
-
-        # Setup mock instances
-        mock_instances = {
-            "humanname": MagicMock(parse=MagicMock(return_value=mock_hn_result)),
-            "parsernaam": MagicMock(parse=MagicMock(return_value=mock_pn_result)),
-            "auto": MagicMock(parse=MagicMock(return_value=mock_auto_result)),
-        }
-
-        def get_mock_instance(parser_type=None):
-            return mock_instances.get(parser_type, mock_instances["auto"])
-
-        mock_parser_class.side_effect = get_mock_instance
-
+    def test_compare_parsers(self):
+        """Test compare_parsers function with real parsers."""
         results = compare_parsers("John Doe")
 
+        # All parsers should be available
         self.assertIn("humanname", results)
+        self.assertIn("parsernaam", results)
         self.assertIn("auto", results)
-        if HAS_PARSERNAAM:
-            self.assertIn("parsernaam", results)
+        
+        # Each should return a ParsedName object
+        for parser_type, result in results.items():
+            self.assertIsInstance(result, ParsedName)
+            self.assertEqual(result.original, "John Doe")
 
-    @patch("search_names.enhanced_name_parser.HAS_PARSERNAAM", False)
-    def test_compare_parsers_no_parsernaam(self):
-        """Test compare_parsers when parsernaam not available."""
-        results = compare_parsers("John Doe")
+    def test_compare_parsers_indian_name(self):
+        """Test compare_parsers with an Indian name."""
+        results = compare_parsers("Rajesh Kumar")
 
+        # All parsers should be available
         self.assertIn("humanname", results)
+        self.assertIn("parsernaam", results) 
         self.assertIn("auto", results)
-        self.assertNotIn("parsernaam", results)
+        
+        # Each should return a ParsedName object
+        for parser_type, result in results.items():
+            self.assertIsInstance(result, ParsedName)
+            self.assertEqual(result.original, "Rajesh Kumar")
 
 
 class TestIntegration(unittest.TestCase):
