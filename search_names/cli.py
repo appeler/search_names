@@ -131,7 +131,7 @@ def clean_names_cmd(
     except Exception as e:
         logger.error(f"Error cleaning names: {e}")
         rprint(f"[bold red]✗ Error: {e}[/bold red]")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from e
 
 
 @app.command("merge-supp")
@@ -187,7 +187,7 @@ def merge_supplementary_data_cmd(
     except Exception as e:
         logger.error(f"Error merging supplementary data: {e}")
         rprint(f"[bold red]✗ Error: {e}[/bold red]")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from e
 
 
 @app.command("preprocess")
@@ -241,7 +241,7 @@ def preprocess_cmd(
     except Exception as e:
         logger.error(f"Error preprocessing: {e}")
         rprint(f"[bold red]✗ Error: {e}[/bold red]")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from e
 
 
 @app.command("split")
@@ -276,7 +276,7 @@ def split_corpus_cmd(
     except Exception as e:
         logger.error(f"Error splitting corpus: {e}")
         rprint(f"[bold red]✗ Error: {e}[/bold red]")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from e
 
 
 @app.command("search")
@@ -348,7 +348,7 @@ def search_cmd(
     except Exception as e:
         logger.error(f"Error during search: {e}")
         rprint(f"[bold red]✗ Error: {e}[/bold red]")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from e
 
 
 @app.command("merge-results")
@@ -384,7 +384,7 @@ def merge_results_cmd(
     except Exception as e:
         logger.error(f"Error merging results: {e}")
         rprint(f"[bold red]✗ Error: {e}[/bold red]")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from e
 
 
 @app.command("config")
@@ -420,7 +420,7 @@ def config_cmd(
         except Exception as e:
             logger.error(f"Error creating sample config: {e}")
             rprint(f"[bold red]✗ Error: {e}[/bold red]")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from e
 
     else:
         rprint(f"[bold red]✗ Unknown action: {action}[/bold red]")
@@ -501,7 +501,7 @@ def pipeline_cmd(
     except Exception as e:
         logger.error(f"Pipeline error: {e}")
         rprint(f"[bold red]✗ Pipeline failed: {e}[/bold red]")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from e
 
 
 def main_cli():

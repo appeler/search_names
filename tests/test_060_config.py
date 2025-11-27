@@ -28,7 +28,7 @@ class TestConfigDataClasses(unittest.TestCase):
         config = SearchConfig()
 
         self.assertEqual(config.max_results, 20)
-        self.assertEqual(config.fuzzy_min_lengths, [(10, 1), (15, 2)])
+        self.assertEqual(config.fuzzy_min_lengths, [[10, 1], [15, 2]])
         self.assertEqual(config.processes, 4)
         self.assertEqual(config.chunk_size, 1000)
 

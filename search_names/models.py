@@ -152,7 +152,7 @@ class SearchJobConfig(BaseModel):
     max_results: int = Field(20, ge=1, description="Maximum results per document")
     processes: int = Field(4, ge=1, description="Number of parallel processes")
     chunk_size: int = Field(1000, ge=1, description="Chunk size for processing")
-    fuzzy_min_lengths: list[tuple] = Field(default_factory=list, description="Fuzzy matching parameters")
+    fuzzy_min_lengths: list[list] = Field(default_factory=list, description="Fuzzy matching parameters")
     clean_text: bool = Field(False, description="Whether to clean text before search")
     input_columns: list[str] = Field(default_factory=list, description="Input columns to include")
     search_columns: list[str] = Field(default_factory=list, description="Search result columns")

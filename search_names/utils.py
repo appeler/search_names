@@ -115,7 +115,7 @@ def get_export_path(outdir, filename):
     """
     try:
         relpath = os.path.relpath(filename)
-    except:
+    except (ValueError, OSError):
         relpath = os.path.splitdrive(filename)[1]
     relpath = re.sub(r'^[\.|\\|\/]*', '', relpath)
     extdir = outdir + '/' + os.path.dirname(relpath)

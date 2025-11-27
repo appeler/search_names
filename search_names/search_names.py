@@ -11,7 +11,7 @@ import sys
 
 try:
     csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
-except:
+except (OverflowError, ValueError):
     csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
 import signal
 import time
@@ -143,7 +143,7 @@ def load_names_file(namefile, col_id=DEFAULT_COL_ID, col_search=DEFAULT_COL_SEAR
         for r in reader:
             try:
                 names.append((r[col_id], r[col_search]))
-            except:
+            except KeyError:
                 logging.error(f"Name file must have '{col_id}' and '{col_search}' columns"
                               )
     return names
@@ -203,7 +203,7 @@ def worker(args):
                 args.result_queue.put(c)
                 count += 1
         logging.info(f'[{pid}] worker stop')
-    except:
+    except Exception:
         import traceback
         traceback.print_exc()
 
@@ -247,7 +247,7 @@ def search_names(input, text=DEFAULT_TXT_COLNAME,
             new_outfile = False
         csvwriter = csv.writer(csvfile, dialect='excel', delimiter=',',
                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    except:
+    except OSError:
         logging.error("Cannot create output file")
         return -1
 

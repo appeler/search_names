@@ -39,8 +39,18 @@ class TestFileFormatDetection(unittest.TestCase):
 
     def test_detect_parquet_format(self):
         """Test detection of Parquet formats."""
-        self.assertEqual(detect_file_format("test.parquet"), "parquet")
-        self.assertEqual(detect_file_format("test.pq"), "parquet")
+        # Import to check availability
+        from search_names.file_formats import HAS_PARQUET
+
+        if HAS_PARQUET:
+            self.assertEqual(detect_file_format("test.parquet"), "parquet")
+            self.assertEqual(detect_file_format("test.pq"), "parquet")
+        else:
+            # Should raise error when pyarrow not available
+            with self.assertRaises(FileFormatError):
+                detect_file_format("test.parquet")
+            with self.assertRaises(FileFormatError):
+                detect_file_format("test.pq")
 
     def test_detect_excel_format(self):
         """Test detection of Excel formats."""
@@ -124,7 +134,7 @@ class TestFileReading(unittest.TestCase):
         self.assertEqual(len(df), 3)
 
     @patch('search_names.file_formats.HAS_POLARS', True)
-    @patch('search_names.file_formats.pl')
+    @patch('search_names.file_formats.pl', create=True)
     def test_read_with_polars_engine(self, mock_pl):
         """Test reading with polars engine."""
         mock_df = MagicMock()
@@ -253,7 +263,7 @@ class TestChunkedReading(unittest.TestCase):
         self.assertEqual(len(chunks[0]), 200)
 
     @patch('search_names.file_formats.HAS_PARQUET', True)
-    @patch('search_names.file_formats.pq')
+    @patch('search_names.file_formats.pq', create=True)
     def test_chunked_parquet_reading(self, mock_pq):
         """Test reading Parquet file in chunks."""
         parquet_path = Path(self.temp_dir) / "large.parquet"
@@ -403,6 +413,9 @@ class TestConvenienceFunctions(unittest.TestCase):
 
         parquet_path = Path(self.temp_dir) / "input.parquet"
         csv_path = Path(self.temp_dir) / "output.csv"
+
+        # Create the parquet file for the test
+        parquet_path.touch()  # Create empty file to satisfy existence check
 
         parquet_to_csv(parquet_path, csv_path)
 

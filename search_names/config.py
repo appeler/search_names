@@ -15,7 +15,7 @@ logger = get_logger("config")
 class SearchConfig:
     """Configuration for search behavior."""
     max_results: int = 20
-    fuzzy_min_lengths: list[tuple] = field(default_factory=lambda: [(10, 1), (15, 2)])
+    fuzzy_min_lengths: list[list] = field(default_factory=lambda: [[10, 1], [15, 2]])
     edit_distances: list[int] = field(default_factory=list)
     processes: int = 4
     chunk_size: int = 1000

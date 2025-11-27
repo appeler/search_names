@@ -12,7 +12,6 @@ logger = get_logger("file_formats")
 
 # Optional imports with fallbacks
 try:
-    import pyarrow as pa
     import pyarrow.parquet as pq
     HAS_PARQUET = True
 except ImportError:

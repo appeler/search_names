@@ -1,16 +1,6 @@
 import sys
 import warnings
 
-if not sys.warnoptions:  # allow overriding with `-W` option
-    warnings.filterwarnings('ignore', category=RuntimeWarning, module='runpy')
-
-__version__ = "0.3.0"
-
-# Initialize logging
-from .logging_config import setup_logging
-
-setup_logging()
-
 from . import file_formats, models, nlp_engine
 from .clean_names import clean_names
 from .config import create_sample_config, get_config, get_config_manager, save_config
@@ -20,6 +10,14 @@ from .merge_supp import merge_supp
 from .preprocess import preprocess
 from .search_names import search_names
 from .split_text_corpus import split_text_corpus
+
+if not sys.warnoptions:  # allow overriding with `-W` option
+    warnings.filterwarnings('ignore', category=RuntimeWarning, module='runpy')
+
+__version__ = "0.4.0"
+
+# Initialize logging after imports
+setup_logging()
 
 __all__ = [
     'clean_names',

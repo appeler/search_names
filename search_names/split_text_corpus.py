@@ -11,7 +11,7 @@ from os.path import basename, dirname, splitext
 
 try:
     csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
-except:
+except (OverflowError, ValueError):
     csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
 
 LOG_FILE = 'split_text_corpus.log'

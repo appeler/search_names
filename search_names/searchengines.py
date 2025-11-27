@@ -53,8 +53,8 @@ class SearchMultipleKeywords:
 
     def get_allow_distance(self, k):
         dist = 0
-        for l, d in self.fuzzy_min_len:
-            if len(k) > l:
+        for length, d in self.fuzzy_min_len:
+            if len(k) > length:
                 dist = d
         return dist
 
@@ -83,7 +83,7 @@ class SearchMultipleKeywords:
             if j >= n:
                 break
         while j < n:
-            for a in RESULT_FIELDS:
+            for _a in RESULT_FIELDS:
                 c.append('')
             j += 1
         count = 0
@@ -127,8 +127,8 @@ class NewSearchMultipleKeywords:
 
     def get_allow_distance(self, k):
         dist = 0
-        for l, d in self.fuzzy_min_len:
-            if len(k) > l:
+        for length, d in self.fuzzy_min_len:
+            if len(k) > length:
                 dist = d
         return dist
 
@@ -171,7 +171,7 @@ class NewSearchMultipleKeywords:
             if j >= n:
                 break
         while j < n:
-            for a in RESULT_FIELDS:
+            for _a in RESULT_FIELDS:
                 c.append('')
             j += 1
         count = 0
@@ -203,7 +203,7 @@ if __name__ == "__main__":
         result_header.append('count')
         writer.writerow(result_header)
         start_time = time.time()
-        for i, r in enumerate(reader):
+        for _i, r in enumerate(reader):
             uid = r['uniqid']
             text = r['text']
             c = [uid, text]
@@ -229,7 +229,7 @@ if __name__ == "__main__":
         result_header.append('count')
         writer.writerow(result_header)
         start_time = time.time()
-        for i, r in enumerate(reader):
+        for _i, r in enumerate(reader):
             uid = r['uniqid']
             text = r['text']
             c = [uid, text]

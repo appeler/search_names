@@ -281,12 +281,12 @@ class TestSearchJobConfig(unittest.TestCase):
             output_file="results.csv",
             max_results=50,
             processes=8,
-            fuzzy_min_lengths=[(10, 1), (15, 2)]
+            fuzzy_min_lengths=[[10, 1], [15, 2]]
         )
 
         self.assertEqual(config.max_results, 50)
         self.assertEqual(config.processes, 8)
-        self.assertEqual(config.fuzzy_min_lengths, [(10, 1), (15, 2)])
+        self.assertEqual(config.fuzzy_min_lengths, [[10, 1], [15, 2]])
 
     def test_positive_validation(self):
         """Test that numeric fields must be positive."""
@@ -305,9 +305,9 @@ class TestSearchJobConfig(unittest.TestCase):
             name_file="names.csv",
             text_file="corpus.csv",
             output_file="results.csv",
-            fuzzy_min_lengths=[(10, 1), (15, 2)]
+            fuzzy_min_lengths=[[10, 1], [15, 2]]
         )
-        self.assertEqual(config.fuzzy_min_lengths, [(10, 1), (15, 2)])
+        self.assertEqual(config.fuzzy_min_lengths, [[10, 1], [15, 2]])
 
         # Invalid format - wrong length
         with self.assertRaises(ValidationError):

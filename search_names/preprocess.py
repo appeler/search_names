@@ -48,11 +48,11 @@ def load_drop_patterns(filename):
     drop_patterns = []
     try:
         with open(filename) as f:
-            for l in f:
-                l = l.strip().lower()
-                if len(l): # null string
+            for line in f:
+                line = line.strip().lower()
+                if len(line): # null string
                     continue
-                drop_patterns.append(l)
+                drop_patterns.append(line)
     except Exception:
         logger.warning(f'Drop pattern file {filename} not found')
     return drop_patterns
@@ -104,8 +104,8 @@ def preprocess(infile = None, patterns = DEFAULT_PATTERNS, outfile = DEFAULT_OUT
             name1 = r['search_name']
             # Get max edit distance
             max_dist = 0
-            for k, l in enumerate(editlength):
-                if len(name1) > l:
+            for k, length in enumerate(editlength):
+                if len(name1) > length:
                     max_dist = k + 1
             uid1 = r['uniqid']
             if i not in dup:

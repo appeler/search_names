@@ -131,7 +131,7 @@ def process_names(
     except Exception as e:
         logger.error(f"Error processing names: {e}")
         console.print(f"[red]Error: {e}[/red]")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from e
 
 
 @app.command()
@@ -321,7 +321,7 @@ def validate_names(
 
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from e
 
 
 def _calculate_processing_stats(df: pd.DataFrame) -> dict:
@@ -386,7 +386,7 @@ def _save_output(df: pd.DataFrame, output_file: Path, format_type: str, include_
             raise ValueError(f"Unsupported format: {format_type}")
 
     except Exception as e:
-        raise Exception(f"Failed to save output: {e}")
+        raise Exception(f"Failed to save output: {e}") from e
 
 
 if __name__ == "__main__":

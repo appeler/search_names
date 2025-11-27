@@ -61,11 +61,11 @@ def load_nick_names(filename):
     nick_names = {}
     try:
         with open(filename) as f:
-            for l in f:
-                l = l.strip().lower()
-                if len(l): # null string
+            for line in f:
+                line = line.strip().lower()
+                if len(line): # null string
                     continue
-                a = l.split('-')
+                a = line.split('-')
                 if len(a) >= 2:
                     names = a[0].split(',')
                     names = [s.strip() for s in names]
@@ -78,7 +78,7 @@ def load_nick_names(filename):
                         else:
                             nick_names[n] = nicks
                 else:
-                    logger.warning(f"Invalid nick name line '{l}'")
+                    logger.warning(f"Invalid nick name line '{line}'")
     except Exception:
         logger.warning(f'Nick name file {filename} not found')
 

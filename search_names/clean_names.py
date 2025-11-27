@@ -48,7 +48,7 @@ def clean_names(infile, outfile=DEFAULT_OUTPUT, col="Name", all=False):
     if outfile:
         try:
             of = open(outfile, 'w')
-        except:
+        except OSError:
             outfile = None
 
     with open(infile) as f:

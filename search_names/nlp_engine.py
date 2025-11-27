@@ -10,8 +10,6 @@ logger = get_logger("nlp_engine")
 # Optional imports with graceful degradation
 try:
     import spacy
-    from spacy.lang.en import English
-    from spacy.tokens import Doc, Token
     HAS_SPACY = True
 except ImportError:
     logger.debug("spaCy not available - NER features disabled")
