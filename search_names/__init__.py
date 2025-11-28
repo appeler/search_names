@@ -1,8 +1,7 @@
 import sys
 import warnings
 
-# Temporarily commenting out nlp_engine to test hanging hypothesis
-from . import models  # , nlp_engine
+from . import models, nlp_engine
 from .clean_names import clean_names
 from .config import create_sample_config, get_config, get_config_manager, save_config
 from .logging_config import get_logger, setup_logging
@@ -35,5 +34,5 @@ __all__ = [
     "save_config",
     "create_sample_config",
     "models",
-    # "nlp_engine",  # Temporarily commented out
+    "nlp_engine",
 ]
