@@ -2,10 +2,10 @@
 
 from typing import Any
 
-import numpy as np
-import spacy
-from sentence_transformers import SentenceTransformer
-
+# Lazy imports - heavy ML libraries imported only when needed
+# import numpy as np  # Moved to methods where used
+# import spacy  # Moved to SpacyNER class
+# from sentence_transformers import SentenceTransformer  # Moved to SemanticSimilarity class
 from .logging_config import get_logger
 from .models import EntityLinkingResult, EntityMention
 
@@ -52,6 +52,9 @@ class SpacyNER:
     def _load_model(self):
         """Load spaCy model with error handling."""
         try:
+            # Lazy import of spacy
+            import spacy
+
             self.nlp = spacy.load(self.model_name, disable=self.disable_components)
             logger.info(f"Loaded spaCy model: {self.model_name}")
         except OSError as e:
@@ -208,6 +211,9 @@ class SemanticSimilarity:
     def _load_model(self):
         """Load sentence transformer model."""
         try:
+            # Lazy import of sentence_transformers
+            from sentence_transformers import SentenceTransformer
+
             self.model = SentenceTransformer(self.model_name)
             logger.info(f"Loaded sentence transformer model: {self.model_name}")
         except Exception as e:
@@ -229,6 +235,9 @@ class SemanticSimilarity:
             raise NLPEngineError("Sentence transformer model not loaded")
 
         try:
+            # Lazy import of numpy
+            import numpy as np
+
             embeddings = self.model.encode([text1, text2])
             similarity = np.dot(embeddings[0], embeddings[1]) / (
                 np.linalg.norm(embeddings[0]) * np.linalg.norm(embeddings[1])

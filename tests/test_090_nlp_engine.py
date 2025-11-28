@@ -17,7 +17,6 @@ from search_names.nlp_engine import (
 )
 
 
-@unittest.skip("Temporarily skipping to test hanging hypothesis")
 class TestNLPEngineError(unittest.TestCase):
     """Test NLPEngineError exception."""
 
@@ -27,7 +26,6 @@ class TestNLPEngineError(unittest.TestCase):
         self.assertEqual(str(error), "Test error message")
 
 
-@unittest.skip("Temporarily skipping to test hanging hypothesis")
 class TestSpacyNER(unittest.TestCase):
     """Test SpacyNER class."""
 
@@ -162,7 +160,6 @@ class TestSpacyNER(unittest.TestCase):
         self.assertIn("spaCy model not loaded", str(context.exception))
 
 
-@unittest.skip("Temporarily skipping to test hanging hypothesis")
 class TestSemanticSimilarity(unittest.TestCase):
     """Test SemanticSimilarity class."""
 
@@ -257,7 +254,6 @@ class TestSemanticSimilarity(unittest.TestCase):
         self.assertIn("Sentence transformer model not loaded", str(context.exception))
 
 
-@unittest.skip("Temporarily skipping to test hanging hypothesis")
 class TestEntityLinker(unittest.TestCase):
     """Test EntityLinker class."""
 
@@ -367,7 +363,6 @@ class TestEntityLinker(unittest.TestCase):
         self.assertEqual(result.confidence, 0.0)
 
 
-@unittest.skip("Temporarily skipping to test hanging hypothesis")
 class TestNLPEngine(unittest.TestCase):
     """Test main NLPEngine class."""
 
@@ -479,7 +474,6 @@ class TestNLPEngine(unittest.TestCase):
         self.assertEqual(results[0]["matches"], [])
 
 
-@unittest.skip("Temporarily skipping to test hanging hypothesis")
 class TestIntegration(unittest.TestCase):
     """Integration tests for NLP components."""
 
