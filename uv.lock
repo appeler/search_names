@@ -2226,6 +2226,9 @@ web = [
 dev = [
     { name = "pre-commit" },
 ]
+nlp = [
+    { name = "spacy" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -2268,6 +2271,7 @@ provides-extras = ["dev", "test", "docs", "nlp", "ml", "formats", "search", "web
 
 [package.metadata.requires-dev]
 dev = [{ name = "pre-commit", specifier = ">=4.5.0" }]
+nlp = [{ name = "spacy", extras = ["en-core-web-sm"], specifier = ">=3.8.11" }]
 
 [[package]]
 name = "sentence-transformers"

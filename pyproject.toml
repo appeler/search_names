@@ -131,3 +131,6 @@ ignore = [
 dev = [
     "pre-commit>=4.5.0",
 ]
+nlp = [
+    "spacy[en-core-web-sm]>=3.8.11",
+]
