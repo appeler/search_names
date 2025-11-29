@@ -23,7 +23,14 @@ class TestCLI(unittest.TestCase):
 
     def tearDown(self):
         """Clean up test environment."""
+        import multiprocessing
         import shutil
+
+        # Clean up any multiprocessing resources
+        if hasattr(multiprocessing, "active_children"):
+            for child in multiprocessing.active_children():
+                child.terminate()
+                child.join(timeout=0.5)
 
         shutil.rmtree(self.temp_dir)
 
@@ -227,7 +234,14 @@ class TestCLIIntegration(unittest.TestCase):
 
     def tearDown(self):
         """Clean up test environment."""
+        import multiprocessing
         import shutil
+
+        # Clean up any multiprocessing resources
+        if hasattr(multiprocessing, "active_children"):
+            for child in multiprocessing.active_children():
+                child.terminate()
+                child.join(timeout=0.5)
 
         shutil.rmtree(self.temp_dir)
 

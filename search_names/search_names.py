@@ -339,39 +339,53 @@ def search_names(
                 h.append("count")
             csvwriter.writerow(h)
 
-    # Setting up multiprocessing worker
+    # Setting up multiprocessing worker with proper cleanup
     manager = WorkAroundManager()
-    manager.start()
-    # FIXME: Limit memory usage by set maxsize to twice a number of processes.
-    args.result_queue = manager.Queue(args.processes * 2)
-    pool = Pool(processes=args.processes, initializer=init_worker)
-    result = pool.map_async(worker, [(args, pid) for pid in range(args.processes)])
+    pool = None
+    try:
+        manager.start()
+        # FIXME: Limit memory usage by set maxsize to twice a number of processes.
+        args.result_queue = manager.Queue(args.processes * 2)
+        pool = Pool(processes=args.processes, initializer=init_worker)
+        result = pool.map_async(worker, [(args, pid) for pid in range(args.processes)])
 
-    # Getting the result from worker processes though share queue
-    progress = 0
-    while True:
-        try:
-            r = args.result_queue.get(timeout=0.1)
-            csvwriter.writerow(r)
-            progress += 1
-            elaspe = time.time() - all_start
-            logging.info(
-                f"Progress: {progress:d}, Average rate = {progress * 60 / elaspe:.0f} rows/min"
-            )
-        except KeyboardInterrupt:
-            break
-        except Empty:
+        # Getting the result from worker processes though share queue
+        progress = 0
+        while True:
             try:
-                done = result.get(timeout=0.1)
-                count = sum(done)
+                r = args.result_queue.get(timeout=0.1)
+                csvwriter.writerow(r)
+                progress += 1
+                elaspe = time.time() - all_start
+                logging.info(
+                    f"Progress: {progress:d}, Average rate = {progress * 60 / elaspe:.0f} rows/min"
+                )
+            except KeyboardInterrupt:
                 break
-            except TimeoutError:
-                pass
-    pool.terminate()
-    pool.join()
-    elaspe = time.time() - all_start
-    logging.info(f"Total: {count:d}, Average rate = {count * 60 / elaspe:.0f} rows/min")
-    csvfile.close()
+            except Empty:
+                try:
+                    done = result.get(timeout=0.1)
+                    count = sum(done)
+                    break
+                except TimeoutError:
+                    pass
+        elaspe = time.time() - all_start
+        logging.info(
+            f"Total: {count:d}, Average rate = {count * 60 / elaspe:.0f} rows/min"
+        )
+    finally:
+        # Ensure proper cleanup of multiprocessing resources
+        if pool is not None:
+            pool.terminate()
+            pool.join()
+        # Manager cleanup - WorkAroundManager doesn't support shutdown() properly
+        try:
+            if hasattr(manager, "_process"):
+                manager._process.terminate()
+                manager._process.join(timeout=1)
+        except (OSError, AttributeError, Exception):
+            pass  # Ignore errors during cleanup
+        csvfile.close()
 
 
 def main(argv=sys.argv[1:]):
