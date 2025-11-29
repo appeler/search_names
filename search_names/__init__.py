@@ -1,5 +1,6 @@
 import sys
 import warnings
+from importlib.metadata import version
 
 from . import models, nlp_engine
 from .clean_names import clean_names
@@ -14,7 +15,10 @@ from .split_text_corpus import split_text_corpus
 if not sys.warnoptions:  # allow overriding with `-W` option
     warnings.filterwarnings("ignore", category=RuntimeWarning, module="runpy")
 
-__version__ = "0.4.0"
+try:
+    __version__ = version("search_names")
+except Exception:
+    __version__ = "unknown"
 
 # Initialize logging after imports
 setup_logging()
