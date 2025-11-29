@@ -197,14 +197,20 @@ class SpacyNER:
 class SemanticSimilarity:
     """Semantic similarity matching using sentence transformers."""
 
-    def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
+    def __init__(
+        self,
+        model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
+        local_files_only: bool = False,
+    ):
         """Initialize semantic similarity model.
 
         Args:
             model_name: Sentence transformer model name
+            local_files_only: If True, only use locally cached models
         """
 
         self.model_name = model_name
+        self.local_files_only = local_files_only
         self.model = None
         self._load_model()
 
@@ -214,7 +220,9 @@ class SemanticSimilarity:
             # Lazy import of sentence_transformers
             from sentence_transformers import SentenceTransformer
 
-            self.model = SentenceTransformer(self.model_name)
+            self.model = SentenceTransformer(
+                self.model_name, local_files_only=self.local_files_only
+            )
             logger.info(f"Loaded sentence transformer model: {self.model_name}")
         except Exception as e:
             error_msg = f"Could not load sentence transformer model '{self.model_name}'"

@@ -43,6 +43,11 @@ jobs:
       run: |
         uv sync --extra test --extra dev
 
+    - name: Download NLP models
+      run: |
+        uv pip install en-core-web-sm@https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+        uv run python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')"
+
     - name: Run ruff linting
       run: |
         uv run ruff check .
