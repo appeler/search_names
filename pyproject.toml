@@ -1,6 +1,10 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.9.13,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "search_names"
+module-root = ""
 
 [project]
 name = "search_names"
@@ -81,11 +85,6 @@ Issues = "https://github.com/appeler/search-names/issues"
 # Modern CLI - unified interface for the complete pipeline
 search-names = "search_names.cli:main_cli"
 
-[tool.hatch.build.targets.wheel]
-packages = ["search_names"]
-
-[tool.hatch.build.targets.wheel.shared-data]
-"examples" = "share/search_names/examples"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
