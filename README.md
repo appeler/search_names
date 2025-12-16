@@ -1,8 +1,8 @@
 # Search Names: Advanced Name Search and Entity Recognition
 
 [![CI](https://github.com/appeler/search_names/workflows/CI/badge.svg)](https://github.com/appeler/search_names/actions?query=workflow%3ACI)
-[![PyPI version](https://img.shields.io/pypi/v/search-names.svg)](https://pypi.python.org/pypi/search-names)
-[![Python versions](https://img.shields.io/pypi/pyversions/search-names.svg)](https://pypi.python.org/pypi/search-names)
+[![PyPI version](https://img.shields.io/pypi/v/search-names.svg)](https://pypi.org/project/search-names/)
+[![Python versions](https://img.shields.io/pypi/pyversions/search-names.svg)](https://pypi.org/project/search-names/)
 [![Downloads](https://pepy.tech/badge/search-names)](https://pepy.tech/project/search-names)
 
 **Search Names** is a modern Python package for advanced name search and entity recognition in large text corpora. It uses sophisticated NLP techniques to handle the complexities of real-world name matching with high accuracy and performance.
@@ -334,7 +334,7 @@ results = search_names(
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](https://www.contributor-covenant.org/version/2/0/code_of_conduct/).
+We welcome contributions! Please see our [Code of Conduct](https://www.contributor-covenant.org/version/2/0/code_of_conduct/).
 
 ## 📄 License
 
@@ -347,4 +347,4 @@ This project is licensed under the [MIT License](https://opensource.org/licenses
 
 ---
 
-For detailed documentation and advanced usage, visit our [documentation site](https://search-names.readthedocs.io/).
+For detailed documentation and advanced usage, visit our [documentation site](https://appeler.github.io/search-names/).
