@@ -54,8 +54,7 @@ class TestCLI(unittest.TestCase):
             self.assertEqual(result.exit_code, 0)
             # Accept either search-names or search_names in help output
             self.assertTrue(
-                "search-names" in result.stdout.lower()
-                or "search_names" in result.stdout.lower()
+                "search-names" in result.stdout.lower() or "search_names" in result.stdout.lower()
             )
         except ImportError:
             self.skipTest("CLI module not available")
@@ -141,9 +140,7 @@ class TestCLI(unittest.TestCase):
 
             config_path = Path(self.temp_dir) / "config.yaml"
 
-            result = self.runner.invoke(
-                app, ["config", "create", "--path", str(config_path)]
-            )
+            result = self.runner.invoke(app, ["config", "create", "--path", str(config_path)])
 
             # Check config file was created
             if result.exit_code == 0:
@@ -166,7 +163,7 @@ class TestCLI(unittest.TestCase):
 
             # Should show version info
             if result.exit_code == 0:
-                self.assertIn("0.4", result.stdout)
+                self.assertIn("0.5", result.stdout)
 
         except ImportError:
             self.skipTest("CLI module not available")
@@ -302,9 +299,7 @@ log_level: DEBUG
             config_path.write_text(config_content)
 
             # Run command with config
-            result = self.runner.invoke(
-                app, ["--config", str(config_path), "--version"]
-            )
+            result = self.runner.invoke(app, ["--config", str(config_path), "--version"])
 
             # Should succeed
             self.assertEqual(result.exit_code, 0)

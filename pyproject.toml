@@ -8,7 +8,7 @@ module-root = ""
 
 [project]
 name = "search_names"
-version = "0.4.1"
+version = "0.5.0"
 description = "Advanced name search and entity recognition in large text corpora with NLP and AI capabilities"
 authors = [
     {name = "Suriyan Laohaprapanon", email = "suriyant@gmail.com"},
@@ -18,7 +18,7 @@ license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.11"
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3.11",
@@ -38,27 +38,28 @@ dependencies = [
     "pydantic>=2.12.0",
     "pyyaml>=6.0",
     "rich>=14.0.0",
-    "pandas>=2.3.0",
-    "numpy>=1.26.0",
-    "scikit-learn>=1.7.0",
     "parsernaam>=0.1.0",
-    "spacy>=3.8.0",
-    "sentence-transformers>=5.0.0",
 ]
 
 [project.optional-dependencies]
 dev = ["ruff>=0.14.0", "pre-commit>=4.0.0"]
 test = ["coverage>=7.12.0", "pytest>=9.0.0", "pytest-asyncio>=1.3.0", "pytest-timeout>=2.3.1"]
 docs = ["sphinx>=8.0.0", "furo>=2025.9.0"]
+# Enhanced features with heavy dependencies
+enhanced = [
+    "pandas>=2.3.0",        # DataFrame processing in enhanced parser
+    "spacy>=3.8.0",         # NER and entity recognition
+    "sentence-transformers>=5.0.0",  # Semantic similarity
+]
 nlp = [
-    "transformers>=4.57.0",  # Latest transformers for advanced NLP
-    "torch>=2.9.0",          # Latest PyTorch
+    "transformers>=4.57.0", # Advanced transformers for NLP
+    "torch>=2.9.0",         # PyTorch backend
     "huggingface-hub>=0.36.0",
 ]
 ml = [
-    # Core ML features now included in main dependencies
-    "scipy>=1.16.0",
-    "joblib>=1.5.0",
+    "scipy>=1.16.0",        # Scientific computing
+    "joblib>=1.5.0",        # Parallel processing
+    "numpy>=1.26.0",        # Numerical arrays
 ]
 formats = [
     "pyarrow>=22.0.0",  # Latest Parquet support
@@ -73,7 +74,27 @@ web = [
     "uvicorn[standard]>=0.38.0",
 ]
 all = [
-    "search_names[nlp,ml,formats,search,web]"
+    # Enhanced features
+    "pandas>=2.3.0",
+    "spacy>=3.8.0",
+    "sentence-transformers>=5.0.0",
+    # Advanced NLP
+    "transformers>=4.57.0",
+    "torch>=2.9.0",
+    "huggingface-hub>=0.36.0",
+    # ML features
+    "scipy>=1.16.0",
+    "joblib>=1.5.0",
+    "numpy>=1.26.0",
+    # Format support
+    "pyarrow>=22.0.0",
+    "polars>=1.35.0",
+    # Search backends
+    "elasticsearch>=9.0.0",
+    "opensearch-py>=3.0.0",
+    # Web interface
+    "fastapi>=0.122.0",
+    "uvicorn[standard]>=0.38.0",
 ]
 
 [project.urls]
@@ -103,7 +124,7 @@ filterwarnings = [
 
 [tool.ruff]
 target-version = "py311"
-line-length = 88
+line-length = 100
 
 [tool.ruff.lint]
 select = [
@@ -126,8 +147,15 @@ ignore = [
 
 # Black and isort configurations removed - using ruff for all formatting
 
+[tool.deptry.per_rule_ignores]
+# python-Levenshtein package provides the Levenshtein module (imported as "from Levenshtein import distance")
+DEP002 = ["python-Levenshtein"]
+# Allow importing Levenshtein module from python-Levenshtein package
+DEP003 = ["Levenshtein"]
+
 [dependency-groups]
 dev = [
+    "deptry>=0.24.0",
     "pre-commit>=4.5.0",
 ]
 nlp = [

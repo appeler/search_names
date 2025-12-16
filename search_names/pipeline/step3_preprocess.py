@@ -3,7 +3,6 @@
 import argparse
 import csv
 import itertools
-import sys
 import traceback
 from copy import copy
 
@@ -169,21 +168,3 @@ def preprocess_names(
         if f:
             f.close()
     logger.info("Done.")
-
-
-def main(argv=sys.argv[1:]):
-    args = parse_command_line(argv)
-
-    args.drop_patterns = load_drop_patterns(args.drop_patterns_file)
-
-    logger.debug(f"Arguments: {args}")
-
-    preprocess_names(
-        args.input, args.patterns, args.outfile, args.editlength, args.drop_patterns
-    )
-
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())

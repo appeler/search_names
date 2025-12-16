@@ -26,13 +26,16 @@ Our package addresses each of these systematically with modern NLP and AI techni
 ### Installation
 
 ```bash
-# Basic installation
+# Core installation (name parsing, fuzzy search, CLI)
 pip install search_names
 
-# With NLP features (recommended)
+# Enhanced features (pandas, spaCy, semantic similarity)
+pip install "search_names[enhanced]"
+
+# Advanced NLP (transformers, torch)
 pip install "search_names[nlp]"
 
-# With all features
+# All features including ML, formats, search backends, web
 pip install "search_names[all]"
 ```
 
@@ -143,10 +146,11 @@ Prepare optimized search patterns:
 
 ### 4. **Search** (`search-names search`)
 Execute high-performance name search:
-- Multi-threaded parallel processing
-- Fuzzy matching with edit distance
-- Context-aware filtering
-- Confidence scoring
+- **Multi-threaded parallel processing** with optimized chunking
+- **High-performance mode** for large files (2-5x faster)
+- **Fuzzy matching** with edit distance
+- **Streaming mode** for memory efficiency
+- Context-aware filtering and confidence scoring
 
 **Input**: Text corpus + search patterns
 **Output**: Ranked search results with confidence scores

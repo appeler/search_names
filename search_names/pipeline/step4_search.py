@@ -7,7 +7,6 @@ import ctypes
 import gzip
 import logging
 import os
-import sys
 
 try:
     csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
@@ -20,10 +19,12 @@ from multiprocessing.managers import SyncManager
 from queue import Empty
 
 from .. import utils
-from ..optimized_searchengines import create_optimized_search_engine
-from ..searchengines import (
+from ..engines import (
     RESULT_FIELDS,
-    NewSearchMultipleKeywords,
+    create_search_engine,
+)
+from ..engines import (
+    BasicSearchEngine as NewSearchMultipleKeywords,
 )
 
 """ Defaults declaration
@@ -196,9 +197,7 @@ def load_names_file(namefile, col_id=DEFAULT_COL_ID, col_search=DEFAULT_COL_SEAR
             try:
                 names.append((r[col_id], r[col_search]))
             except KeyError:
-                logging.error(
-                    f"Name file must have '{col_id}' and '{col_search}' columns"
-                )
+                logging.error(f"Name file must have '{col_id}' and '{col_search}' columns")
     return names
 
 
@@ -278,14 +277,34 @@ def search_names(
     clean=True,
     use_optimized=True,
     use_streaming=False,
+    use_high_performance=False,
 ):
     if names is None:
         names = []
 
+    # Use high-performance parallel implementation
+    if use_high_performance:
+        from .optimized_search import search_names_optimized
+
+        logging.info("Using high-performance parallel search...")
+
+        return search_names_optimized(
+            input_file=input,
+            names=names,
+            output_file=outfile,
+            text_column=text,
+            input_cols=input_cols,
+            search_cols=search_cols,
+            max_results=max_name,
+            processes=processes,
+            clean_text=clean,
+        )
+
     # Use optimized search engine if requested
     if use_optimized:
         logging.info("Using optimized search engine...")
-        search_engine = create_optimized_search_engine(names, editlength, use_streaming)
+        engine_type = "streaming" if use_streaming else "optimized"
+        search_engine = create_search_engine(names, editlength, engine_type)
 
         if use_streaming:
             # Use streaming for large files
@@ -385,9 +404,7 @@ def search_names(
                 except TimeoutError:
                     pass
         elaspe = time.time() - all_start
-        logging.info(
-            f"Total: {count:d}, Average rate = {count * 60 / elaspe:.0f} rows/min"
-        )
+        logging.info(f"Total: {count:d}, Average rate = {count * 60 / elaspe:.0f} rows/min")
     finally:
         # Ensure proper cleanup of multiprocessing resources
         if pool is not None:
@@ -401,33 +418,3 @@ def search_names(
         except (OSError, AttributeError, Exception):
             pass  # Ignore errors during cleanup
         csvfile.close()
-
-
-def main(argv=sys.argv[1:]):
-    args = parse_command_line(argv)
-
-    setup_logger(args.debug)
-
-    logging.info(str(args))
-
-    names = load_names_file(args.namefile, args.name_id, args.name_search)
-
-    search_names(
-        args.input,
-        args.text,
-        args.input_cols,
-        names,
-        args.search_cols,
-        args.max_name,
-        args.editlength,
-        args.outfile,
-        args.overwritten,
-        args.processes,
-        args.clean,
-    )
-
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())

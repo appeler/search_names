@@ -8,7 +8,7 @@ import os
 import unittest
 
 from search_names import search_names
-from search_names.search_names import load_names_file
+from search_names.pipeline.step4_search import load_names_file
 
 
 class TestSearch(unittest.TestCase):

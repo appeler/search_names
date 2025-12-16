@@ -2,7 +2,6 @@
 
 import argparse
 import csv
-import sys
 
 from ..logging_config import get_logger
 
@@ -126,9 +125,7 @@ def augment_names(
         f = open(infile)
         reader = csv.DictReader(f)
         o = open(outfile, "w")
-        writer = csv.DictWriter(
-            o, fieldnames=reader.fieldnames + ["prefixes", "nick_names"]
-        )
+        writer = csv.DictWriter(o, fieldnames=reader.fieldnames + ["prefixes", "nick_names"])
         writer.writeheader()
 
         for i, r in enumerate(reader):
@@ -158,26 +155,3 @@ def augment_names(
             f.close()
 
     logger.info("Done.")
-
-
-def main(argv=sys.argv[1:]):
-    args = parse_command_line(argv)
-
-    logger.debug(f"Arguments: {args}")
-
-    logger.info(f"Merging to '{args.outfile}', please wait...")
-
-    augment_names(
-        args.input,
-        args.prefix,
-        args.name,
-        args.outfile,
-        args.prefix_file,
-        args.nickname_file,
-    )
-
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())

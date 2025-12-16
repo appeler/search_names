@@ -2,9 +2,7 @@
 
 import argparse
 import csv
-import os
 import re
-import sys
 
 from nameparser import HumanName
 
@@ -158,11 +156,8 @@ def clean_names(infile, outfile=DEFAULT_OUTPUT, col="Name", all=False):
                 if all or (first, mid, last) not in allnames:
                     rowid += 1
                     r["uniqid"] = rowid
-                    allnameswithid.append(
-                        (r["uniqid"], first, mid, last, r["seat"].strip())
-                    )
+                    allnameswithid.append((r["uniqid"], first, mid, last, r["seat"].strip()))
                     allnames.append((first, mid, last))
-                    # print "Add...", r['uniqid'], first, "-", mid, "-", last, "-", r['seat'].strip()
                     s = {
                         "FirstName": first.upper(),
                         "MiddleInitial/Name": mid.upper(),
@@ -248,27 +243,8 @@ def clean_names_streaming(
     if should_use_streaming(infile):
         logger.info(f"Using streaming for large file: {infile}")
         stats = process_large_csv(infile, outfile, process_chunk, chunk_size)
-        logger.info(
-            f"Processed {stats['total_rows']} rows in {stats['chunks_processed']} chunks"
-        )
+        logger.info(f"Processed {stats['total_rows']} rows in {stats['chunks_processed']} chunks")
         return stats["total_rows"]
     else:
         # Use original function for smaller files
         return clean_names(infile, outfile, col, all)
-
-
-def main(argv=sys.argv[1:]):
-    args = parse_command_line(argv)
-    logger.debug(f"Arguments: {args}")
-
-    clean_names(args.input, args.outfile, args.column, args.all)
-
-    return 0
-
-
-if __name__ == "__main__":
-    from .logging_config import setup_logging
-
-    setup_logging()
-    logger.info(f"Starting {os.path.basename(sys.argv[0])}")
-    sys.exit(main())
