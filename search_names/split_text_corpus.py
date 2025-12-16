@@ -74,9 +74,7 @@ def main(argv=sys.argv[1:]):
 
     """Parse command line options
     """
-    parser = argparse.ArgumentParser(
-        description="Split large text corpus into smaller chunks"
-    )
+    parser = argparse.ArgumentParser(description="Split large text corpus into smaller chunks")
 
     parser.add_argument("input", help="CSV input file name")
 

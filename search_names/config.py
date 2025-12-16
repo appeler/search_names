@@ -73,9 +73,7 @@ class FileConfig:
 
     default_output_dir: str = "./output"
     input_formats: list[str] = field(default_factory=lambda: ["csv", "json", "parquet"])
-    output_formats: list[str] = field(
-        default_factory=lambda: ["csv", "json", "parquet"]
-    )
+    output_formats: list[str] = field(default_factory=lambda: ["csv", "json", "parquet"])
     encoding: str = "utf-8"
     csv_delimiter: str = ","
 
@@ -112,9 +110,7 @@ class ConfigManager:
     """Manages configuration loading and saving."""
 
     def __init__(self, config_path: str | Path | None = None):
-        self.config_path = (
-            Path(config_path) if config_path else self._find_config_file()
-        )
+        self.config_path = Path(config_path) if config_path else self._find_config_file()
         self._config: Config | None = None
 
     def _find_config_file(self) -> Path | None:

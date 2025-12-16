@@ -104,9 +104,7 @@ class SpacyNER:
             logger.error(f"Error extracting entities: {e}")
             return []
 
-    def extract_person_entities(
-        self, text: str, min_length: int = 2
-    ) -> list[EntityMention]:
+    def extract_person_entities(self, text: str, min_length: int = 2) -> list[EntityMention]:
         """Extract person entities specifically.
 
         Args:
@@ -130,9 +128,7 @@ class SpacyNER:
 
         return filtered_entities
 
-    def is_person_context(
-        self, text: str, start: int, end: int, context_window: int = 50
-    ) -> bool:
+    def is_person_context(self, text: str, start: int, end: int, context_window: int = 50) -> bool:
         """Check if a mention appears in a person context.
 
         Args:
@@ -484,9 +480,7 @@ class NLPEngine:
             if link_entities and self.entity_linker:
                 linked_entities = []
                 for entity in person_entities:
-                    linking_result = self.entity_linker.link_entity(
-                        entity, similarity_threshold
-                    )
+                    linking_result = self.entity_linker.link_entity(entity, similarity_threshold)
                     linked_entities.append(linking_result)
 
                 results["linked_entities"] = linked_entities

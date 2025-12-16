@@ -81,9 +81,7 @@ class TestSupplementaryData(unittest.TestCase):
 
     def test_string_list_cleaning(self):
         """Test that string lists are properly cleaned."""
-        data = SupplementaryData(
-            prefixes="Mr.;Dr.;Prof.", nick_names="Bill;William;Will"
-        )
+        data = SupplementaryData(prefixes="Mr.;Dr.;Prof.", nick_names="Bill;William;Will")
 
         self.assertEqual(data.prefixes, "Mr.;Dr.;Prof.")
         self.assertEqual(data.nick_names, "Bill;William;Will")
@@ -126,9 +124,7 @@ class TestSearchPattern(unittest.TestCase):
     def test_invalid_pattern_format(self):
         """Test that invalid pattern format raises validation error."""
         with self.assertRaises(ValidationError):
-            SearchPattern(
-                pattern="Invalid Pattern", uniqid="001", search_name="John Doe"
-            )
+            SearchPattern(pattern="Invalid Pattern", uniqid="001", search_name="John Doe")
 
     def test_confidence_bounds(self):
         """Test that confidence is bounded between 0 and 1."""
@@ -204,9 +200,7 @@ class TestSearchResult(unittest.TestCase):
                 end_positions=[18, 56],
             )
 
-        self.assertIn(
-            "match_count must equal length of matches", str(context.exception)
-        )
+        self.assertIn("match_count must equal length of matches", str(context.exception))
 
     def test_empty_confidence_scores_allowed(self):
         """Test that empty confidence_scores list is allowed."""
@@ -339,9 +333,7 @@ class TestEntityMention(unittest.TestCase):
 
     def test_valid_entity_mention(self):
         """Test creating a valid EntityMention."""
-        mention = EntityMention(
-            text="John Doe", label="PERSON", start=10, end=18, confidence=0.95
-        )
+        mention = EntityMention(text="John Doe", label="PERSON", start=10, end=18, confidence=0.95)
 
         self.assertEqual(mention.text, "John Doe")
         self.assertEqual(mention.label, "PERSON")
@@ -424,9 +416,7 @@ class TestComplexModels(unittest.TestCase):
         ]
 
         patterns = [
-            SearchPattern(
-                pattern="FirstName LastName", uniqid="001", search_name="John Doe"
-            )
+            SearchPattern(pattern="FirstName LastName", uniqid="001", search_name="John Doe")
         ]
 
         request = SearchRequest(documents=documents, search_patterns=patterns)

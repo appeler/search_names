@@ -146,9 +146,7 @@ class TestSemanticSimilarity(unittest.TestCase):
         """Test initialization with invalid model name."""
         with self.assertRaises(NLPEngineError) as context:
             SemanticSimilarity("non-existent-model", local_files_only=True)
-        self.assertIn(
-            "Could not load sentence transformer model", str(context.exception)
-        )
+        self.assertIn("Could not load sentence transformer model", str(context.exception))
 
 
 class TestEntityLinker(unittest.TestCase):
@@ -271,9 +269,7 @@ class TestNLPEngine(unittest.TestCase):
         self.assertIsNotNone(engine.semantic_similarity)
 
         # Test processing
-        results = engine.process_text(
-            "John Doe is meeting Jane Smith.", extract_entities=True
-        )
+        results = engine.process_text("John Doe is meeting Jane Smith.", extract_entities=True)
 
         self.assertIn("entities", results)
         self.assertIn("person_entities", results)
@@ -318,9 +314,7 @@ class TestNLPEngine(unittest.TestCase):
         self.assertEqual(john_result["match_count"], 1)
 
         # Check Bob Wilson has no matches
-        bob_result = next(
-            (r for r in results if r["search_name"] == "Bob Wilson"), None
-        )
+        bob_result = next((r for r in results if r["search_name"] == "Bob Wilson"), None)
         self.assertIsNotNone(bob_result)
         self.assertEqual(bob_result["match_count"], 0)
 
@@ -387,9 +381,7 @@ class TestMockedErrorCases(unittest.TestCase):
         with self.assertRaises(NLPEngineError) as context:
             SemanticSimilarity("invalid_model")
 
-        self.assertIn(
-            "Could not load sentence transformer model", str(context.exception)
-        )
+        self.assertIn("Could not load sentence transformer model", str(context.exception))
 
 
 if __name__ == "__main__":

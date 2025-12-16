@@ -56,9 +56,7 @@ class TestParsedName(unittest.TestCase):
 
     def test_to_dict_method(self):
         """Test to_dict method."""
-        parsed = ParsedName(
-            original="John Doe", first_name="John", last_name="Doe", confidence=0.9
-        )
+        parsed = ParsedName(original="John Doe", first_name="John", last_name="Doe", confidence=0.9)
 
         result = parsed.to_dict()
 

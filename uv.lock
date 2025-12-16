@@ -2199,12 +2199,15 @@ source = { editable = "." }
 dependencies = [
     { name = "nameparser" },
     { name = "nltk" },
+    { name = "pandas" },
     { name = "parsernaam" },
     { name = "pydantic" },
     { name = "python-levenshtein" },
     { name = "pyyaml" },
     { name = "regex" },
     { name = "rich" },
+    { name = "sentence-transformers" },
+    { name = "spacy" },
     { name = "typer" },
 ]
 
@@ -2216,12 +2219,9 @@ all = [
     { name = "joblib" },
     { name = "numpy" },
     { name = "opensearch-py" },
-    { name = "pandas" },
     { name = "polars" },
     { name = "pyarrow" },
     { name = "scipy" },
-    { name = "sentence-transformers" },
-    { name = "spacy" },
     { name = "torch" },
     { name = "transformers" },
     { name = "uvicorn", extra = ["standard"] },
@@ -2235,23 +2235,18 @@ docs = [
     { name = "sphinx" },
 ]
 enhanced = [
-    { name = "pandas" },
-    { name = "sentence-transformers" },
-    { name = "spacy" },
+    { name = "huggingface-hub" },
+    { name = "torch" },
+    { name = "transformers" },
 ]
 formats = [
     { name = "polars" },
     { name = "pyarrow" },
 ]
-ml = [
+nlp = [
     { name = "joblib" },
     { name = "numpy" },
     { name = "scipy" },
-]
-nlp = [
-    { name = "huggingface-hub" },
-    { name = "torch" },
-    { name = "transformers" },
 ]
 search = [
     { name = "elasticsearch" },
@@ -2273,9 +2268,6 @@ dev = [
     { name = "deptry" },
     { name = "pre-commit" },
 ]
-nlp = [
-    { name = "spacy" },
-]
 
 [package.metadata]
 requires-dist = [
@@ -2286,17 +2278,16 @@ requires-dist = [
     { name = "fastapi", marker = "extra == 'web'", specifier = ">=0.122.0" },
     { name = "furo", marker = "extra == 'docs'", specifier = ">=2025.9.0" },
     { name = "huggingface-hub", marker = "extra == 'all'", specifier = ">=0.36.0" },
-    { name = "huggingface-hub", marker = "extra == 'nlp'", specifier = ">=0.36.0" },
+    { name = "huggingface-hub", marker = "extra == 'enhanced'", specifier = ">=0.36.0" },
     { name = "joblib", marker = "extra == 'all'", specifier = ">=1.5.0" },
-    { name = "joblib", marker = "extra == 'ml'", specifier = ">=1.5.0" },
+    { name = "joblib", marker = "extra == 'nlp'", specifier = ">=1.5.0" },
     { name = "nameparser", specifier = ">=1.1.0" },
     { name = "nltk", specifier = ">=3.9.0" },
     { name = "numpy", marker = "extra == 'all'", specifier = ">=1.26.0" },
-    { name = "numpy", marker = "extra == 'ml'", specifier = ">=1.26.0" },
+    { name = "numpy", marker = "extra == 'nlp'", specifier = ">=1.26.0" },
     { name = "opensearch-py", marker = "extra == 'all'", specifier = ">=3.0.0" },
     { name = "opensearch-py", marker = "extra == 'search'", specifier = ">=3.0.0" },
-    { name = "pandas", marker = "extra == 'all'", specifier = ">=2.3.0" },
-    { name = "pandas", marker = "extra == 'enhanced'", specifier = ">=2.3.0" },
+    { name = "pandas", specifier = ">=2.3.0" },
     { name = "parsernaam", specifier = ">=0.1.0" },
     { name = "polars", marker = "extra == 'all'", specifier = ">=1.35.0" },
     { name = "polars", marker = "extra == 'formats'", specifier = ">=1.35.0" },
@@ -2313,28 +2304,25 @@ requires-dist = [
     { name = "rich", specifier = ">=14.0.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.14.0" },
     { name = "scipy", marker = "extra == 'all'", specifier = ">=1.16.0" },
-    { name = "scipy", marker = "extra == 'ml'", specifier = ">=1.16.0" },
-    { name = "sentence-transformers", marker = "extra == 'all'", specifier = ">=5.0.0" },
-    { name = "sentence-transformers", marker = "extra == 'enhanced'", specifier = ">=5.0.0" },
-    { name = "spacy", marker = "extra == 'all'", specifier = ">=3.8.0" },
-    { name = "spacy", marker = "extra == 'enhanced'", specifier = ">=3.8.0" },
+    { name = "scipy", marker = "extra == 'nlp'", specifier = ">=1.16.0" },
+    { name = "sentence-transformers", specifier = ">=5.0.0" },
+    { name = "spacy", specifier = ">=3.8.0" },
     { name = "sphinx", marker = "extra == 'docs'", specifier = ">=8.0.0" },
     { name = "torch", marker = "extra == 'all'", specifier = ">=2.9.0" },
-    { name = "torch", marker = "extra == 'nlp'", specifier = ">=2.9.0" },
+    { name = "torch", marker = "extra == 'enhanced'", specifier = ">=2.9.0" },
     { name = "transformers", marker = "extra == 'all'", specifier = ">=4.57.0" },
-    { name = "transformers", marker = "extra == 'nlp'", specifier = ">=4.57.0" },
+    { name = "transformers", marker = "extra == 'enhanced'", specifier = ">=4.57.0" },
     { name = "typer", specifier = ">=0.20.0" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'all'", specifier = ">=0.38.0" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'web'", specifier = ">=0.38.0" },
 ]
-provides-extras = ["dev", "test", "docs", "enhanced", "nlp", "ml", "formats", "search", "web", "all"]
+provides-extras = ["dev", "test", "docs", "enhanced", "nlp", "formats", "search", "web", "all"]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "deptry", specifier = ">=0.24.0" },
     { name = "pre-commit", specifier = ">=4.5.0" },
 ]
-nlp = [{ name = "spacy", extras = ["en-core-web-sm"], specifier = ">=3.8.11" }]
 
 [[package]]
 name = "sentence-transformers"

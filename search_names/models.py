@@ -87,9 +87,7 @@ class SearchPattern(BaseModel):
     pattern: str = Field(..., description="Search pattern (e.g., 'FirstName LastName')")
     uniqid: str = Field(..., description="Unique identifier")
     search_name: str = Field(..., description="Actual name to search for")
-    confidence: float | None = Field(
-        None, ge=0.0, le=1.0, description="Confidence score"
-    )
+    confidence: float | None = Field(None, ge=0.0, le=1.0, description="Confidence score")
 
     @field_validator("pattern")
     @classmethod
@@ -106,13 +104,9 @@ class SearchResult(BaseModel):
     uniqid: str = Field(..., description="Unique identifier from search list")
     match_count: int = Field(0, ge=0, description="Number of matches found")
     matches: list[str] = Field(default_factory=list, description="Matched text")
-    start_positions: list[int] = Field(
-        default_factory=list, description="Start positions"
-    )
+    start_positions: list[int] = Field(default_factory=list, description="Start positions")
     end_positions: list[int] = Field(default_factory=list, description="End positions")
-    confidence_scores: list[float] = Field(
-        default_factory=list, description="Confidence scores"
-    )
+    confidence_scores: list[float] = Field(default_factory=list, description="Confidence scores")
 
     @model_validator(mode="after")
     def validate_list_lengths(self):
@@ -127,14 +121,10 @@ class SearchResult(BaseModel):
             raise ValueError("match_count must equal length of matches list")
 
         if len(matches) != len(starts) or len(matches) != len(ends):
-            raise ValueError(
-                "matches, start_positions, and end_positions must have same length"
-            )
+            raise ValueError("matches, start_positions, and end_positions must have same length")
 
         if scores and len(scores) != len(matches):
-            raise ValueError(
-                "confidence_scores must be empty or same length as matches"
-            )
+            raise ValueError("confidence_scores must be empty or same length as matches")
 
         return self
 
@@ -144,9 +134,7 @@ class TextDocument(BaseModel):
 
     uniqid: str = Field(..., description="Unique identifier for the document")
     text: str = Field(..., description="Text content to search")
-    metadata: dict[str, Any] = Field(
-        default_factory=dict, description="Additional metadata"
-    )
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
     preprocessed_text: str | None = Field(None, description="Preprocessed text")
 
     @field_validator("uniqid")
@@ -177,21 +165,15 @@ class SearchJobConfig(BaseModel):
         default_factory=list, description="Fuzzy matching parameters"
     )
     clean_text: bool = Field(False, description="Whether to clean text before search")
-    input_columns: list[str] = Field(
-        default_factory=list, description="Input columns to include"
-    )
-    search_columns: list[str] = Field(
-        default_factory=list, description="Search result columns"
-    )
+    input_columns: list[str] = Field(default_factory=list, description="Input columns to include")
+    search_columns: list[str] = Field(default_factory=list, description="Search result columns")
 
     @field_validator("fuzzy_min_lengths")
     @classmethod
     def validate_fuzzy_lengths(cls, v):
         for item in v:
             if not isinstance(item, (list, tuple)) or len(item) != 2:
-                raise ValueError(
-                    "fuzzy_min_lengths must contain tuples/lists of length 2"
-                )
+                raise ValueError("fuzzy_min_lengths must contain tuples/lists of length 2")
             if not isinstance(item[0], int) or not isinstance(item[1], int):
                 raise ValueError("fuzzy_min_lengths values must be integers")
             if item[0] <= 0 or item[1] < 0:
@@ -205,9 +187,7 @@ class NameSearchJob(BaseModel):
     job_id: str = Field(..., description="Unique job identifier")
     config: SearchJobConfig = Field(..., description="Job configuration")
     status: str = Field("pending", description="Job status")
-    created_at: datetime = Field(
-        default_factory=datetime.now, description="Creation timestamp"
-    )
+    created_at: datetime = Field(default_factory=datetime.now, description="Creation timestamp")
     started_at: datetime | None = Field(None, description="Start timestamp")
     completed_at: datetime | None = Field(None, description="Completion timestamp")
     error_message: str | None = Field(None, description="Error message if failed")
@@ -225,9 +205,7 @@ class NameSearchJob(BaseModel):
 class FuzzyMatchConfig(BaseModel):
     """Model for fuzzy matching configuration."""
 
-    min_length: int = Field(
-        ..., ge=1, description="Minimum string length for this edit distance"
-    )
+    min_length: int = Field(..., ge=1, description="Minimum string length for this edit distance")
     edit_distance: int = Field(..., ge=0, description="Maximum edit distance allowed")
 
     @model_validator(mode="after")
@@ -244,9 +222,7 @@ class EntityMention(BaseModel):
     label: str = Field(..., description="Entity label (PERSON, ORG, etc.)")
     start: int = Field(..., ge=0, description="Start position in text")
     end: int = Field(..., ge=0, description="End position in text")
-    confidence: float | None = Field(
-        None, ge=0.0, le=1.0, description="Confidence score"
-    )
+    confidence: float | None = Field(None, ge=0.0, le=1.0, description="Confidence score")
 
     @model_validator(mode="after")
     def validate_positions(self):
@@ -281,9 +257,7 @@ class ProcessingStats(BaseModel):
     @model_validator(mode="after")
     def calculate_derived_stats(self):
         if self.processing_time_seconds > 0:
-            self.documents_per_second = (
-                self.processed_documents / self.processing_time_seconds
-            )
+            self.documents_per_second = self.processed_documents / self.processing_time_seconds
         else:
             self.documents_per_second = 0.0
         return self

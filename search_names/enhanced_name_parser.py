@@ -220,9 +220,7 @@ class NameParser:
                 return self.parse_with_humanname(name)
             elif self.parser_type == "parsernaam":
                 results = self.parse_with_parsernaam([name])
-                return (
-                    results[0] if results else ParsedName(original=name, confidence=0.0)
-                )
+                return results[0] if results else ParsedName(original=name, confidence=0.0)
             else:  # auto
                 # Use parsernaam for Indian names, humanname otherwise
                 if self.is_indian_name(name):

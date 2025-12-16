@@ -50,24 +50,14 @@ def process_names(
     parser_type: str = typer.Option(
         "auto", "-p", "--parser", help="Parser type: humanname, parsernaam, or auto"
     ),
-    config_file: Path | None = typer.Option(
-        None, "--config", help="YAML configuration file"
-    ),
-    format: str = typer.Option(
-        "csv", "-f", "--format", help="Output format: csv, json, parquet"
-    ),
+    config_file: Path | None = typer.Option(None, "--config", help="YAML configuration file"),
+    format: str = typer.Option("csv", "-f", "--format", help="Output format: csv, json, parquet"),
     show_confidence: bool = typer.Option(
         True, "--confidence/--no-confidence", help="Include confidence scores"
     ),
-    show_progress: bool = typer.Option(
-        True, "--progress/--no-progress", help="Show progress bar"
-    ),
-    batch_size: int = typer.Option(
-        100, "--batch-size", help="Batch size for processing"
-    ),
-    ml_threshold: float = typer.Option(
-        0.8, "--ml-threshold", help="ML confidence threshold"
-    ),
+    show_progress: bool = typer.Option(True, "--progress/--no-progress", help="Show progress bar"),
+    batch_size: int = typer.Option(100, "--batch-size", help="Batch size for processing"),
+    ml_threshold: float = typer.Option(0.8, "--ml-threshold", help="ML confidence threshold"),
 ):
     """
     Process names in a CSV file with enhanced parsing capabilities.
@@ -105,9 +95,7 @@ def process_names(
         df = pd.read_csv(input_file)
 
         if name_column not in df.columns:
-            console.print(
-                f"[red]Error: Column '{name_column}' not found in input file[/red]"
-            )
+            console.print(f"[red]Error: Column '{name_column}' not found in input file[/red]")
             console.print(f"Available columns: {', '.join(df.columns)}")
             raise typer.Exit(1)
 
@@ -126,9 +114,7 @@ def process_names(
         if show_progress:
             console.print("[dim]Processing names...[/dim]")
 
-        processed_df = parser.parse_dataframe(
-            df, name_column=name_column, add_components=True
-        )
+        processed_df = parser.parse_dataframe(df, name_column=name_column, add_components=True)
 
         # Add summary statistics
         stats = _calculate_processing_stats(processed_df)
@@ -155,9 +141,7 @@ def process_names(
 @app.command()
 def compare_parsers(
     names: list[str] = typer.Argument(..., help="Names to parse and compare"),
-    save_results: bool = typer.Option(
-        False, "--save", help="Save comparison results to CSV"
-    ),
+    save_results: bool = typer.Option(False, "--save", help="Save comparison results to CSV"),
     output_file: Path | None = typer.Option(
         None, "-o", "--output", help="Output file for comparison results"
     ),
@@ -290,9 +274,7 @@ output:
 @app.command()
 def validate_names(
     input_file: Path = typer.Argument(..., help="Input CSV file"),
-    name_column: str = typer.Option(
-        "Name", "-c", "--column", help="Column containing names"
-    ),
+    name_column: str = typer.Option("Name", "-c", "--column", help="Column containing names"),
     min_confidence: float = typer.Option(0.7, help="Minimum confidence threshold"),
 ):
     """
@@ -374,9 +356,7 @@ def _calculate_processing_stats(df: pd.DataFrame) -> dict:
         stats["parser_usage"] = df["parser_used"].value_counts().to_dict()
 
     stats["total_processed"] = len(df)
-    stats["successful_parses"] = len(
-        df.dropna(subset=["parsed_first_name", "parsed_last_name"])
-    )
+    stats["successful_parses"] = len(df.dropna(subset=["parsed_first_name", "parsed_last_name"]))
 
     return stats
 
@@ -402,9 +382,7 @@ def _display_stats(stats: dict):
     console.print(table)
 
 
-def _save_output(
-    df: pd.DataFrame, output_file: Path, format_type: str, include_confidence: bool
-):
+def _save_output(df: pd.DataFrame, output_file: Path, format_type: str, include_confidence: bool):
     """Save output in specified format."""
     # Filter columns if confidence not requested
     if not include_confidence:

@@ -63,9 +63,7 @@ class TestLoggingConfig(unittest.TestCase):
         mock_handler = MagicMock()
         mock_rich_handler.return_value = mock_handler
 
-        setup_logging(
-            level="DEBUG", rich_tracebacks=True, show_time=True, show_path=False
-        )
+        setup_logging(level="DEBUG", rich_tracebacks=True, show_time=True, show_path=False)
 
         # Verify Console was created
         mock_console.assert_called_once_with(stderr=True)

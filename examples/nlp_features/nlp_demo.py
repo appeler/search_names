@@ -73,9 +73,7 @@ def demo_named_entity_recognition():
 
         print(f"Found {len(entities)} entities:")
         for entity in entities:
-            print(
-                f"  '{entity.text}' ({entity.label}) at positions {entity.start}-{entity.end}"
-            )
+            print(f"  '{entity.text}' ({entity.label}) at positions {entity.start}-{entity.end}")
 
         print()
 
@@ -86,9 +84,7 @@ def demo_named_entity_recognition():
             print(f"  '{entity.text}' at positions {entity.start}-{entity.end}")
 
             # Check context
-            is_person_context = ner.is_person_context(
-                sample_text, entity.start, entity.end
-            )
+            is_person_context = ner.is_person_context(sample_text, entity.start, entity.end)
             print(f"    Person context: {is_person_context}")
 
     except NLPEngineError as e:
@@ -112,9 +108,7 @@ def demo_semantic_similarity():
 
     try:
         # Initialize semantic similarity
-        similarity = SemanticSimilarity(
-            model_name="sentence-transformers/all-MiniLM-L6-v2"
-        )
+        similarity = SemanticSimilarity(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
         # Test similarity between names
         name_pairs = [
@@ -148,9 +142,7 @@ def demo_semantic_similarity():
         ]
 
         print(f"Finding names similar to '{target_name}':")
-        similar_names = similarity.find_similar_names(
-            target_name, candidates, threshold=0.3
-        )
+        similar_names = similarity.find_similar_names(target_name, candidates, threshold=0.3)
 
         for name, score in similar_names:
             print(f"  '{name}': {score:.3f}")
@@ -232,9 +224,7 @@ def demo_entity_linking():
                     print(f"  Party: {entity_info.get('party', 'Unknown')}")
 
                 if result.alternative_entities:
-                    print(
-                        f"  Alternatives: {len(result.alternative_entities)} other candidates"
-                    )
+                    print(f"  Alternatives: {len(result.alternative_entities)} other candidates")
             else:
                 print("  No entity linked")
             print()
@@ -278,9 +268,7 @@ def demo_full_nlp_pipeline():
         print("-" * 50)
 
         # Process with full pipeline
-        results = nlp_engine.process_text(
-            text, extract_entities=True, link_entities=True
-        )
+        results = nlp_engine.process_text(text, extract_entities=True, link_entities=True)
 
         print(f"Entities found: {len(results['entities'])}")
         for entity in results["entities"]:

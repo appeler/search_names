@@ -49,9 +49,7 @@ def merge_results(infile=None, outfile=DEFAULT_OUTPUT_FILE):
 
 def main(argv=sys.argv[1:]):
     """Parse command line options"""
-    parser = argparse.ArgumentParser(
-        description="Merge search results from multiple chunks"
-    )
+    parser = argparse.ArgumentParser(description="Merge search results from multiple chunks")
 
     parser.add_argument("inputs", nargs="*", help="CSV input file(s) name")
 

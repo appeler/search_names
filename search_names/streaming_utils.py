@@ -99,12 +99,9 @@ class ChunkedCSVProcessor:
                         # Log progress
                         if self.stats["chunks_processed"] % 10 == 0:
                             elapsed = time.time() - start_time
-                            rate = (
-                                self.stats["total_rows"] / elapsed if elapsed > 0 else 0
-                            )
+                            rate = self.stats["total_rows"] / elapsed if elapsed > 0 else 0
                             logger.info(
-                                f"Processed {self.stats['total_rows']} rows "
-                                f"({rate:.0f} rows/sec)"
+                                f"Processed {self.stats['total_rows']} rows ({rate:.0f} rows/sec)"
                             )
 
                 # Process remaining rows
@@ -236,13 +233,9 @@ def split_large_file(
         for row in reader:
             if current_rows == 0:
                 # Start new file
-                split_file_path = (
-                    output_dir / f"{input_path.stem}_part{file_num:03d}.csv"
-                )
+                split_file_path = output_dir / f"{input_path.stem}_part{file_num:03d}.csv"
                 current_file = open(split_file_path, "w", encoding="utf-8", newline="")
-                current_writer = csv.DictWriter(
-                    current_file, fieldnames=reader.fieldnames
-                )
+                current_writer = csv.DictWriter(current_file, fieldnames=reader.fieldnames)
                 current_writer.writeheader()
                 split_files.append(str(split_file_path))
 
@@ -387,9 +380,7 @@ def process_large_csv(
 
         if processed_rows:
             with open(output_file, "w", encoding="utf-8", newline="") as outfile:
-                writer = csv.DictWriter(
-                    outfile, fieldnames=list(processed_rows[0].keys())
-                )
+                writer = csv.DictWriter(outfile, fieldnames=list(processed_rows[0].keys()))
                 writer.writeheader()
                 writer.writerows(processed_rows)
 
