@@ -26,17 +26,26 @@ Our package addresses each of these systematically with modern NLP and AI techni
 ### Installation
 
 ```bash
-# Core installation (name parsing, fuzzy search, CLI)
-pip install search_names
+# Core installation (includes pandas, spaCy, sentence-transformers, CLI)
+uv add search-names
 
-# Enhanced features (pandas, spaCy, semantic similarity)
-pip install "search_names[enhanced]"
+# Or with pip
+pip install search-names
 
-# Advanced NLP (transformers, torch)
-pip install "search_names[nlp]"
+# Optional: Advanced features (transformers, torch)
+uv add "search-names[enhanced]"
 
-# All features including ML, formats, search backends, web
-pip install "search_names[all]"
+# Optional: Additional formats (Parquet, Polars)
+uv add "search-names[formats]"
+
+# Optional: Search backends (Elasticsearch, OpenSearch)
+uv add "search-names[search]"
+
+# Optional: Web interface (FastAPI, Uvicorn)
+uv add "search-names[web]"
+
+# All optional features
+uv add "search-names[all]"
 ```
 
 ### Modern CLI Interface
@@ -55,20 +64,21 @@ search-names preprocess augmented_names.csv              # Step 3: Preprocess
 search-names search text_corpus.csv --optimized --streaming  # Step 4: Search
 
 # Performance options
-search-names search corpus.csv --optimized               # Use optimized search engine
-search-names search large_corpus.csv --streaming         # Memory-efficient streaming
-search-names clean huge_names.csv --streaming            # Chunked processing
+search-names search corpus.csv --optimized               # Use optimized search engine (default)
+search-names search corpus.csv --streaming               # Memory-efficient streaming
+search-names search corpus.csv --high-performance        # Best performance for large files
+search-names search corpus.csv --processes 8             # Use 8 parallel processes
 ```
 
 ### Python API
 
 ```python
-import search_names
 from search_names.pipeline import clean_names, augment_names, preprocess_names, search_names
 from search_names.pipeline.step4_search import load_names_file
+from search_names.config import get_config
 
 # Load configuration
-config = search_names.get_config()
+config = get_config()
 
 # Step 1: Clean and standardize names
 result = clean_names(
@@ -203,11 +213,11 @@ search-names search corpus.csv --streaming
 
 ### Optimized Search Engine
 ```python
-from search_names.optimized_searchengines import create_optimized_search_engine
+from search_names.engines import create_optimized_search_engine
 
-# Up to 10x faster than original implementation
-engine = create_optimized_search_engine(names, use_streaming=True)
-results = engine.search_file_streaming("large_corpus.csv", "results.csv")
+# Optimized implementation with better performance
+engine = create_optimized_search_engine(names)
+results = engine.search("sample text", max_results=10)
 ```
 
 ### Memory Management
@@ -216,13 +226,25 @@ results = engine.search_file_streaming("large_corpus.csv", "results.csv")
 - **Memory Estimation**: Automatic file size analysis to choose processing method
 - **Resource Cleanup**: Proper cleanup of temporary files and memory
 
-### Benchmarking
+### Performance Monitoring
 ```python
-from search_names.optimized_searchengines import benchmark_search_engines
+import time
+from search_names.engines import create_search_engine
 
-# Compare performance between engines
-speedup = benchmark_search_engines(keywords, test_text, iterations=100)
-print(f"Optimized engine is {speedup:.1f}x faster")
+# Compare basic vs optimized engines
+basic_engine = create_search_engine(names, engine_type="basic")
+optimized_engine = create_search_engine(names, engine_type="optimized")
+
+# Time comparison
+start = time.time()
+basic_results = basic_engine.search(test_text)
+basic_time = time.time() - start
+
+start = time.time()
+optimized_results = optimized_engine.search(test_text)
+optimized_time = time.time() - start
+
+print(f"Performance improvement: {basic_time/optimized_time:.1f}x faster")
 ```
 
 ## ⚙️ Configuration
@@ -241,26 +263,39 @@ search:
   max_results: 20
   fuzzy_min_lengths: [[10, 1], [15, 2]]
   processes: 4
-  use_optimized: true      # Use optimized search engine
-  use_streaming: false     # Auto-detect large files
+  chunk_size: 1000
+  timeout_seconds: 300
 
-# Performance settings
-performance:
-  chunk_size: 1000         # Rows per chunk for streaming
-  max_memory_mb: 500       # Memory threshold for streaming
-  enable_benchmarking: false
-
-# NLP features
-nlp:
-  use_spacy: true
-  spacy_model: "en_core_web_sm"
-  similarity_threshold: 0.8
+# Name cleaning
+name_cleaning:
+  default_patterns:
+    - "FirstName LastName"
+    - "NickName LastName"
+    - "Prefix LastName"
 
 # Text processing
 text_processing:
   remove_stopwords: true
   normalize_unicode: true
-  streaming_for_large_files: true
+  remove_punctuation: true
+  language: "english"
+
+# NLP features (optional)
+nlp:
+  use_spacy: false
+  spacy_model: "en_core_web_sm"
+  use_transformers: false
+  embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+  similarity_threshold: 0.8
+
+# File handling
+files:
+  default_output_dir: "./output"
+  encoding: "utf-8"
+  csv_delimiter: ","
+
+# Logging
+log_level: "INFO"
 ```
 
 ## 🔄 Legacy CLI Support
@@ -296,15 +331,9 @@ print(f"Processed {len(result)} names")
 ```python
 from search_names.pipeline import search_names
 from search_names.pipeline.step4_search import load_names_file
-from search_names.optimized_searchengines import benchmark_search_engines
 
 # Load preprocessed names
 names = load_names_file("politician_names.csv")
-
-# Benchmark performance (optional)
-test_text = "President Biden met with Senator Warren yesterday"
-speedup = benchmark_search_engines(names, test_text, iterations=10)
-print(f"Optimized engine is {speedup:.1f}x faster")
 
 # Run optimized search
 results = search_names(
@@ -315,8 +344,9 @@ results = search_names(
     max_name=50,
     processes=8,
     editlength=[8, 12],        # Fuzzy matching thresholds
-    use_optimized=True,        # Use vectorized engine
+    use_optimized=True,        # Use optimized engine (default)
     use_streaming=True,        # Stream large files
+    use_high_performance=True, # Best performance for large files
     clean=True                 # Clean text preprocessing
 )
 ```
